@@ -110,13 +110,13 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 "非同期処理を提供してくれる縁の下の力持ち
 NeoBundle 'Shougo/vimproc', {
-  'build' : {
-  \     'windows' : 'make -f make_mingw32.mak',
-  \     'cygwin' : 'make -f make_cygwin.mak',
-    'mac' : 'make -f make_mac.mak',
-  \     'unix' : 'make -f make_unix.mak',
-  },
-}
+\ 'build' : {
+\     'windows' : 'make -f make_mingw32.mak',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make -f make_mac.mak',
+\     'unix' : 'make -f make_unix.mak',
+\    },
+\ }
 
 "色
 NeoBundle 'nanotech/jellybeans.vim'
