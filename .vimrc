@@ -37,20 +37,20 @@ set smartindent
 " smartindentで増減する幅
 set shiftwidth=4
 
-" カーソルの左右移動で行末から次の行の行頭への移動が可能になる
-set whichwrap=b,s,h,l,<,>,[,],~
-
 " 行番号を表示
 set number
 
-" カーソルラインをハイライト
-set cursorline
+" インクリメンタルサーチ. １文字入力毎に検索を行う
+set incsearch
 
-" 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
-nnoremap j gj
-nnoremap k gk
-nnoremap <down> gj
-nnoremap <up> gk
+" 検索パターンに大文字小文字を区別しない
+set ignorecase
+
+" 検索パターンに大文字を含んでいたら大文字小文字を区別する
+set smartcase
+
+" 検索結果をハイライト"
+set hlsearch
 
 " 矢印キーを無効にする
 noremap <Up> <Nop>
@@ -73,21 +73,6 @@ set wildmenu
 
 " 保存するコマンド履歴の数
 set history=5000
-
-" クリップボードからペーストする時だけインデントしない
-if &term =~ "xterm"
-    let &t_SI .= "\e[?2004h"
-    let &t_EI .= "\e[?2004l"
-    let &pastetoggle = "\e[201~"
-
-    function XTermPasteBegin(ret)
-        set paste
-        return a:ret
-    endfunction
-
-    inoremap <special> <expr> <Esc>[200~ XTermPasteBegin("")
-endif
-
 
 " neobundle settings {{{
 if has('vim_starting')
@@ -118,90 +103,71 @@ NeoBundle 'Shougo/vimproc', {
 \    },
 \ }
 
-"色
-NeoBundle 'nanotech/jellybeans.vim'
+" 色
+NeoBundle 'tomasr/molokai'
 
-"かっことじてくれる
-NeoBundle 'Townk/vim-autoclose'
+" " 保存時に構文チェック
+" NeoBundle 'vim-syntastic/syntastic'
+" let g:syntastic_enable_signs=1
+" let g:syntastic_auto_loc_list=2
+" let g:syntastic_mode_map = {'mode': 'passive'}
+" augroup AutoSyntastic
+"     autocmd!
+"     autocmd InsertLeave,TextChanged * call s:syntastic()
+" augroup END
+" function! s:syntastic()
+"     w
+"     SyntasticCheck
+" endfunction
 
-"ifとかの終了宣言を自動で挿入してくれる
+ "ifとかの終了宣言を自動で挿入してくれる
 NeoBundleLazy 'tpope/vim-endwise', {
   \ 'autoload' : { 'insert' : 1,}}
 
 " ステータスラインの表示内容強化
-NeoBundle 'itchyny/lightline.vim'
-
-" ステータスラインの設定
-set laststatus=2 " ステータスラインを常に表示
-set showmode " 現在のモードを表示
-set showcmd " 打ったコマンドをステータスラインの下に表示
-set ruler " ステータスラインの右側にカーソルの現在位置を表示する
-
-" 末尾の全角と半角の空白文字を赤くハイライト
-NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'vim-airline/vim-airline'
+let g:airline#extensions#tabline#enabled = 1
+" テーマ
+NeoBundle 'vim-airline/vim-airline-themes'
+let g:airline_theme='term'
 
 " インデントの可視化
 NeoBundle 'Yggdroot/indentLine'
 
-" pythonのやつ
-NeoBundle 'davidhalter/jedi-vim'
+" " ~/.pyenv/shimsを$PATHに追加
+" " jedi-vim や vim-pyenc のロードよりも先に行う必要がある、はず。
+" let $PATH = "~/.pyenv/shims:".$PATH
+" " pythonのやつ
+" NeoBundle 'davidhalter/jedi-vim'
+" " pyenv 処理用に vim-pyenv を追加
+" " Note: depends が指定されているため jedi-vim より後にロードされる（ことを期待）
+" NeoBundleLazy "lambdalisue/vim-pyenv", {
+"       \ "depends": ['davidhalter/jedi-vim'],
+"       \ "autoload": {
+"       \   "filetypes": ["python", "python3"]
+"       \ }}
 
 " html
 NeoBundle 'mattn/emmet-vim'
 
-" ランチャー
-NeoBundle 'Shougo/unite.vim'
-" unite {{{
-let g:unite_enable_start_insert=1
-nmap <silent> <C-u><C-b> :<C-u>Unite buffer<CR>
-nmap <silent> <C-u><C-f> :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
-nmap <silent> <C-u><C-r> :<C-u>Unite -buffer-name=register register<CR>
-nmap <silent> <C-u><C-m> :<C-u>Unite file_mru<CR>
-nmap <silent> <C-u><C-u> :<C-u>Unite buffer file_mru<CR>
-nmap <silent> <C-u><C-a> :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
-au FileType unite nmap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-au FileType unite imap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-au FileType unite nmap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-au FileType unite imap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-au FileType unite nmap <silent> <buffer> <ESC><ESC> q
-au FileType unite imap <silent> <buffer> <ESC><ESC> <ESC>q
-" }}}
+"LaTex
+NeoBundle 'lervag/vimtex'
+filetype plugin on
+let tex_flavor = 'latex'
+set grepprg=grep\ -nH\ $*
+set shellslash
+let g:Tex_CompileRule_dvi = 'platex --interaction=nonstopmode $*'
+let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
+let g:Tex_FormatDependency_pdf = 'dvi,pdf'
 
-" ファイル履歴
-NeoBundle 'Shougo/neomru.vim', {
-  \ 'depends' : 'Shougo/unite.vim'
-  \ }
-
-
-" vimfiler {{{
-let g:vimfiler_as_default_explorer  = 1
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_data_directory       = expand('~/.vim/etc/vimfiler')
-nnoremap <silent><C-u><C-j> :<C-u>VimFilerBufferDir -split -simple -winwidth=35 -no-quit -toggle<CR>
-" }}}
-" ファイラー
-NeoBundleLazy 'Shougo/vimfiler', {
-  \ 'depends' : ["Shougo/unite.vim"],
-  \ 'autoload' : {
-  \   'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer", "VimFilerBufferDir" ],
-  \   'mappings' : ['<Plug>(vimfiler_switch)'],
-  \   'explorer' : 1,
-  \ }}
-
-" vimfiler {{{
-let g:vimfiler_as_default_explorer  = 1
-let g:vimfiler_safe_mode_by_default = 0
-let g:vimfiler_data_directory       = expand('~/.vim/etc/vimfiler')
-nnoremap <silent><C-u><C-j> :<C-u>VimFilerBufferDir -split -simple -winwidth=35 -no-quit -toggle<CR>
-" }}}
-
+" コメントON/OFFを手軽に実行 ctl と - を二回
+NeoBundle 'tomtom/tcomment_vim'
 
 " vimrc に記述されたプラグインでインストールされていないものがないかチェックする
 NeoBundleCheck
 call neobundle#end()
 filetype plugin indent on
 
-" jellybeans カラースキーマ
-set t_Co=256
+" 色セット
 syntax on
-colorscheme jellybeans
+colorscheme molokai
