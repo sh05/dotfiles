@@ -150,6 +150,9 @@ NeoBundle 'Yggdroot/indentLine'
 " html
 NeoBundle 'mattn/emmet-vim'
 
+" markdown
+NeoBundle 'tpope/vim-markdown'
+
 "LaTex
 NeoBundle 'lervag/vimtex'
 filetype plugin on

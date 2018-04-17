@@ -23,7 +23,8 @@ SAVEHIST=1000000
 # 1行表示
 # PROMPT="%~ %# "
 # 2行表示
-PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[red]}%}->%{${reset_color} "
+PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%}
+ ${fg[red]}%}->%{${reset_color} "
 
 
 # 単語の区切り文字を指定する
@@ -211,9 +212,10 @@ case ${OSTYPE} in
 esac
 
 # vim:set ft=zsh:
-export PATH=/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin
+export PATH=/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+export PATH=/Applications/MAMP/bin/php/php7.1.1/bin:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims:/Users/nakamotoshogo/.pyenv/shims:/Users/nakamotoshogo/.pyenv/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
