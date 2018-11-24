@@ -22,9 +22,12 @@ SAVEHIST=1000000
 # プロンプト
 # 1行表示
 # PROMPT="%~ %# "
+# fg -> bg で字抜き
+# green, black, red, yellow, blue, magenta, cyan, white
 # 2行表示
 PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%}
- ${fg[red]}%}->%{${reset_color} "
+${fg[red]}%}->%{${reset_color}"
+# PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[blue]}%}->%{${reset_color} "
 
 
 # 単語の区切り文字を指定する
@@ -119,6 +122,9 @@ add-zsh-hook precmd _update_vcs_info_msg
 
 ########################################
 # オプション
+# vimモードでescをjjに
+bindkey "jj" vi-cmd-mode
+
 # 日本語ファイル名を表示可能にする
 setopt print_eight_bit
 
@@ -219,3 +225,7 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export PATH=/Applications/MAMP/bin/php/php7.1.1/bin:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims:/Users/nakamotoshogo/.pyenv/shims:/Users/nakamotoshogo/.pyenv/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
+
+export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
+export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"

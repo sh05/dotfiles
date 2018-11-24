@@ -62,6 +62,9 @@ inoremap <Down> <Nop>
 inoremap <Left> <Nop>
 inoremap <Right> <Nop>
 
+" insertをjjで抜ける
+inoremap <silent> jj <ESC>
+
 " 括弧の対応関係を一瞬表示する
 set showmatch
 
@@ -153,15 +156,15 @@ NeoBundle 'mattn/emmet-vim'
 " markdown
 NeoBundle 'tpope/vim-markdown'
 
-"LaTex
-NeoBundle 'lervag/vimtex'
-filetype plugin on
-let tex_flavor = 'latex'
-set grepprg=grep\ -nH\ $*
-set shellslash
-let g:Tex_CompileRule_dvi = 'platex --interaction=nonstopmode $*'
-let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
-let g:Tex_FormatDependency_pdf = 'dvi,pdf'
+" "LaTex
+" NeoBundle 'lervag/vimtex'
+" filetype plugin on
+" let tex_flavor = 'latex'
+" set grepprg=grep\ -nH\ $*
+" set shellslash
+" let g:Tex_CompileRule_dvi = 'platex --interaction=nonstopmode $*'
+" let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
+" let g:Tex_FormatDependency_pdf = 'dvi,pdf'
 
 " コメントON/OFFを手軽に実行 ctl と - を二回
 NeoBundle 'tomtom/tcomment_vim'
