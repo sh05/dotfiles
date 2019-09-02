@@ -1,3 +1,6 @@
+" エマージェンシ
+set clipboard+=unnamed
+
 " ファイル読み込み時の文字コードの設定
 set encoding=utf-8
 
@@ -35,7 +38,7 @@ set autoindent
 set smartindent
 
 " smartindentで増減する幅
-set shiftwidth=4
+set shiftwidth=2
 
 " 行番号を表示
 set number
@@ -84,7 +87,7 @@ if has('vim_starting')
   " neobundle をインストールしていない場合は自動インストール
   if !isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
     echo "install neobundle..."
-    " vim からコマンド呼び出しているだけ neobundle.vim のクローン
+    " vim からコマンド呼び出し neobundle.vim のクローン
     :call system("git clone https://github.com/Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vim")
   endif
   " runtimepath の追加は必須
@@ -93,10 +96,10 @@ endif
 call neobundle#begin(expand('~/.vim/bundle'))
 let g:neobundle_default_git_protocol='https'
 
-" neobundle#begin - neobundle#end の間に導入するプラグインを記載します。
+" neobundle#begin - neobundle#end の間に導入するプラグインを記載
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-"非同期処理を提供してくれる縁の下の力持ち
+"非同期処理
 NeoBundle 'Shougo/vimproc', {
 \ 'build' : {
 \     'windows' : 'make -f make_mingw32.mak',
@@ -108,6 +111,12 @@ NeoBundle 'Shougo/vimproc', {
 
 " 色
 NeoBundle 'tomasr/molokai'
+
+" golang
+NeoBundle 'fatih/vim-go'
+
+" arduino
+NeoBundle 'sudar/vim-arduino-syntax'
 
 " " 保存時に構文チェック
 " NeoBundle 'vim-syntastic/syntastic'
@@ -166,7 +175,7 @@ NeoBundle 'tpope/vim-markdown'
 " let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
 " let g:Tex_FormatDependency_pdf = 'dvi,pdf'
 
-" コメントON/OFFを手軽に実行 ctl と - を二回
+" コメント <ctl>-- 2回
 NeoBundle 'tomtom/tcomment_vim'
 
 " vimrc に記述されたプラグインでインストールされていないものがないかチェックする

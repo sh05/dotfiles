@@ -218,14 +218,24 @@ case ${OSTYPE} in
 esac
 
 # vim:set ft=zsh:
-export PATH=/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
 
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+# export PYENV_ROOT="$HOME/.pyenv"
+# export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
+# eval "$(pyenv virtualenv-init -)"
+
+export PATH=/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
 export PATH=/Applications/MAMP/bin/php/php7.1.1/bin:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims:/Users/nakamotoshogo/.pyenv/shims:/Users/nakamotoshogo/.pyenv/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
 
 export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
+
+export GOPATH=$HOME
+export PATH=$GOPATH:$PATH
+
+# dockerエイリアス
+alias d='docker '
+alias ds='docker ps'
+alias dsa='docker ps -a'
+alias dc='docker-compose '
