@@ -78,111 +78,49 @@ source $VIMRUNTIME/macros/matchit.vim
 set wildmenu
 
 " 保存するコマンド履歴の数
-set history=5000
+set history=20
 
-" neobundle settings {{{
-if has('vim_starting')
-  set nocompatible
+" プラグインが実際にインストールされるディレクトリ
+let s:dein_dir = expand('~/.cache/dein')
+" dein.vim 本体
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 
-  " neobundle をインストールしていない場合は自動インストール
-  if !isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
-    echo "install neobundle..."
-    " vim からコマンド呼び出し neobundle.vim のクローン
-    :call system("git clone https://github.com/Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vim")
+" dein.vim がなければ github から落としてくる
+if &runtimepath !~# '/dein.vim'
+  if !isdirectory(s:dein_repo_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
   endif
-  " runtimepath の追加は必須
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
+  execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
 endif
-call neobundle#begin(expand('~/.vim/bundle'))
-let g:neobundle_default_git_protocol='https'
 
-" neobundle#begin - neobundle#end の間に導入するプラグインを記載
-NeoBundleFetch 'Shougo/neobundle.vim'
+" 設定開始
+if dein#load_state(s:dein_dir)
+  call dein#begin(s:dein_dir)
 
-"非同期処理
-NeoBundle 'Shougo/vimproc', {
-\ 'build' : {
-\     'windows' : 'make -f make_mingw32.mak',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make -f make_mac.mak',
-\     'unix' : 'make -f make_unix.mak',
-\    },
-\ }
+  " プラグインリストを収めた TOML ファイル
+  " 予め TOML ファイル（後述）を用意しておく
+  let g:rc_dir    = expand('~/.vim/rc')
+  let s:toml      = g:rc_dir . '/dein.toml'
+  let s:lazy_toml = g:rc_dir . '/dein_lazy.toml'
 
-" 色
-NeoBundle 'tomasr/molokai'
+  " TOML を読み込み、キャッシュしておく
+  call dein#load_toml(s:toml,      {'lazy': 0})
+  call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
-" golang
-NeoBundle 'fatih/vim-go'
+  " 設定終了
+  call dein#end()
+  call dein#save_state()
+endif
 
-" arduino
-NeoBundle 'sudar/vim-arduino-syntax'
-
-" " 保存時に構文チェック
-" NeoBundle 'vim-syntastic/syntastic'
-" let g:syntastic_enable_signs=1
-" let g:syntastic_auto_loc_list=2
-" let g:syntastic_mode_map = {'mode': 'passive'}
-" augroup AutoSyntastic
-"     autocmd!
-"     autocmd InsertLeave,TextChanged * call s:syntastic()
-" augroup END
-" function! s:syntastic()
-"     w
-"     SyntasticCheck
-" endfunction
-
- "ifとかの終了宣言を自動で挿入してくれる
-NeoBundleLazy 'tpope/vim-endwise', {
-  \ 'autoload' : { 'insert' : 1,}}
-
-" ステータスラインの表示内容強化
-NeoBundle 'vim-airline/vim-airline'
+" もし、未インストールものものがあったらインストール
+if dein#check_install()
+  call dein#install()
+endif
 let g:airline#extensions#tabline#enabled = 1
-" テーマ
-NeoBundle 'vim-airline/vim-airline-themes'
 let g:airline_theme='term'
 
-" インデントの可視化
-NeoBundle 'Yggdroot/indentLine'
-
-" " ~/.pyenv/shimsを$PATHに追加
-" " jedi-vim や vim-pyenc のロードよりも先に行う必要がある、はず。
-" let $PATH = "~/.pyenv/shims:".$PATH
-" " pythonのやつ
-" NeoBundle 'davidhalter/jedi-vim'
-" " pyenv 処理用に vim-pyenv を追加
-" " Note: depends が指定されているため jedi-vim より後にロードされる（ことを期待）
-" NeoBundleLazy "lambdalisue/vim-pyenv", {
-"       \ "depends": ['davidhalter/jedi-vim'],
-"       \ "autoload": {
-"       \   "filetypes": ["python", "python3"]
-"       \ }}
-
-" html
-NeoBundle 'mattn/emmet-vim'
-
-" markdown
-NeoBundle 'tpope/vim-markdown'
-
-" "LaTex
-" NeoBundle 'lervag/vimtex'
-" filetype plugin on
-" let tex_flavor = 'latex'
-" set grepprg=grep\ -nH\ $*
-" set shellslash
-" let g:Tex_CompileRule_dvi = 'platex --interaction=nonstopmode $*'
-" let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
-" let g:Tex_FormatDependency_pdf = 'dvi,pdf'
-
-" コメント <ctl>-- 2回
-NeoBundle 'tomtom/tcomment_vim'
-
-" vimrc に記述されたプラグインでインストールされていないものがないかチェックする
-NeoBundleCheck
-call neobundle#end()
 filetype plugin indent on
 
 " 色セット
 syntax on
-colorscheme molokai
+colorscheme hybrid

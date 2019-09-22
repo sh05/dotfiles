@@ -1,0 +1,53 @@
+# 特定のファイルタイプで読み込む
+[[plugins]]
+repo  = 'Quramy/tsuquyomi'
+on_ft = ['typescript']
+
+# toml syntax
+[[plugins]]
+repo = 'cespare/vim-toml'
+on_ft = ['toml']
+
+# emmet
+[[plugins]]
+repo = 'mattn/emmet-vim'
+on_ft = ['html']
+
+# markdown
+[[plugins]]
+repo = 'tpope/vim-markdown'
+on_ft = ['markdown']
+
+# golang
+[[plugins]]
+repo = 'fatih/vim-go'
+on_ft = ['go']
+
+# arduino
+[[plugins]]
+repo = 'sudar/vim-arduino-syntax'
+on_ft = ['arduino']
+
+# インサートモードに入ったら読み込む
+[[plugins]]
+repo = 'Shougo/neocomplete.vim'
+on_i = 1
+
+# ifとかの終了宣言を自動で挿入してくれる
+[[plugins]]
+repo = 'tpope/vim-endwise'
+on_i = 1
+
+[[plugins]]
+repo   = 'Shougo/unite.vim'
+
+# unite.vim を読み込んだら一緒に読み込む
+[[plugins]]
+repo      = 'Shougo/neomru.vim'
+on_source = ['unite.vim']
+
+# 特定のコマンドを打ったら読み込む
+[[plugins]]
+repo      = 'thinca/vim-prettyprint'
+on_cmd    = ['PP', 'PrettyPrint']
+
