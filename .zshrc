@@ -1,34 +1,65 @@
-# 少し凝った zshrc
-# License : MIT
-# http://mollifier.mit-license.org/
+### ほぼコピペ
 
-########################################
+
 # 環境変数
 export LANG=ja_JP.UTF-8
-
 
 # 色を使用出来るようにする
 autoload -Uz colors
 colors
 
+# vim 風キーバインドにする
+bindkey -v
+
+# vimモードでescをjjに
+bindkey "jj" vi-cmd-mode
+
 # emacs 風キーバインドにする
-#bindkey -e
+# bindkey -e
 
 # ヒストリの設定
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000
 SAVEHIST=1000000
 
-# プロンプト
-# 1行表示
-# PROMPT="%~ %# "
-# fg -> bg で字抜き
-# green, black, red, yellow, blue, magenta, cyan, white
-# 2行表示
-PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%}
-${fg[red]}%}->%{${reset_color}"
-# PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[blue]}%}->%{${reset_color} "
+# 日本語ファイル名を表示可能にする
+setopt print_eight_bit
 
+# beep を無効にする
+setopt no_beep
+
+# フローコントロールを無効にする
+setopt no_flow_control
+
+# Ctrl+Dでzshを終了しない
+setopt ignore_eof
+
+# '#' 以降をコメントとして扱う
+setopt interactive_comments
+
+# ディレクトリ名だけでcdする
+setopt auto_cd
+
+# cd したら自動的にpushdする
+setopt auto_pushd
+
+# 重複したディレクトリを追加しない
+setopt pushd_ignore_dups
+
+# 同時に起動したzshの間でヒストリを共有する
+setopt share_history
+
+# 同じコマンドをヒストリに残さない
+setopt hist_ignore_all_dups
+
+# スペースから始まるコマンド行はヒストリに残さない
+setopt hist_ignore_space
+
+# ヒストリに保存するときに余分なスペースを削除する
+setopt hist_reduce_blanks
+
+# 高機能なワイルドカード展開を使用する
+setopt extended_glob
 
 # 単語の区切り文字を指定する
 autoload -Uz select-word-style
@@ -38,8 +69,22 @@ select-word-style default
 zstyle ':zle:*' word-chars " /=;@:{},|"
 zstyle ':zle:*' word-style unspecified
 
+# vcs_info
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
+
+zstyle ':vcs_info:*' formats '%F{yello}%b %f'
+zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+
+function _update_vcs_info_msg() {
+    LANG=en_US.UTF-8 vcs_info
+    RPROMPT="${vcs_info_msg_0_}"
+}
+add-zsh-hook precmd _update_vcs_info_msg
+
 ########################################
 # 補完
+
 # 補完機能を有効にする
 autoload -Uz compinit
 compinit
@@ -57,22 +102,54 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
+########################################
+# キーバインド
+
+# ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
+bindkey '^R' history-incremental-pattern-search-backward
+
+# C で標準出力をクリップボードにコピーする
+# mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
+if which pbcopy >/dev/null 2>&1 ; then
+    # Mac
+    alias -g C='| pbcopy'
+elif which xsel >/dev/null 2>&1 ; then
+    # Linux
+    alias -g C='| xsel --input --clipboard'
+elif which putclip >/dev/null 2>&1 ; then
+    # Cygwin
+    alias -g C='| putclip'
+fi
 
 ########################################
-# vcs_info
-autoload -Uz vcs_info
-autoload -Uz add-zsh-hook
+# OS 別の設定
+case ${OSTYPE} in
+    darwin*)
+        #Mac用の設定
+        export CLICOLOR=1
+        alias ls='ls -G -F'
+        ;;
+    linux*)
+        #Linux用の設定
+        alias ls='ls -F --color=auto'
+        ;;
+esac
 
-zstyle ':vcs_info:*' formats '%F{yello}%b %f'
-zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+########################################
+# プロンプト
 
-function _update_vcs_info_msg() {
-    LANG=en_US.UTF-8 vcs_info
-    RPROMPT="${vcs_info_msg_0_}"
-}
-add-zsh-hook precmd _update_vcs_info_msg
+# 1行表示
+# PROMPT="%~ %# "
+# fg -> bg で字抜き
+# green, black, red, yellow, blue, magenta, cyan, white
 
-## RPROMPT
+# 2行表示
+PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%}
+${fg[red]}%}->%{${reset_color}"
+
+## RPROMPT with git
+# PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[blue]}%}->%{${reset_color} "
+
 #RPROMPT=$'`branch-status-check`'
 #setopt prompt_subst #表示毎にPROMPTで設定されている文字列を評価する
 
@@ -121,56 +198,26 @@ add-zsh-hook precmd _update_vcs_info_msg
 # }}}
 
 ########################################
-# オプション
-# vimモードでescをjjに
-bindkey "jj" vi-cmd-mode
+# path
 
-# 日本語ファイル名を表示可能にする
-setopt print_eight_bit
+export PATH=/usr/local/bin
+export PATH=$PATH:/usr/sbin/
+export PATH=$PATH:/usr/bin
+export PATH=$PATH:/sbin
+export PATH=$PATH:/bin
+export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
+export PATH=$PATH:$HOME/.nodebrew/current/bin
+# export PATH=$PATH:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims
+# export PATH=$PATH:/Users/nakamotoshogo/.pyenv/shims
+# export PATH=$PATH:/Users/nakamotoshogo/.pyenv/bin
+export PATH=$PATH:$HOME/.composer/vendor/bin
+# export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 
-# beep を無効にする
-setopt no_beep
-
-# フローコントロールを無効にする
-setopt no_flow_control
-
-# Ctrl+Dでzshを終了しない
-#setopt ignore_eof
-
-# '#' 以降をコメントとして扱う
-setopt interactive_comments
-
-# ディレクトリ名だけでcdする
-setopt auto_cd
-
-# cd したら自動的にpushdする
-setopt auto_pushd
-# 重複したディレクトリを追加しない
-setopt pushd_ignore_dups
-
-# 同時に起動したzshの間でヒストリを共有する
-setopt share_history
-
-# 同じコマンドをヒストリに残さない
-setopt hist_ignore_all_dups
-
-# スペースから始まるコマンド行はヒストリに残さない
-setopt hist_ignore_space
-
-# ヒストリに保存するときに余分なスペースを削除する
-setopt hist_reduce_blanks
-
-# 高機能なワイルドカード展開を使用する
-setopt extended_glob
+export GOPATH=$HOME
+export PATH=$PATH:$GOPATH
 
 ########################################
-# キーバインド
-
-# ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
-bindkey '^R' history-incremental-pattern-search-backward
-
-########################################
-# エイリアス
+# alias
 
 alias la='ls -a'
 alias ll='ls -l'
@@ -181,61 +228,25 @@ alias mv='mv -i'
 
 alias mkdir='mkdir -p'
 
-# sudo の後のコマンドでエイリアスを有効にする
+# sudo の後のコマンドでaliasを有効にする
 alias sudo='sudo '
 
-# グローバルエイリアス
+# グローバルalias
 alias -g L='| less'
 alias -g G='| grep'
 
-# C で標準出力をクリップボードにコピーする
-# mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
-if which pbcopy >/dev/null 2>&1 ; then
-    # Mac
-    alias -g C='| pbcopy'
-elif which xsel >/dev/null 2>&1 ; then
-    # Linux
-    alias -g C='| xsel --input --clipboard'
-elif which putclip >/dev/null 2>&1 ; then
-    # Cygwin
-    alias -g C='| putclip'
-fi
-
-
-
-########################################
-# OS 別の設定
-case ${OSTYPE} in
-    darwin*)
-        #Mac用の設定
-        export CLICOLOR=1
-        alias ls='ls -G -F'
-        ;;
-    linux*)
-        #Linux用の設定
-        alias ls='ls -F --color=auto'
-        ;;
-esac
-
-# vim:set ft=zsh:
-
-# export PYENV_ROOT="$HOME/.pyenv"
-# export PATH="$PYENV_ROOT/bin:$PATH"
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-
-export PATH=/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
-export PATH=/Applications/MAMP/bin/php/php7.1.1/bin:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims:/Users/nakamotoshogo/.pyenv/shims:/Users/nakamotoshogo/.pyenv/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/bin:/Users/nakamotoshogo/.composer/vendor/bin:/usr/sbin/:/sbin
-
-export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
-
-export GOPATH=$HOME
-export PATH=$GOPATH:$PATH
-
-# dockerエイリアス
-alias d='docker '
+# docker alias
+alias d='docker'
 alias ds='docker ps'
 alias dsa='docker ps -a'
-alias dc='docker-compose '
+alias drun='docker run --rm'
+alias dbuild='docker build'
+alias dimages='docker images'
+alias dstop='docker stop'
+alias drm='docker rm'
+alias drmi='docker rmi'
+
+alias dc='docker-compose'
+alias dcup='docker-compose up'
+alias dcbuild='docker-compose build'
+alias dcrun='docker-compose run --rm'
