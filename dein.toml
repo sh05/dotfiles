@@ -1,10 +1,9 @@
-# 基本は github.com のレポジトリーを指定するだけ
 [[plugins]]
 repo = 'Shougo/dein.vim'
 
-# git clone 後、実行すべきコマンドがある場合はこんな感じ
 [[plugins]]
 repo = 'Shougo/vimproc.vim'
+# git clone 後、実行すべきコマンド
 hook_post_update = '''
   if dein#util#_is_windows()
     let cmd = 'tools\\update-dll-mingw'
@@ -48,10 +47,16 @@ if   = '''! has('kaoriya')'''
 [[plugins]]
 repo    = 'vim-airline/vim-airline'
 depends = ['vim-airline-themes']
+hook_add = """
+let g:airline#extensions#tabline#enabled = 1
+"""
 
 # ステータスラインのテーマ
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
+hook_add = """
+let g:airline_theme='term'
+"""
 
 # 色
 # [[plugins]]

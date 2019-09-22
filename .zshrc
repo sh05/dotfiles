@@ -200,11 +200,13 @@ ${fg[red]}%}->%{${reset_color}"
 ########################################
 # path
 
-export PATH=/usr/local/bin
+export PATH=/usr/local/sbin
+export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/usr/sbin/
 export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
+export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
 export PATH=$PATH:$HOME/.nodebrew/current/bin
 # export PATH=$PATH:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims

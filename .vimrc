@@ -116,8 +116,6 @@ endif
 if dein#check_install()
   call dein#install()
 endif
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme='term'
 
 filetype plugin indent on
 
