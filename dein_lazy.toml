@@ -3,6 +3,11 @@
 repo  = 'Quramy/tsuquyomi'
 on_ft = ['typescript']
 
+# js
+[[plugins]]
+repo  = 'pangloss/vim-javascript'
+on_ft = ['javascript']
+
 # toml syntax
 [[plugins]]
 repo = 'cespare/vim-toml'
@@ -56,9 +61,9 @@ let g:deoplete#enable_at_startup = 1
 """
 
 # ifとかの終了宣言を自動で挿入してくれる
-[[plugins]]
-repo = 'tpope/vim-endwise'
-on_i = 1
+# [[plugins]]
+# repo = 'tpope/vim-endwise'
+# on_i = 1
 
 [[plugins]]
 repo   = 'Shougo/unite.vim'

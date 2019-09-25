@@ -31,6 +31,14 @@ depends = ['context_filetype.vim']
 [[plugins]]
 repo = 'Shougo/context_filetype.vim'
 
+# テキストオブジェクトの拡張
+[[plugins]]
+repo = 'tpope/vim-surround'
+
+# マイクロマクロの拡張
+[[plugins]]
+repo = 'tpope/vim-repeat'
+
 # カラースキーマ
 [[plugins]]
 repo = 'w0ng/vim-hybrid'
@@ -58,14 +66,27 @@ hook_add = """
 let g:airline_theme='term'
 """
 
-# 色
-# [[plugins]]
-# repo = 'tomasr/molokai'
-
 # インデントの可視化
 [[plugins]]
 repo = 'Yggdroot/indentLine'
 
-# コメント <ctl>-- 2回
+# 色
+# [[plugins]]
+# repo = 'tomasr/molokai'
+
+# syntax highlight
 [[plugins]]
-repo = 'tomtom/tcomment_vim'
+repo = 'Yggdroot/indentLine'
+
+# コメント <ctl>-- 2回
+# [[plugins]]
+# repo = 'tomtom/tcomment_vim'
+
+# コメント gcc, gcG
+[[plugins]]
+repo = 'tpope/vim-commentary'
+
+# pairs such as {, [
+[[plugins]]
+repo = 'jiangmiao/auto-pairs'
+

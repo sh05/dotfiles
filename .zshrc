@@ -144,7 +144,7 @@ esac
 # green, black, red, yellow, blue, magenta, cyan, white
 
 # 2行表示
-PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%}
+PROMPT="${fg[green]}%}[${HOST}]%{${reset_color}%{${fg[blue]}%}[%d]%{${reset_color}%}
 ${fg[red]}%}->%{${reset_color}"
 
 ## RPROMPT with git
@@ -236,6 +236,10 @@ alias sudo='sudo '
 # グローバルalias
 alias -g L='| less'
 alias -g G='| grep'
+
+# editor alias
+alias v='vim -p'
+alias e='emacs'
 
 # docker alias
 alias d='docker'
