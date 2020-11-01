@@ -144,7 +144,7 @@ esac
 # green, black, red, yellow, blue, magenta, cyan, white
 
 # 2行表示
-PROMPT="${fg[green]}%}[${HOST}]%{${reset_color}%{${fg[blue]}%}[%d]%{${reset_color}%}
+PROMPT="${fg[green]}%}[${HOST}]%{${reset_color}%{${fg[yellow]}%}[%d]%{${reset_color}%}
 ${fg[red]}%}->%{${reset_color}"
 
 ## RPROMPT with git
@@ -207,12 +207,12 @@ export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
+# export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
 export PATH=$PATH:$HOME/.nodebrew/current/bin
 # export PATH=$PATH:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims
 # export PATH=$PATH:/Users/nakamotoshogo/.pyenv/shims
 # export PATH=$PATH:/Users/nakamotoshogo/.pyenv/bin
-export PATH=$PATH:$HOME/.composer/vendor/bin
+# export PATH=$PATH:$HOME/.composer/vendor/bin
 # export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 
 export GOPATH=$HOME
@@ -229,6 +229,8 @@ alias cp='cp -i'
 alias mv='mv -i'
 
 alias mkdir='mkdir -p'
+
+alias hisg='cat ~/.zsh_history | grep'
 
 # sudo の後のコマンドでaliasを有効にする
 alias sudo='sudo '
@@ -256,3 +258,14 @@ alias dc='docker-compose'
 alias dcup='docker-compose up'
 alias dcbuild='docker-compose build'
 alias dcrun='docker-compose run --rm'
+
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH="/usr/local/opt/ncurses/bin:$PATH"
+
+# env
+export PATH="/usr/local/opt/ncurses/bin:$PATH"

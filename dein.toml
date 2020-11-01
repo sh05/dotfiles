@@ -41,10 +41,13 @@ repo = 'tpope/vim-repeat'
 
 # カラースキーマ
 [[plugins]]
-repo = 'w0ng/vim-hybrid'
-hook_add = '''
-  set background=dark
-'''
+repo = 'ghifarit53/tokyonight-vim'
+# repo = 'w0ng/vim-hybrid'
+# repo = 'joshdick/onedark.vim'
+# repo = 'tomasr/molokai'
+hook_add = """
+let g:tokyonight_style = 'night'
+"""
 
 # 特定の条件で読み込みたいとき
 [[plugins]]
@@ -63,16 +66,12 @@ let g:airline#extensions#tabline#enabled = 1
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
 hook_add = """
-let g:airline_theme='term'
+let g:airline_theme='tokyonight'
 """
 
 # インデントの可視化
 [[plugins]]
 repo = 'Yggdroot/indentLine'
-
-# 色
-# [[plugins]]
-# repo = 'tomasr/molokai'
 
 # syntax highlight
 [[plugins]]

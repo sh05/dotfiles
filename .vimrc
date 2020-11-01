@@ -121,4 +121,4 @@ filetype plugin indent on
 
 " 色セット
 syntax on
-colorscheme hybrid
+colorscheme tokyonight
