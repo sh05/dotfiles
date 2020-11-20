@@ -89,14 +89,12 @@ autocmd BufRead * normal zR
 
 " netrwのデフォルトをtreeにする
 let g:netrw_liststyle = 3
-
 " netrwのvで開く方向を右にする
 let g:netrw_altv = 1
 " netrwのoで開く方向を右にする
 let g:netrw_alto = 1
-
 " netrwのEnterでPと同じにする
-let g:netrw_browse_split = 4
+" let g:netrw_browse_split = 4
 
 " プラグインが実際にインストールされるディレクトリ
 let s:dein_dir = expand('~/.cache/dein')
