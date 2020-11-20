@@ -216,6 +216,7 @@ export PATH=$PATH:$HOME/.nodebrew/current/bin
 # export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 
 export GOPATH=$HOME
+export GOROOT=$(go env GOROOT)
 export PATH=$PATH:$GOPATH
 
 ########################################
