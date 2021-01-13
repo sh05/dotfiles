@@ -3,13 +3,10 @@ set clipboard+=unnamed
 
 " ファイル読み込み時の文字コードの設定
 set encoding=utf-8
-
 " Vim script内でマルチバイト文字を使う場合の設定
 scriptencoding utf-8
-
 " 保存時の文字コード
 set fileencoding=utf-8
-
 " 読み込み時の文字コードの自動判別. 左側が優先される
 set fileencodings=ucs-boms,utf-8,euc-jp,cp932
 
@@ -38,7 +35,7 @@ set autoindent
 set smartindent
 
 " smartindentで増減する幅
-set shiftwidth=4
+set shiftwidth=2
 
 " 行番号を表示
 set number
@@ -50,7 +47,7 @@ set incsearch
 set ignorecase
 
 " 検索パターンに大文字を含んでいたら大文字小文字を区別する
-set smartcase
+" set smartcase
 
 " 検索結果をハイライト"
 set hlsearch
@@ -64,6 +61,33 @@ inoremap <Up> <Nop>
 inoremap <Down> <Nop>
 inoremap <Left> <Nop>
 inoremap <Right> <Nop>
+
+set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
+
+" 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
+nnoremap j gj
+nnoremap k gk
+nnoremap <down> gj
+nnoremap <up> gk
+
+if &term =~ "xterm"
+  let &t_SI .= "\e[?2004h"
+  let &t_EI .= "\e[?2004l"
+  let &pastetoggle = "\e[201~"
+
+  function XTermPasteBegin(ret)
+    set paste
+    return a:ret
+  endfunction
+
+  inoremap <special> <expr> <Esc>[200~ XTermPasteBegin("")
+endif
+
+
+" バックスペースキーの有効化
+set backspace=indent,eol,start
+
+set cursorline " カーソルラインをハイライト
 
 " insertをjjで抜ける
 inoremap <silent> jj <ESC>
@@ -85,8 +109,6 @@ set foldmethod=indent
 set foldcolumn=4
 autocmd BufRead * normal zR
 
-
-
 " netrwのデフォルトをtreeにする
 let g:netrw_liststyle = 3
 " netrwのvで開く方向を右にする
@@ -94,7 +116,7 @@ let g:netrw_altv = 1
 " netrwのoで開く方向を右にする
 let g:netrw_alto = 1
 " netrwのEnterでPと同じにする
-" let g:netrw_browse_split = 4
+let g:netrw_browse_split = 4
 
 " プラグインが実際にインストールされるディレクトリ
 let s:dein_dir = expand('~/.cache/dein')
@@ -137,4 +159,16 @@ filetype plugin indent on
 
 " 色セット
 syntax on
-colorscheme tokyonight
+set background=dark
+" テキスト背景色
+au ColorScheme * hi Normal ctermbg=none
+" 括弧対応
+au ColorScheme * hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+" スペルチェック
+au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
+set background=dark
+
+au VimEnter * call dein#call_hook('post_source')
+
+" 色いじったりしてキャッシュが邪魔なとき用
+" call dein#recache_runtimepath()
