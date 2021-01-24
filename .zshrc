@@ -1,8 +1,8 @@
 ### ほぼコピペ
 
-
 # 環境変数
-export LANG=ja_JP.UTF-8
+# export LANG=ja_JP.UTF-8
+export LANG=en_US.UTF-8
 
 # 色を使用出来るようにする
 autoload -Uz colors
@@ -78,7 +78,7 @@ zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
 function _update_vcs_info_msg() {
     LANG=en_US.UTF-8 vcs_info
-    RPROMPT="${vcs_info_msg_0_}"
+    # RPROMPT="${vcs_info_msg_0_}"
 }
 add-zsh-hook precmd _update_vcs_info_msg
 
@@ -97,7 +97,7 @@ zstyle ':completion:*' ignore-parents parent pwd ..
 
 # sudo の後ろでコマンド名を補完する
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
-                   /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+  /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
@@ -127,7 +127,8 @@ case ${OSTYPE} in
     darwin*)
         #Mac用の設定
         export CLICOLOR=1
-        alias ls='ls -G -F'
+        alias ls='ls -G'
+        # alias ls='ls -G -F'
         ;;
     linux*)
         #Linux用の設定
@@ -144,8 +145,8 @@ esac
 # green, black, red, yellow, blue, magenta, cyan, white
 
 # 2行表示
-PROMPT="${fg[green]}%}[${HOST}]%{${reset_color}%{${fg[yellow]}%}[%d]%{${reset_color}%}
-${fg[red]}%}->%{${reset_color}"
+PROMPT="${fg[green]}%}[%n%{${reset_color}%{${fg[green]}%}@%{${reset_color}%{${fg[green]}%}%m]%{${reset_color}%{${fg[yellow]}%}[%C]%{${reset_color}%{${fg[blue]}%}[%* %w]
+%{${reset_color}%{${fg[red]}%}->%{${reset_color}"
 
 ## RPROMPT with git
 # PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[blue]}%}->%{${reset_color} "
@@ -207,16 +208,12 @@ export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
-# export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
+export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
 export PATH=$PATH:$HOME/.nodebrew/current/bin
-# export PATH=$PATH:/usr/local/Cellar/pyenv-virtualenv/1.1.0/shims
-# export PATH=$PATH:/Users/nakamotoshogo/.pyenv/shims
-# export PATH=$PATH:/Users/nakamotoshogo/.pyenv/bin
-# export PATH=$PATH:$HOME/.composer/vendor/bin
-# export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
+export PATH=$PATH:$HOME/.composer/vendor/bin
+export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 
 export GOPATH=$HOME
-export GOROOT=$(go env GOROOT)
 export PATH=$PATH:$GOPATH
 
 ########################################
@@ -270,3 +267,15 @@ export PATH="/usr/local/opt/ncurses/bin:$PATH"
 
 # env
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
+## zshrc
+# export ZSHRC="$HOME/.zshrc"
+export Z="$HOME/.zshrc"
+## vimrc
+# export VIMRC="$HOME/.vimrc"
+export V="$HOME/.vimrc"
+## dein
+# export DEIN="$HOME/.vim/rc/"
+export D="$HOME/.vim/rc/"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

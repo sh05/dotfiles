@@ -2,6 +2,12 @@
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
+repo = 'junegunn/goyo.vim'
+
+[[plugins]]
+repo = 'tpope/vim-unimpaired'
+
+[[plugins]]
 repo = 'Shougo/vimproc.vim'
 # git clone 後、実行すべきコマンド
 hook_post_update = '''
@@ -17,7 +23,9 @@ hook_post_update = '''
   let g:dein#plugin.build = cmd
 '''
 
-# ブランチやタグを指定したいとき
+[[plugins]]
+repo = 'easymotion/vim-easymotion'
+
 [[plugins]]
 repo = 'delphinus35/typescript-vim'
 rev  = 'colorize-template-strings'
@@ -39,15 +47,6 @@ repo = 'tpope/vim-surround'
 [[plugins]]
 repo = 'tpope/vim-repeat'
 
-# カラースキーマ
-[[plugins]]
-repo = 'ghifarit53/tokyonight-vim'
-# repo = 'w0ng/vim-hybrid'
-# repo = 'joshdick/onedark.vim'
-# repo = 'tomasr/molokai'
-hook_add = """
-let g:tokyonight_style = 'night'
-"""
 
 # 特定の条件で読み込みたいとき
 [[plugins]]
@@ -55,31 +54,16 @@ repo = 'elzr/vim-json'
 if   = '''! has('kaoriya')'''
 
 # ステータスラインの表示内容強化
-[[plugins]]
+# [[plugins]]
 repo    = 'vim-airline/vim-airline'
 depends = ['vim-airline-themes']
 hook_add = """
 let g:airline#extensions#tabline#enabled = 1
 """
 
-# ステータスラインのテーマ
-[[plugins]]
-repo = 'vim-airline/vim-airline-themes'
-hook_add = """
-let g:airline_theme='tokyonight'
-"""
-
 # インデントの可視化
 [[plugins]]
 repo = 'Yggdroot/indentLine'
-
-# syntax highlight
-[[plugins]]
-repo = 'Yggdroot/indentLine'
-
-# コメント <ctl>-- 2回
-# [[plugins]]
-# repo = 'tomtom/tcomment_vim'
 
 # コメント gcc, gcG
 [[plugins]]
@@ -89,3 +73,69 @@ repo = 'tpope/vim-commentary'
 [[plugins]]
 repo = 'jiangmiao/auto-pairs'
 
+# ステータスラインのテーマ
+[[plugins]]
+repo = 'vim-airline/vim-airline-themes'
+hook_add = """
+" let g:airline_theme = 'tokyonight'
+"""
+
+# # tokyonight
+# [[plugins]]
+# repo = 'ghifarit53/tokyonight-vim'
+# hook_add = """
+# " set termguicolors
+# " let g:tokyonight_enable_italic = 1
+# let g:tokyonight_style = 'night'
+# " let g:tokyonight_style = 'storm'
+# """
+# hook_post_source = """
+# colorscheme tokyonight
+# """
+
+# # onedark
+# [[plugins]]
+# repo = 'joshdick/onedark.vim'
+# hook_add = """
+# au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+# au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+# au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+# au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+# au ColorScheme * hi Statement    ctermfg=45
+# au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+# au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+# """
+# hook_post_source = """
+# colorscheme onedark
+# """
+
+# # hybrid
+# [[plugins]]
+# repo = 'w0ng/vim-hybrid'
+# hook_add = """
+# let g:hybrid_custom_term_colors = 1
+# """
+# hook_post_source = """
+# colorscheme hybrid
+# ""
+
+# molokai
+[[plugins]]
+repo = 'tomasr/molokai'
+hook_add = """
+let g:molokai_original = 1
+let g:rehash256 = 1
+"""
+hook_post_source = """
+colorscheme molokai
+"""
+
+# # night owl
+# [[plugins]]
+# repo = 'haishanh/night-owl.vim'
+# hook_add = """
+# set termguicolors
+# """
+# hook_post_source = """
+# colorscheme night-owl
+# """

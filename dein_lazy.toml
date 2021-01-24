@@ -59,9 +59,25 @@ repo = 'roxma/nvim-yarp'
 repo = 'roxma/vim-hug-neovim-rpc'
 
 # tex
-# [[plugins]]
-# repo = 'lervag/vimtex'
-# on_ft = ['tex']
+[[plugins]]
+repo = 'lervag/vimtex'
+on_ft = 'tex'
+hook_add = '''
+  let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
+  let g:tex_flavor = "tex"
+  let g:vimtex_view_method= 'skim'
+  " set conceallevel=2
+  " let g:tex_conceal = "abdmgs"
+  set conceallevel=0
+  " let g:tex_conceal = ""
+  " let g:vimtex_quickfix_latexlog = {'default': 0}
+'''
+hook_source = '''
+  if empty(v:servername) && exists('*remote_startserver')
+    call remote_startserver('VIM')
+  endif
+  set conceallevel=0
+'''
 
 # インサートモードに入ったら読み込む
 [[plugins]]
