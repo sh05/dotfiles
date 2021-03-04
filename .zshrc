@@ -279,3 +279,6 @@ export D="$HOME/.vim/rc/"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+# complettion
+eval "$(gh completion -s zsh)"
+
