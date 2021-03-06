@@ -5,11 +5,13 @@ repo = 'Shougo/dein.vim'
 repo = 'junegunn/goyo.vim'
 
 [[plugins]]
+repo = 'tpope/vim-fugitive'
+
+[[plugins]]
 repo = 'tpope/vim-unimpaired'
 
 [[plugins]]
 repo = 'Shougo/vimproc.vim'
-# git clone 後、実行すべきコマンド
 hook_post_update = '''
   if dein#util#_is_windows()
     let cmd = 'tools\\update-dll-mingw'
@@ -27,53 +29,38 @@ hook_post_update = '''
 repo = 'easymotion/vim-easymotion'
 
 [[plugins]]
-repo = 'delphinus35/typescript-vim'
-rev  = 'colorize-template-strings'
-
-# カーソル位置のコンテキストに合わせてftを切り替える
-[[plugins]]
 repo = 'osyo-manga/vim-precious'
 depends = ['context_filetype.vim']
 
-# カーソル位置のコンテキストのftを判定するライブラリ
 [[plugins]]
 repo = 'Shougo/context_filetype.vim'
 
-# テキストオブジェクトの拡張
 [[plugins]]
 repo = 'tpope/vim-surround'
 
-# マイクロマクロの拡張
 [[plugins]]
 repo = 'tpope/vim-repeat'
 
-
-# 特定の条件で読み込みたいとき
 [[plugins]]
 repo = 'elzr/vim-json'
 if   = '''! has('kaoriya')'''
 
-# ステータスラインの表示内容強化
-# [[plugins]]
+[[plugins]]
 repo    = 'vim-airline/vim-airline'
 depends = ['vim-airline-themes']
 hook_add = """
 let g:airline#extensions#tabline#enabled = 1
 """
 
-# インデントの可視化
 [[plugins]]
 repo = 'Yggdroot/indentLine'
 
-# コメント gcc, gcG
 [[plugins]]
 repo = 'tpope/vim-commentary'
 
-# pairs such as {, [
 [[plugins]]
 repo = 'jiangmiao/auto-pairs'
 
-# ステータスラインのテーマ
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
 hook_add = """
