@@ -128,8 +128,9 @@ esac
 # 色はこのワンライナで確認
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
 
-export PR_LINE=0
-export HEAVY_PR=1
+export PR_LINE=1
+export HEAVY_PR=2
+export VIM_INFO=0
 export HOSTNAME_COLOR=200
 
 if [ `hostname` = "sh05MBP.local" ] ; then
@@ -152,26 +153,60 @@ zstyle ':vcs_info:git:*' stagedstr "[uncomited]"
 zstyle ':vcs_info:git:*' unstagedstr "[unstaged]"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
-if (($PR_LINE)); then
-zstyle ':vcs_info:git:*' formats "%K{226}%F{000} [%b]%c%u %k%f"
-PROMPT=$REMOTE_ALERT"%F{000}%K{046} %n@%m %k%f%F{046}%K{214}%f%F{000} %d %f%k%F{214}%K{045}%f%F{000} %D %T %f%k%F{045}%K{226}%f%k"
-PROMPT=$PROMPT\$vcs_info_msg_0_
-PROMPT=$PROMPT"%F{226}%f
-%K{196} %k%F{196}%f"
-RPROMPT=""
-else
-zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
-PROMPT=$REMOTE_ALERT"%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f"
-RPROMPT=\$vcs_info_msg_0_
-PROMPT=$PROMPT"
-%F{196}->%f"
-fi
+export VIM_NORMAL="%F{196}%K{black}->%k%f"
+export VIM_INSERT="%F{039}%K{black}->%k%f"
 
-if (($HEAVY_PR)); then
-zstyle ':vcs_info:git:*' check-for-changes true
-else
-zstyle ':vcs_info:git:*' check-for-changes false
-fi
+function zle-line-init zle-keymap-select {
+    PROMPT=$PR_BODY"
+${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}"
+    zle reset-prompt
+}
+
+function show_mode() {
+  ((VIM_INFO=!VIM_INFO))
+  if (($VIM_INFO)); then
+    RPROMPT=""
+    zle -N zle-line-init
+    zle -N zle-keymap-select
+  else
+    RPROMPT=""
+    zle -D zle-line-init
+    zle -D zle-keymap-select
+  fi
+}
+
+function switch_pr() {
+  ((PR_LINE=!PR_LINE))
+  if (($PR_LINE)); then
+    zstyle ':vcs_info:git:*' formats "%K{226}%F{000} [%b]%c%u %k%f"
+    PROMPT=$REMOTE_ALERT"%F{000}%K{046} %n@%m %k%f%F{046}%K{214}%f%F{000} %d %f%k%F{214}%K{045}%f%F{000} %D %T %f%k%F{045}%K{226}%f%k"
+    PROMPT=$PROMPT\$vcs_info_msg_0_
+    PROMPT=$PROMPT"%F{226}%f"
+    export PR_BODY=$PROMPT
+    # PROMPT=$PROMPT"%F{226}%f
+# %K{196} %k%F{196}%f"
+  else
+    zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
+    PROMPT=$REMOTE_ALERT"%K{black}%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%k"
+    PROMPT=$PROMPT\$vcs_info_msg_0_
+    export PR_BODY=$PROMPT
+    # PROMPT=$PROMPT"
+# %F{196}->%f"
+  fi
+}
+
+function git_check() {
+  ((HEAVY_PR=!HEAVY_PR))
+  if (($HEAVY_PR)); then
+    zstyle ':vcs_info:git:*' check-for-changes true
+  else
+    zstyle ':vcs_info:git:*' check-for-changes false
+  fi
+}
+
+show_mode
+switch_pr
+git_check
 
 ########################################
 # path
