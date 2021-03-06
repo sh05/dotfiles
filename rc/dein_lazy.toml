@@ -3,12 +3,6 @@
 repo  = 'Quramy/tsuquyomi'
 on_ft = ['typescript']
 
-[[plugins]]
-repo = 'delphinus35/typescript-vim'
-rev  = 'colorize-template-strings'
-on_ft = ['typescript']
-
-
 # js
 [[plugins]]
 repo  = 'pangloss/vim-javascript'
@@ -110,4 +104,3 @@ on_source = ['unite.vim']
 [[plugins]]
 repo      = 'thinca/vim-prettyprint'
 on_cmd    = ['PP', 'PrettyPrint']
-

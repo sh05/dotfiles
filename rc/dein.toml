@@ -27,6 +27,19 @@ hook_post_update = '''
 
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
+hook_add = """
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
+"""
 
 [[plugins]]
 repo = 'osyo-manga/vim-precious'
@@ -63,22 +76,19 @@ repo = 'jiangmiao/auto-pairs'
 
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
-hook_add = """
-" let g:airline_theme = 'tokyonight'
-"""
 
-# # tokyonight
-# [[plugins]]
-# repo = 'ghifarit53/tokyonight-vim'
-# hook_add = """
-# " set termguicolors
-# " let g:tokyonight_enable_italic = 1
-# let g:tokyonight_style = 'night'
-# " let g:tokyonight_style = 'storm'
-# """
-# hook_post_source = """
-# colorscheme tokyonight
-# """
+# tokyonight
+[[plugins]]
+repo = 'ghifarit53/tokyonight-vim'
+hook_add = """
+set termguicolors
+let g:tokyonight_enable_italic = 1
+let g:tokyonight_style = 'night'
+let g:tokyonight_style = 'storm'
+"""
+hook_post_source = """
+colorscheme tokyonight
+"""
 
 # # onedark
 # [[plugins]]
@@ -104,18 +114,18 @@ hook_add = """
 # """
 # hook_post_source = """
 # colorscheme hybrid
-# ""
+# """
 
 # molokai
-[[plugins]]
-repo = 'tomasr/molokai'
-hook_add = """
-let g:molokai_original = 1
-let g:rehash256 = 1
-"""
-hook_post_source = """
-colorscheme molokai
-"""
+# [[plugins]]
+# repo = 'tomasr/molokai'
+# hook_add = """
+# let g:molokai_original = 1
+# let g:rehash256 = 1
+# """
+# hook_post_source = """
+# colorscheme molokai
+# """
 
 # # night owl
 # [[plugins]]
