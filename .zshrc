@@ -174,12 +174,9 @@ export PATH=$PATH:/usr/sbin/
 export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
+export PATH=$PATH:/usr/local/opt/ruby/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH=$PATH:/Applications/MAMP/bin/php/php7.1.1/bin
-export PATH=$PATH:$HOME/.nodebrew/current/bin
-export PATH=$PATH:$HOME/.composer/vendor/bin
 export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
-
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
 
