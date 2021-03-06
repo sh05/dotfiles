@@ -69,19 +69,6 @@ select-word-style default
 zstyle ':zle:*' word-chars " /=;@:{},|"
 zstyle ':zle:*' word-style unspecified
 
-# vcs_info
-autoload -Uz vcs_info
-autoload -Uz add-zsh-hook
-
-zstyle ':vcs_info:*' formats '%F{yello}%b %f'
-zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
-
-function _update_vcs_info_msg() {
-    LANG=en_US.UTF-8 vcs_info
-    # RPROMPT="${vcs_info_msg_0_}"
-}
-add-zsh-hook precmd _update_vcs_info_msg
-
 ########################################
 # 補完
 
@@ -139,64 +126,44 @@ esac
 ########################################
 # プロンプト
 
-# 1行表示
-# PROMPT="%~ %# "
-# fg -> bg で字抜き
-# green, black, red, yellow, blue, magenta, cyan, white
+export PR_LINE=0
+export HEAVY_PR=1
 
-# 2行表示
-PROMPT="${fg[green]}%}[%n%{${reset_color}%{${fg[green]}%}@%{${reset_color}%{${fg[green]}%}%m]%{${reset_color}%{${fg[yellow]}%}[%C]%{${reset_color}%{${fg[blue]}%}[%* %w]
-%{${reset_color}%{${fg[red]}%}->%{${reset_color}"
 
-## RPROMPT with git
-# PROMPT="%{${fg[green]}%}[%d]%{${reset_color}%} ${fg[blue]}%}->%{${reset_color} "
+#表示毎にPROMPTで設定されている文字列を評価する
+setopt prompt_subst
 
-#RPROMPT=$'`branch-status-check`'
-#setopt prompt_subst #表示毎にPROMPTで設定されている文字列を評価する
+# vcs_info
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
 
-# {{{ methods for RPROMPT
-# fg[color]表記と$reset_colorを使いたい
-# @see https://wiki.archlinux.org/index.php/zsh
-#autoload -U colors; colors
-#function branch-status-check {
-#    local prefix branchname suffix
-#        # .gitの中だから除外
-#        if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
-#            return
-#        fi
-#        branchname=`get-branch-name`
-#        # ブランチ名が無いので除外
-#        if [[ -z $branchname ]]; then
-#            return
-#        fi
-#        prefix=`get-branch-status` #色だけ返ってくる
-#        suffix='%{'${reset_color}'%}'
-#        echo ${prefix}'\ue0a0'${branchname}${suffix}
-#}
-#function get-branch-name {
-#    # gitディレクトリじゃない場合のエラーは捨てます
-#    echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
-#}
-#function get-branch-status {
-#    local res color
-#        output=`git status --short 2> /dev/null`
-#        if [ -z "$output" ]; then
-#            res=':' # status Clean
-#            color='%{'${fg[green]}'%}'
-#        elif [[ $output =~ "[\n]?\?\? " ]]; then
-#            res='?:' # Untracked
-#            color='%{'${fg[yellow]}'%}'
-#        elif [[ $output =~ "[\n]? M " ]]; then
-#            res='M:' # Modified
-#            color='%{'${fg[red]}'%}'
-#        else
-#            res='A:' # Added to commit
-#            color='%{'${fg[cyan]}'%}'
-#        fi
-#        # echo ${color}${res}'%{'${reset_color}'%}'
-#        echo ${color} # 色だけ返す
-#}
-# }}}
+_vcs_precmd () { vcs_info }
+add-zsh-hook precmd _vcs_precmd
+
+zstyle ':vcs_info:git:*' stagedstr "[uncomited]"
+zstyle ':vcs_info:git:*' unstagedstr "[unstaged]"
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+
+if (($PR_LINE)); then
+zstyle ':vcs_info:git:*' formats "%K{226}%F{000} [%b]%c%u %k%f"
+PROMPT="%F{000}%K{046} %n@%m %k%f%F{046}%K{214}%f%F{000} %d %f%k%F{214}%K{045}%f%F{000} %D %T %f%k%F{045}%K{226}%f%k"
+PROMPT=$PROMPT\$vcs_info_msg_0_
+PROMPT=$PROMPT"%F{226}%f
+%K{196} %k%F{196}%f"
+RPROMPT=""
+else
+zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
+PROMPT="%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f"
+RPROMPT=\$vcs_info_msg_0_
+PROMPT=$PROMPT"
+%F{196}->%f"
+fi
+
+if (($HEAVY_PR)); then
+zstyle ':vcs_info:git:*' check-for-changes true
+else
+zstyle ':vcs_info:git:*' check-for-changes false
+fi
 
 ########################################
 # path
