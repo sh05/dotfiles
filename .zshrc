@@ -1,4 +1,6 @@
-### ほぼコピペ
+autoload -Uz tetris
+zle -N tetris
+bindkey '...' tetris
 
 # 環境変数
 # export LANG=ja_JP.UTF-8
@@ -76,6 +78,15 @@ zstyle ':zle:*' word-style unspecified
 autoload -Uz compinit
 compinit
 
+# lsの色
+export LSCOLORS=gxfxcxdxbxegedabagacad
+export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+
+alias ls="ls -G"
+alias gls="gls --color"
+
+zstyle ':completion:*' list-colors 'di=36' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+
 # 補完で小文字でも大文字にマッチさせる
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
@@ -129,7 +140,7 @@ esac
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
 
 export PR_LINE=1
-export HEAVY_PR=2
+export HEAVY_PR=0
 export VIM_INFO=0
 export HOSTNAME_COLOR=200
 
