@@ -1,10 +1,10 @@
 autoload -Uz tetris
 zle -N tetris
-bindkey '...' tetris
+# bindkey '...' tetris
 
 # 環境変数
-# export LANG=ja_JP.UTF-8
-export LANG=en_US.UTF-8
+export LANG=ja_JP.UTF-8
+# export LANG=en_US.UTF-8
 
 # 色を使用出来るようにする
 autoload -Uz colors
@@ -233,6 +233,7 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 ########################################
 # alias
@@ -300,3 +301,5 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 # complettion
 eval "$(gh completion -s zsh)"
 
+# starship 
+eval "$(starship init zsh)"
