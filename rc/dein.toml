@@ -2,28 +2,64 @@
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
-repo = 'junegunn/goyo.vim'
+repo = 'prabirshrestha/asyncomplete.vim'
 
 [[plugins]]
-repo = 'tpope/vim-fugitive'
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+
+[[plugins]]
+repo = 'SirVer/ultisnips'
+
+[[plugins]]
+repo = 'honza/vim-snippets'
+
+[[plugins]]
+repo = 'thomasfaingnaert/vim-lsp-snippets'
+
+[[plugins]]
+repo = 'thomasfaingnaert/vim-lsp-ultisnips'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+
+[[plugins]]
+repo = 'junegunn/goyo.vim'
+
+# [[plugins]]
+# repo = 'tpope/vim-fugitive'
 
 [[plugins]]
 repo = 'tpope/vim-unimpaired'
 
-[[plugins]]
-repo = 'Shougo/vimproc.vim'
-hook_post_update = '''
-  if dein#util#_is_windows()
-    let cmd = 'tools\\update-dll-mingw'
-  elseif dein#util#_is_cygwin()
-    let cmd = 'make -f make_cygwin.mak'
-  elseif executable('gmake')
-    let cmd = 'gmake'
-  else
-    let cmd = 'make'
-  endif
-  let g:dein#plugin.build = cmd
-'''
+[[plugin]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugin]]
+repo = 'mattn/vim-lsp-settings'
+
+# [[plugins]]
+# repo = 'Shougo/vimproc.vim'
+# hook_post_update = '''
+#   if dein#util#_is_windows()
+#     let cmd = 'tools\\update-dll-mingw'
+#   elseif dein#util#_is_cygwin()
+#     let cmd = 'make -f make_cygwin.mak'
+#   elseif executable('gmake')
+#     let cmd = 'gmake'
+#   else
+#     let cmd = 'make'
+#   endif
+#   let g:dein#plugin.build = cmd
+# '''
 
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
@@ -55,17 +91,6 @@ repo = 'tpope/vim-surround'
 repo = 'tpope/vim-repeat'
 
 [[plugins]]
-repo = 'elzr/vim-json'
-if   = '''! has('kaoriya')'''
-
-[[plugins]]
-repo    = 'vim-airline/vim-airline'
-depends = ['vim-airline-themes']
-hook_add = """
-let g:airline#extensions#tabline#enabled = 1
-"""
-
-[[plugins]]
 repo = 'Yggdroot/indentLine'
 
 [[plugins]]
@@ -74,65 +99,28 @@ repo = 'tpope/vim-commentary'
 [[plugins]]
 repo = 'jiangmiao/auto-pairs'
 
+# onedark
+[[plugins]]
+repo = 'joshdick/onedark.vim'
+hook_add = """
+au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+au ColorScheme * hi Statement    ctermfg=45
+au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+"""
+hook_post_source = """
+colorscheme onedark
+"""
+
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
 
-# tokyonight
 [[plugins]]
-repo = 'ghifarit53/tokyonight-vim'
+repo    = 'vim-airline/vim-airline'
+depends = ['vim-airline-themes']
 hook_add = """
-set termguicolors
-let g:tokyonight_enable_italic = 1
-let g:tokyonight_style = 'night'
-let g:tokyonight_style = 'storm'
+let g:airline#extensions#tabline#enabled = 1
 """
-hook_post_source = """
-colorscheme tokyonight
-"""
-
-# # onedark
-# [[plugins]]
-# repo = 'joshdick/onedark.vim'
-# hook_add = """
-# au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
-# au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
-# au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
-# au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
-# au ColorScheme * hi Statement    ctermfg=45
-# au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
-# au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
-# """
-# hook_post_source = """
-# colorscheme onedark
-# """
-
-# # hybrid
-# [[plugins]]
-# repo = 'w0ng/vim-hybrid'
-# hook_add = """
-# let g:hybrid_custom_term_colors = 1
-# """
-# hook_post_source = """
-# colorscheme hybrid
-# """
-
-# molokai
-# [[plugins]]
-# repo = 'tomasr/molokai'
-# hook_add = """
-# let g:molokai_original = 1
-# let g:rehash256 = 1
-# """
-# hook_post_source = """
-# colorscheme molokai
-# """
-
-# # night owl
-# [[plugins]]
-# repo = 'haishanh/night-owl.vim'
-# hook_add = """
-# set termguicolors
-# """
-# hook_post_source = """
-# colorscheme night-owl
-# """

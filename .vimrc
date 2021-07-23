@@ -49,6 +49,9 @@ set ignorecase
 " 検索パターンに大文字を含んでいたら大文字小文字を区別する
 " set smartcase
 
+" カーソルを中心に
+set scrolloff=999
+
 " 検索結果をハイライト"
 set hlsearch
 
@@ -118,11 +121,15 @@ let g:netrw_alto = 1
 " netrwのEnterでPと同じにする
 let g:netrw_browse_split = 4
 
+" set sessionoptions-=globals
+" set sessionoptions-=localoptions
+" set sessionoptions-=options
+set sessionoptions+=options
+
 " プラグインが実際にインストールされるディレクトリ
 let s:dein_dir = expand('~/.cache/dein')
 " dein.vim 本体
 let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
-
 " dein.vim がなければ github から落としてくる
 if &runtimepath !~# '/dein.vim'
   if !isdirectory(s:dein_repo_dir)
@@ -134,6 +141,15 @@ endif
 " 設定開始
 if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
+
+
+  if !has('nvim')
+    call dein#add('roxma/nvim-yarp')
+    call dein#add('roxma/vim-hug-neovim-rpc')
+    " for vim-delve
+    call dein#add('Shougo/vimshell.vim')
+    call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
+  endif
 
   " プラグインリストを収めた TOML ファイル
   " 予め TOML ファイル（後述）を用意しておく
@@ -172,3 +188,58 @@ au VimEnter * call dein#call_hook('post_source')
 
 " 色いじったりしてキャッシュが邪魔なとき用
 " call dein#recache_runtimepath()
+
+" netrwをツリースタイルにしているとsession読み込み時に反映されないから開き直す
+au SessionLoadPost NetrwTreeListing Ex
+
+" golang lsp
+function! s:on_lsp_buffer_enabled() abort
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> <C-]> <plug>(lsp-definition)
+  nmap <buffer> <f2> <plug>(lsp-rename)
+  nmap <buffer> <Leader>d <plug>(lsp-type-definition)
+  nmap <buffer> <Leader>r <plug>(lsp-references)
+  nmap <buffer> <Leader>i <plug>(lsp-implementation)
+  inoremap <expr> <cr> pumvisible() ? "\<c-y>\<cr>" : "\<cr>"
+endfunction
+
+augroup lsp_install
+  au!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
+
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+" let g:asyncomplete_auto_popup = 1
+" let g:asyncomplete_auto_completeopt = 0
+let g:asyncomplete_popup_delay = 200
+let g:lsp_text_edit_enabled = 1
+let g:lsp_preview_float = 1
+let g:lsp_diagnostics_float_cursor = 1
+let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+
+let g:lsp_settings = {}
+let g:lsp_settings['gopls'] = {
+  \  'workspace_config': {
+  \    'usePlaceholders': v:true,
+  \    'analyses': {
+  \      'fillstruct': v:true,
+  \    },
+  \  },
+  \  'initialization_options': {
+  \    'usePlaceholders': v:true,
+  \    'analyses': {
+  \      'fillstruct': v:true,
+  \    },
+  \  },
+  \}
+
+" For snippets
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+set completeopt+=menuone

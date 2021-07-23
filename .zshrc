@@ -1,11 +1,4 @@
-autoload -Uz tetris
-zle -N tetris
-bindkey '...' tetris
-
-# 環境変数
-# export LANG=ja_JP.UTF-8
-export LANG=en_US.UTF-8
-
+export PATH=/usr/local/mysql/bin:$PATH
 # 色を使用出来るようにする
 autoload -Uz colors
 colors
@@ -84,6 +77,7 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 
 alias ls="ls -G"
 alias gls="gls --color"
+alias -g C="| color"
 
 zstyle ':completion:*' list-colors 'di=36' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
 
@@ -120,21 +114,6 @@ elif which putclip >/dev/null 2>&1 ; then
 fi
 
 ########################################
-# OS 別の設定
-case ${OSTYPE} in
-    darwin*)
-        #Mac用の設定
-        export CLICOLOR=1
-        alias ls='ls -G'
-        # alias ls='ls -G -F'
-        ;;
-    linux*)
-        #Linux用の設定
-        alias ls='ls -F --color=auto'
-        ;;
-esac
-
-########################################
 # プロンプト
 # 色はこのワンライナで確認
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
@@ -144,7 +123,7 @@ export HEAVY_PR=0
 export VIM_INFO=0
 export HOSTNAME_COLOR=200
 
-if [ `hostname` = "sh05MBP.local" ] ; then
+if [ `hostname` = "R-MBP-13UBH-220" ]; then
 export REMOTE_ALERT=""
 else
 export REMOTE_ALERT="%F{000}%K{$HOSTNAME_COLOR} REMOTE %k%f"
@@ -164,8 +143,10 @@ zstyle ':vcs_info:git:*' stagedstr "[uncomited]"
 zstyle ':vcs_info:git:*' unstagedstr "[unstaged]"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
-export VIM_NORMAL="%F{196}%K{black}->%k%f"
-export VIM_INSERT="%F{039}%K{black}->%k%f"
+# export VIM_NORMAL="%F{196}%K{black}->%k%f"
+export VIM_NORMAL="%F{196}->%f"
+# export VIM_INSERT="%F{039}%K{black}->%k%f"
+export VIM_INSERT="%F{039}->%f"
 
 function zle-line-init zle-keymap-select {
     PROMPT=$PR_BODY"
@@ -198,7 +179,8 @@ function switch_pr() {
 # %K{196} %k%F{196}%f"
   else
     zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
-    PROMPT=$REMOTE_ALERT"%K{black}%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%k"
+    # PROMPT=$REMOTE_ALERT"%K{black}%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%k"
+    PROMPT=$REMOTE_ALERT"%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f"
     PROMPT=$PROMPT\$vcs_info_msg_0_
     export PR_BODY=$PROMPT
     # PROMPT=$PROMPT"
@@ -230,9 +212,9 @@ export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
 export PATH=$PATH:/usr/local/opt/ruby/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
+export PATH=$PATH:$GOPATH/bin
 
 ########################################
 # alias
@@ -254,9 +236,12 @@ alias sudo='sudo '
 # グローバルalias
 alias -g L='| less'
 alias -g G='| grep'
+alias -g W='| wc -l'
 
 # editor alias
 alias v='vim -p'
+alias vim='/usr/local/bin/vim'
+alias npvim='vim --noplugin'
 alias e='emacs'
 
 # docker alias
@@ -275,14 +260,6 @@ alias dcup='docker-compose up'
 alias dcbuild='docker-compose build'
 alias dcrun='docker-compose run --rm'
 
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc'; fi
-export PATH="/usr/local/opt/ncurses/bin:$PATH"
-
 # env
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
 ## zshrc
@@ -291,12 +268,27 @@ export Z="$HOME/.zshrc"
 ## vimrc
 # export VIMRC="$HOME/.vimrc"
 export V="$HOME/.vimrc"
-## dein
 # export DEIN="$HOME/.vim/rc/"
 export D="$HOME/.vim/rc/"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# complettion
-eval "$(gh completion -s zsh)"
+# eval "$(starship init zsh)"
+export TIMES_CHANNEL_ID="C01TCDLQAEP"
+export DEBUG_CHANNEL_ID="C027BA3PE8L"
 
+function gitMain() {
+  git config --global --unset-all user.name
+  git config --global user.name "Shogo Nakamoto"
+  git config --global user.email "shnakamo@yahoo-corp.jp"
+  git config --list
+}
+
+function gitSub() {
+  git config --global --unset-all user.name
+  git config --global user.name "sh05"
+  git config --global user.email "shogonakamoto0107@gmail.com"
+  git config --list
+}
+
+eval "$(anyenv init -)"

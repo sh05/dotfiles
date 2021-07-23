@@ -1,106 +1,24 @@
-# ts
-[[plugins]]
-repo  = 'Quramy/tsuquyomi'
-on_ft = ['typescript']
-
-# js
-[[plugins]]
-repo  = 'pangloss/vim-javascript'
-on_ft = ['javascript']
-
-# R
-[[plugins]]
-repo  = 'jalvesaq/Nvim-R'
-rev = 'stable'
-on_ft = ['r']
-
-# toml syntax
-[[plugins]]
-repo = 'cespare/vim-toml'
-on_ft = ['toml']
-
-# emmet
-[[plugins]]
-repo = 'mattn/emmet-vim'
-on_ft = ['html', 'vue', 'htmldjango']
-
 # markdown
 [[plugins]]
 repo = 'tpope/vim-markdown'
 on_ft = ['markdown']
 
-# golang
+# markdown
 [[plugins]]
-repo = 'fatih/vim-go'
+repo = 'cespare/vim-toml'
+on_ft = ['toml']
+
+[[plugins]]
+repo = 'elzr/vim-json'
+if   = '''! has('kaoriya')'''
+on_ft = ['json']
+
+[[plugins]]
+repo = 'sebdah/vim-delve'
 on_ft = ['go']
-
-# arduino
-[[plugins]]
-repo = 'sudar/vim-arduino-syntax'
-on_ft = ['arduino']
-
-# vue
-[[plugins]]
-repo = 'posva/vim-vue'
-hook_post_source = """
-autocmd FileType vue syntax sync fromstart
+hook_add = """
+let g:delve_new_command = 'new'
 """
-on_ft = ['vue']
-
-# python
 [[plugins]]
-repo = 'davidhalter/jedi-vim'
-on_ft = ['python']
-
-# depends
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
-
-# tex
-[[plugins]]
-repo = 'lervag/vimtex'
-on_ft = 'tex'
-hook_add = '''
-  let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
-  let g:tex_flavor = "tex"
-  let g:vimtex_view_method= 'skim'
-  " set conceallevel=2
-  " let g:tex_conceal = "abdmgs"
-  set conceallevel=0
-  " let g:tex_conceal = ""
-  " let g:vimtex_quickfix_latexlog = {'default': 0}
-'''
-hook_source = '''
-  if empty(v:servername) && exists('*remote_startserver')
-    call remote_startserver('VIM')
-  endif
-  set conceallevel=0
-'''
-
-# インサートモードに入ったら読み込む
-[[plugins]]
-repo = 'Shougo/deoplete.nvim'
-on_source = ['nvim-yarp', 'vim-hug-neovim-rpc']
-hook_post_source = """
-let g:deoplete#enable_at_startup = 1
-"""
-
-# ifとかの終了宣言を自動で挿入してくれる
-# [[plugins]]
-# repo = 'tpope/vim-endwise'
-# on_i = 1
-
-[[plugins]]
-repo   = 'Shougo/unite.vim'
-
-# unite.vim を読み込んだら一緒に読み込む
-[[plugins]]
-repo      = 'Shougo/neomru.vim'
-on_source = ['unite.vim']
-
-# 特定のコマンドを打ったら読み込む
-[[plugins]]
-repo      = 'thinca/vim-prettyprint'
-on_cmd    = ['PP', 'PrettyPrint']
+repo = 'mattn/vim-goimports'
+on_ft = ['go']
