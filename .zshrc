@@ -216,6 +216,12 @@ export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
 export PATH=$PATH:$GOPATH/bin
 
+HOMEBREW_PREFIX=$(brew --prefix)
+if [[ -d "$HOMEBREW_PREFIX/opt/dart/libexec" ]]; then
+  export DART_SDK="$HOMEBREW_PREFIX/opt/dart/libexec"
+  PATH="$DART_SDK:$PATH"
+fi
+
 ########################################
 # alias
 

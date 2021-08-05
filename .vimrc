@@ -50,7 +50,7 @@ set ignorecase
 " set smartcase
 
 " カーソルを中心に
-set scrolloff=999
+" set scrolloff=999
 
 " 検索結果をハイライト"
 set hlsearch
@@ -236,6 +236,30 @@ let g:lsp_settings['gopls'] = {
   \    },
   \  },
   \}
+
+if executable('dart')                                                                                          
+    augroup LspDart
+        au!
+        autocmd User lsp_setup call lsp#register_server({
+                    \ 'name': 'analysis_server.dart.snapshot',
+                    \ 'cmd': {server_info->[
+                    \           $DART_SDK.'/usr/local/bin/dart',
+                    \           $DART_SDK.'/bin/snapshots/analysis_server.dart.snapshot',
+                    \           '--lsp',
+                    \           ]},
+                    \ 'root_uri':{server_info->lsp#utils#path_to_uri(
+                    \     lsp#utils#find_nearest_parent_file_directory(
+                    \         lsp#utils#get_buffer_path(),
+                    \         ['.git/', 'analysis_options.yaml']
+                    \     ))},
+                    \ 'allowlist': ['dart'],
+                    \ 'initialization_options': v:null,
+                    \ 'config': {},
+                    \ 'workspace_config': {},
+                    \ })
+        autocmd FileType dart setlocal omnifunc=lsp#complete
+    augroup END
+endif
 
 " For snippets
 let g:UltiSnipsExpandTrigger="<tab>"
