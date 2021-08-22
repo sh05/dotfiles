@@ -78,33 +78,33 @@ repo = 'jiangmiao/auto-pairs'
 repo = 'vim-airline/vim-airline-themes'
 
 # tokyonight
-[[plugins]]
-repo = 'ghifarit53/tokyonight-vim'
-hook_add = """
-set termguicolors
-let g:tokyonight_enable_italic = 1
-let g:tokyonight_style = 'night'
-let g:tokyonight_style = 'storm'
-"""
-hook_post_source = """
-colorscheme tokyonight
-"""
-
-# # onedark
 # [[plugins]]
-# repo = 'joshdick/onedark.vim'
+# repo = 'ghifarit53/tokyonight-vim'
 # hook_add = """
-# au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
-# au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
-# au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
-# au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
-# au ColorScheme * hi Statement    ctermfg=45
-# au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
-# au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+# set termguicolors
+# let g:tokyonight_enable_italic = 1
+# let g:tokyonight_style = 'night'
+# let g:tokyonight_style = 'storm'
 # """
 # hook_post_source = """
-# colorscheme onedark
+# colorscheme tokyonight
 # """
+
+# onedark
+[[plugins]]
+repo = 'joshdick/onedark.vim'
+hook_add = """
+au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+au ColorScheme * hi Statement    ctermfg=45
+au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+"""
+hook_post_source = """
+colorscheme onedark
+"""
 
 # # hybrid
 # [[plugins]]
@@ -136,3 +136,6 @@ colorscheme tokyonight
 # hook_post_source = """
 # colorscheme night-owl
 # """
+
+[[plugins]]
+repo = 'pandysong/ghost-text.vim'
