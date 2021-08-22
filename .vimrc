@@ -118,6 +118,9 @@ let g:netrw_alto = 1
 " netrwのEnterでPと同じにする
 let g:netrw_browse_split = 4
 
+" ウィンドウを閉じずにバッファを閉じる
+command! Bd :bp | :sp | :bn | :bd
+
 " プラグインが実際にインストールされるディレクトリ
 let s:dein_dir = expand('~/.cache/dein')
 " dein.vim 本体
@@ -163,10 +166,13 @@ filetype plugin indent on
 " 色セット
 syntax on
 set background=dark
+
 " テキスト背景色
 au ColorScheme * hi Normal ctermbg=none
+
 " 括弧対応
 au ColorScheme * hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+
 " スペルチェック
 au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
 set background=dark

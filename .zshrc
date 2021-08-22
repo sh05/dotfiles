@@ -2,6 +2,10 @@ autoload -Uz tetris
 zle -N tetris
 # bindkey '...' tetris
 
+# インクリメンタル補完
+# autoload predict-on
+# predict-on 
+
 # 環境変数
 export LANG=ja_JP.UTF-8
 # export LANG=en_US.UTF-8
@@ -150,8 +154,10 @@ else
 export REMOTE_ALERT="%F{000}%K{$HOSTNAME_COLOR} REMOTE %k%f"
 fi
 
-#表示毎にPROMPTで設定されている文字列を評価する
+###
+# 表示毎にPROMPTで設定されている文字列を評価する
 setopt prompt_subst
+###
 
 # vcs_info
 autoload -Uz vcs_info
@@ -164,6 +170,7 @@ zstyle ':vcs_info:git:*' stagedstr "[uncomited]"
 zstyle ':vcs_info:git:*' unstagedstr "[unstaged]"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
+# export VIM_NORMAL="%F{196}%K{black}->%k%f"
 export VIM_NORMAL="%F{196}%K{black}->%k%f"
 export VIM_INSERT="%F{039}%K{black}->%k%f"
 
@@ -254,7 +261,8 @@ alias sudo='sudo '
 
 # グローバルalias
 alias -g L='| less'
-alias -g G='| grep'
+# alias -g G='| grep'
+alias -g G='| rg'
 
 # editor alias
 alias v='vim -p'
@@ -296,10 +304,21 @@ export V="$HOME/.vimrc"
 # export DEIN="$HOME/.vim/rc/"
 export D="$HOME/.vim/rc/"
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # complettion
 eval "$(gh completion -s zsh)"
 
 # starship 
-eval "$(starship init zsh)"
+# eval "$(starship init zsh)"
+
+# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=196'
+# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=27'
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=190'
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# tmux attach || tmux
+# launch tmux when start zsh
+if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+    exec tmux
+fi
