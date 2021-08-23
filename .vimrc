@@ -181,3 +181,9 @@ au VimEnter * call dein#call_hook('post_source')
 
 " 色いじったりしてキャッシュが邪魔なとき用
 " call dein#recache_runtimepath()
+
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+highlight LineNr ctermbg=none
+highlight Folded ctermbg=none
+highlight EndOfBuffer ctermbg=none 
