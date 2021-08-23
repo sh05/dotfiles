@@ -8,6 +8,30 @@ repo = 'junegunn/goyo.vim'
 repo = 'tpope/vim-fugitive'
 
 [[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+
+[[plugins]]
+repo = 'SirVer/ultisnips'
+
+[[plugins]]
+repo = 'honza/vim-snippets'
+
+[[plugins]]
+repo = 'thomasfaingnaert/vim-lsp-snippets'
+
+[[plugins]]
+repo = 'thomasfaingnaert/vim-lsp-ultisnips'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+
+[[plugins]]
 repo = 'tpope/vim-unimpaired'
 
 [[plugins]]
@@ -139,3 +163,32 @@ colorscheme onedark
 
 [[plugins]]
 repo = 'pandysong/ghost-text.vim'
+
+[[plugins]]
+repo = 'thosakwe/vim-flutter'
+on_ft = ['dart']
+hook_add = """
+nnoremap <leader>fa :FlutterRun<cr>
+nnoremap <leader>fq :FlutterQuit<cr>
+nnoremap <leader>fr :FlutterHotReload<cr>
+nnoremap <leader>fR :FlutterHotRestart<cr>
+"""
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = ['go']
+
+[[plugins]]
+repo = 'dart-lang/dart-vim-plugin'
+on_ft = ['dart']
+hook_add = """
+let g:dart_format_on_save = 1
+"""
+
+
+[[plugins]]
+repo = 'sebdah/vim-delve'
+on_ft = ['go']
+hook_add = """
+let g:delve_new_command = 'new'
+"""
