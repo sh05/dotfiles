@@ -72,9 +72,9 @@ repo = 'tpope/vim-markdown'
 on_ft = ['markdown']
 
 # golang
-[[plugins]]
-repo = 'fatih/vim-go'
-on_ft = ['go']
+# [[plugins]]
+# repo = 'fatih/vim-go'
+# on_ft = ['go']
 
 # arduino
 [[plugins]]
@@ -121,13 +121,13 @@ hook_source = '''
   set conceallevel=0
 '''
 
-# インサートモードに入ったら読み込む
-[[plugins]]
-repo = 'Shougo/deoplete.nvim'
-on_source = ['nvim-yarp', 'vim-hug-neovim-rpc']
-hook_post_source = """
-let g:deoplete#enable_at_startup = 1
-"""
+# # インサートモードに入ったら読み込む
+# [[plugins]]
+# repo = 'Shougo/deoplete.nvim'
+# on_source = ['nvim-yarp', 'vim-hug-neovim-rpc']
+# hook_post_source = """
+# let g:deoplete#enable_at_startup = 1
+# """
 
 # ifとかの終了宣言を自動で挿入してくれる
 # [[plugins]]

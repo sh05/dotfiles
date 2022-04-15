@@ -1,6 +1,20 @@
+" leader
+let mapleader = "\<Space>"
+
+" <Leader>i でコードをインデント整形
+map <Leader>i gg=<S-g><C-o><C-o>zz
+
+autocmd QuickFixCmdPost *grep* cwindow
+
+" nmap <Leader>v V
+let maplocalleader = ","
+
+set shell=zsh
+
 " クリップボードを共有
 set clipboard+=unnamed
 
+set nf=alpha
 " ファイル読み込み時の文字コードの設定
 set encoding=utf-8
 " Vim script内でマルチバイト文字を使う場合の設定
@@ -9,6 +23,8 @@ scriptencoding utf-8
 set fileencoding=utf-8
 " 読み込み時の文字コードの自動判別. 左側が優先される
 set fileencodings=ucs-boms,utf-8,euc-jp,cp932
+
+set binary noeol
 
 " 改行コードの自動判別. 左側が優先される
 set fileformats=unix,dos,mac
@@ -108,9 +124,11 @@ set history=20
 set foldmethod=indent
 set foldcolumn=4
 autocmd BufRead * normal zR
+highlight Folded guibg=grey guifg=blue
+highlight FoldColumn guibg=darkgrey guifg=white
 
 " netrwのデフォルトをtreeにする
-let g:netrw_liststyle = 3
+" let g:netrw_liststyle = 3
 " netrwのvで開く方向を右にする
 let g:netrw_altv = 1
 " netrwのoで開く方向を右にする
@@ -120,6 +138,13 @@ let g:netrw_browse_split = 4
 
 " ウィンドウを閉じずにバッファを閉じる
 command! Bd :bp | :sp | :bn | :bd
+" 保存してバッファを閉じる
+command Wd write|bdelete
+
+" set sessionoptions-=globals
+" set sessionoptions-=localoptions
+" set sessionoptions-=options
+set sessionoptions+=options
 
 " プラグインが実際にインストールされるディレクトリ
 let s:dein_dir = expand('~/.cache/dein')
@@ -140,6 +165,15 @@ endif
 " 設定開始
 if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
+
+
+  if !has('nvim')
+    call dein#add('roxma/nvim-yarp')
+    call dein#add('roxma/vim-hug-neovim-rpc')
+    " for vim-delve
+    call dein#add('Shougo/vimshell.vim')
+    call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
+  endif
 
   " プラグインリストを収めた TOML ファイル
   " 予め TOML ファイル（後述）を用意しておく
@@ -166,13 +200,10 @@ filetype plugin indent on
 " 色セット
 syntax on
 set background=dark
-
 " テキスト背景色
 au ColorScheme * hi Normal ctermbg=none
-
 " 括弧対応
 au ColorScheme * hi MatchParen cterm=bold ctermfg=214 ctermbg=black
-
 " スペルチェック
 au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
 set background=dark
@@ -195,13 +226,15 @@ au SessionLoadPost NetrwTreeListing Ex
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
+  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> <C-]> <plug>(lsp-definition)
-  nmap <buffer> <f2> <plug>(lsp-rename)
-  nmap <buffer> <Leader>d <plug>(lsp-type-definition)
-  nmap <buffer> <Leader>r <plug>(lsp-references)
-  nmap <buffer> <Leader>i <plug>(lsp-implementation)
-  inoremap <expr> <cr> pumvisible() ? "\<c-y>\<cr>" : "\<cr>"
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
 endfunction
 
 augroup lsp_install
@@ -236,28 +269,28 @@ let g:lsp_settings['gopls'] = {
   \  },
   \}
 
-if executable('dart')                                                                                          
-    augroup LspDart
-        au!
-        autocmd User lsp_setup call lsp#register_server({
-                    \ 'name': 'analysis_server.dart.snapshot',
-                    \ 'cmd': {server_info->[
-                    \           $DART_SDK.'/usr/local/bin/dart',
-                    \           $DART_SDK.'/bin/snapshots/analysis_server.dart.snapshot',
-                    \           '--lsp',
-                    \           ]},
-                    \ 'root_uri':{server_info->lsp#utils#path_to_uri(
-                    \     lsp#utils#find_nearest_parent_file_directory(
-                    \         lsp#utils#get_buffer_path(),
-                    \         ['.git/', 'analysis_options.yaml']
-                    \     ))},
-                    \ 'allowlist': ['dart'],
-                    \ 'initialization_options': v:null,
-                    \ 'config': {},
-                    \ 'workspace_config': {},
-                    \ })
-        autocmd FileType dart setlocal omnifunc=lsp#complete
-    augroup END
+if executable('dart')
+  augroup LspDart
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'analysis_server.dart.snapshot',
+          \ 'cmd': {server_info->[
+          \           $DART_SDK.'/usr/local/bin/dart',
+          \           $DART_SDK.'/bin/snapshots/analysis_server.dart.snapshot',
+          \           '--lsp',
+          \           ]},
+          \ 'root_uri':{server_info->lsp#utils#path_to_uri(
+          \     lsp#utils#find_nearest_parent_file_directory(
+          \         lsp#utils#get_buffer_path(),
+          \         ['.git/', 'analysis_options.yaml']
+          \     ))},
+          \ 'allowlist': ['dart'],
+          \ 'initialization_options': v:null,
+          \ 'config': {},
+          \ 'workspace_config': {},
+          \ })
+    autocmd FileType dart setlocal omnifunc=lsp#complete
+  augroup END
 endif
 
 " For snippets
@@ -266,3 +299,5 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 set completeopt+=menuone
+autocmd BufNewFile,BufRead *.log set filetype=log
+autocmd BufNewFile,BufRead .zshrc set filetype=sh

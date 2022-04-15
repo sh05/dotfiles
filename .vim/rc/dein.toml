@@ -2,19 +2,83 @@
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
-repo = 'junegunn/goyo.vim'
+repo = 'prabirshrestha/asyncomplete.vim'
+hook_add = '''
+  imap <c-n> <Plug>(asyncomplete_force_refresh)
+  imap <c-x> <Plug>(asyncomplete_force_refresh)
+  imap <c-p> <Plug>(asyncomplete_force_refresh)
+  let g:lsp_signs_enabled = 1
+  let g:lsp_highlight_references_enabled = 1
+  let g:lsp_highlights_enabled = 1
+  let g:lsp_diagnostics_enabled = 1
+  let g:lsp_async_completion = 1
+  let g:lsp_auto_enable = 1
+  let g:lsp_preview_autoclose = 0
+  let g:lsp_preview_keep_focus = 0
+  let g:lsp_preview_doubletap = 0
+  let g:lsp_insert_text_enabled = 0
+  let g:lsp_text_edit_enabled = 0
+  let g:lsp_diagnostics_echo_cursor = 1
+  let g:lsp_virtual_text_enabled = 0
+  let g:lsp_textprop_enabled = 0
+  let g:lsp_signature_help_enabled = 0
+  let g:lsp_fold_enabled = 0
+  let g:asyncomplete_auto_popup = 1
+  let g:asyncomplete_auto_completeopt = 1
+  let g:asyncomplete_remove_duplicates = 1
+  let g:asyncomplete_smart_completion = 1
+  set completeopt-=preview
+  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+  function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~ '\s'
+  endfunction
+  inoremap <silent><expr> <TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ asyncomplete#force_refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+'''
 
 [[plugins]]
-repo = 'tpope/vim-fugitive'
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/async.vim'
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
+hook_add = '''
+  nnoremap <leader>ph :LspHover<CR>
+  nnoremap <leader>pn :LspNextDiagnostic<CR>
+  nnoremap <leader>pc :pclose<CR>
+  autocmd FileType go nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
+  autocmd FileType typescript nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
+  autocmd FileType typescriptreact nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
+  let g:lsp_signs_error = {'text': ' '}
+  let g:lsp_signs_warning = {'text': ' '}
+  let g:lsp_signs_hint = {'text': ' '}
+  let g:lsp_log_verbose = 0
+  " let g:lsp_log_file = expand('~/vim-lsp.log')
+  " for asyncomplete.vim log
+  " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+'''
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
+hook_add = '''
+    let g:lsp_settings_servers_dir = '/Users/shnakamo/.vim/lsp/server'
+'''
 
 [[plugins]]
 repo = 'SirVer/ultisnips'
+hook_add = '''
+  let g:UltiSnipsExpandTrigger="<tab>"
+  let g:UltiSnipsJumpForwardTrigger="<tab>"
+  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+'''
 
 [[plugins]]
 repo = 'honza/vim-snippets'
@@ -34,20 +98,20 @@ repo = 'hrsh7th/vim-vsnip-integ'
 [[plugins]]
 repo = 'tpope/vim-unimpaired'
 
-[[plugins]]
-repo = 'Shougo/vimproc.vim'
-hook_post_update = '''
-  if dein#util#_is_windows()
-    let cmd = 'tools\\update-dll-mingw'
-  elseif dein#util#_is_cygwin()
-    let cmd = 'make -f make_cygwin.mak'
-  elseif executable('gmake')
-    let cmd = 'gmake'
-  else
-    let cmd = 'make'
-  endif
-  let g:dein#plugin.build = cmd
-'''
+# [[plugins]]
+# repo = 'Shougo/vimproc.vim'
+# hook_post_update = '''
+#   if dein#util#_is_windows()
+#     let cmd = 'tools\\update-dll-mingw'
+#   elseif dein#util#_is_cygwin()
+#     let cmd = 'make -f make_cygwin.mak'
+#   elseif executable('gmake')
+#     let cmd = 'gmake'
+#   else
+#     let cmd = 'make'
+#   endif
+#   let g:dein#plugin.build = cmd
+# '''
 
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
@@ -55,6 +119,13 @@ hook_add = """
 " <Leader>f{char} to move to {char}
 map  <Leader>f <Plug>(easymotion-bd-f)
 nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+map <Leader>l <Plug>(easymotion-lineforward)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+map <Leader>h <Plug>(easymotion-linebackward)
+
+let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 
 " Move to line
 map <Leader>L <Plug>(easymotion-bd-jk)
@@ -79,17 +150,6 @@ repo = 'tpope/vim-surround'
 repo = 'tpope/vim-repeat'
 
 [[plugins]]
-repo = 'elzr/vim-json'
-if   = '''! has('kaoriya')'''
-
-[[plugins]]
-repo    = 'vim-airline/vim-airline'
-depends = ['vim-airline-themes']
-hook_add = """
-let g:airline#extensions#tabline#enabled = 1
-"""
-
-[[plugins]]
 repo = 'Yggdroot/indentLine'
 
 [[plugins]]
@@ -99,20 +159,30 @@ repo = 'tpope/vim-commentary'
 repo = 'jiangmiao/auto-pairs'
 
 [[plugins]]
-repo = 'vim-airline/vim-airline-themes'
-
-# tokyonight
-# [[plugins]]
-# repo = 'ghifarit53/tokyonight-vim'
-# hook_add = """
-# set termguicolors
-# let g:tokyonight_enable_italic = 1
-# let g:tokyonight_style = 'night'
-# let g:tokyonight_style = 'storm'
-# """
-# hook_post_source = """
-# colorscheme tokyonight
-# """
+repo = 'thinca/vim-quickrun'
+hook_add = '''
+    set splitbelow
+    set splitright
+    let g:quickrun_config = {}
+    let g:quickrun_config._ = {
+          \ 'outputter/error/success': 'buffer',
+          \ 'outputter/error/error': 'quickfix',
+          \ 'outputter/quickfix/open_cmd': 'copen',
+          \ 'runner': 'vimproc',
+          \ 'runner/vimproc/updatetime': 60,
+          \ 'hook/time/enable': 1
+          \ }
+    let g:quickrun_config.python = {
+          \ 'command': '~/.pyenv/shims/python',
+          \ 'cmdopt': '-u'
+          \ }
+    let g:quickrun_config.cpp = {
+          \ 'command': 'g++',
+          \ 'input': 'input',
+          \ 'runner': 'system'
+          \ }
+'''
+hook_post_source = 'nmap <Leader>r :QuickRun'
 
 # onedark
 [[plugins]]
@@ -130,6 +200,29 @@ hook_post_source = """
 colorscheme onedark
 """
 
+[[plugins]]
+repo = 'vim-airline/vim-airline-themes'
+
+[[plugins]]
+repo    = 'vim-airline/vim-airline'
+depends = ['vim-airline-themes']
+hook_add = """
+let g:airline#extensions#tabline#enabled = 1
+"""
+
+# tokyonight
+# [[plugins]]
+# repo = 'ghifarit53/tokyonight-vim'
+# hook_add = """
+# set termguicolors
+# let g:tokyonight_enable_italic = 1
+# let g:tokyonight_style = 'night'
+# let g:tokyonight_style = 'storm'
+# """
+# hook_post_source = """
+# colorscheme tokyonight
+# """
+
 # # hybrid
 # [[plugins]]
 # repo = 'w0ng/vim-hybrid'
@@ -141,17 +234,18 @@ colorscheme onedark
 # """
 
 # molokai
-# [[plugins]]
-# repo = 'tomasr/molokai'
-# hook_add = """
-# let g:molokai_original = 1
-# let g:rehash256 = 1
-# """
-# hook_post_source = """
-# colorscheme molokai
-# """
+[[plugins]]
+repo = 'tomasr/molokai'
+hook_add = """
+let g:molokai_original = 1
+let g:rehash256 = 1
+" let g:airline_theme = 'molokai' 
+"""
+hook_post_source = """
+colorscheme molokai
+"""
 
-# # night owl
+# night owl
 # [[plugins]]
 # repo = 'haishanh/night-owl.vim'
 # hook_add = """
@@ -160,9 +254,6 @@ colorscheme onedark
 # hook_post_source = """
 # colorscheme night-owl
 # """
-
-[[plugins]]
-repo = 'pandysong/ghost-text.vim'
 
 [[plugins]]
 repo = 'thosakwe/vim-flutter'
@@ -192,3 +283,18 @@ on_ft = ['go']
 hook_add = """
 let g:delve_new_command = 'new'
 """
+
+[[plugins]]
+repo = 'wakatime/vim-wakatime'
+
+
+[[plugins]]
+repo = 'junegunn/goyo.vim'
+
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+[[plugins]]
+repo = 'elzr/vim-json'
+if   = '''! has('kaoriya')'''
+

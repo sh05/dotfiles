@@ -18,6 +18,8 @@ else
   ln -s .config/ $CONFIG
 fi
 
+# sudo apt-get install tmux -y
+
 # alacritty directory
 # ALACRITTY=$CONFIG/alacritty
 # if [ -d $ALACRITTY ]; then
