@@ -71,10 +71,6 @@ on_ft = ['html', 'vue', 'javascript', 'htmldjango', 'typescriptreact']
 repo = 'tpope/vim-markdown'
 on_ft = ['markdown']
 
-# golang
-# [[plugins]]
-# repo = 'fatih/vim-go'
-# on_ft = ['go']
 
 # arduino
 [[plugins]]
@@ -95,10 +91,10 @@ repo = 'davidhalter/jedi-vim'
 on_ft = ['python']
 
 # depends
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
+# [[plugins]]
+# repo = 'roxma/nvim-yarp'
+# [[plugins]]
+# repo = 'roxma/vim-hug-neovim-rpc'
 
 # tex
 [[plugins]]
@@ -108,9 +104,8 @@ hook_add = '''
   let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
   let g:tex_flavor = "tex"
   let g:vimtex_view_method= 'skim'
-  " set conceallevel=2
-  " let g:tex_conceal = "abdmgs"
-  set conceallevel=0
+  let g:tex_conceal = ""
+  let g:tex_fast = "mr"
   " let g:tex_conceal = ""
   " let g:vimtex_quickfix_latexlog = {'default': 0}
 '''
@@ -119,6 +114,10 @@ hook_source = '''
     call remote_startserver('VIM')
   endif
   set conceallevel=0
+'''
+hook_post_source = '''
+  set conceallevel=0
+  let g:tex_conceal = ""
 '''
 
 # # インサートモードに入ったら読み込む
@@ -154,3 +153,22 @@ on_cmd    = ['PP', 'PrettyPrint']
 [[plugins]]
 repo  = 'chrisbra/csv.vim'
 on_ft = ['csv']
+
+[[plugins]]
+repo = 'thosakwe/vim-flutter'
+on_ft = ['dart']
+hook_add = """
+nnoremap <leader>fa :FlutterRun<cr>
+nnoremap <leader>fq :FlutterQuit<cr>
+nnoremap <leader>fr :FlutterHotReload<cr>
+nnoremap <leader>fR :FlutterHotRestart<cr>
+  let g:flutter_show_log_on_run = "tab"
+  let g:flutter_autoscroll = 1
+"""
+
+[[plugins]]
+repo = 'dart-lang/dart-vim-plugin'
+on_ft = ['dart']
+hook_add = """
+let g:dart_format_on_save = 1
+"""

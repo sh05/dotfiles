@@ -69,16 +69,16 @@ hook_add = '''
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
 hook_add = '''
-    let g:lsp_settings_servers_dir = '/Users/shnakamo/.vim/lsp/server'
+    " let g:lsp_settings_servers_dir = '/Users/shnakamo/.vim/lsp/server'
 '''
 
-[[plugins]]
-repo = 'SirVer/ultisnips'
-hook_add = '''
-  let g:UltiSnipsExpandTrigger="<tab>"
-  let g:UltiSnipsJumpForwardTrigger="<tab>"
-  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-'''
+# [[plugins]]
+# repo = 'SirVer/ultisnips'
+# hook_add = '''
+#   let g:UltiSnipsExpandTrigger="<tab>"
+#   let g:UltiSnipsJumpForwardTrigger="<tab>"
+#   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+# '''
 
 [[plugins]]
 repo = 'honza/vim-snippets'
@@ -86,8 +86,8 @@ repo = 'honza/vim-snippets'
 [[plugins]]
 repo = 'thomasfaingnaert/vim-lsp-snippets'
 
-[[plugins]]
-repo = 'thomasfaingnaert/vim-lsp-ultisnips'
+# [[plugins]]
+# repo = 'thomasfaingnaert/vim-lsp-ultisnips'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'
@@ -149,8 +149,8 @@ repo = 'tpope/vim-surround'
 [[plugins]]
 repo = 'tpope/vim-repeat'
 
-[[plugins]]
-repo = 'Yggdroot/indentLine'
+# [[plugins]]
+# repo = 'Yggdroot/indentLine'
 
 [[plugins]]
 repo = 'tpope/vim-commentary'
@@ -233,17 +233,17 @@ let g:airline#extensions#tabline#enabled = 1
 # colorscheme hybrid
 # """
 
-# molokai
-[[plugins]]
-repo = 'tomasr/molokai'
-hook_add = """
-let g:molokai_original = 1
-let g:rehash256 = 1
-" let g:airline_theme = 'molokai' 
-"""
-hook_post_source = """
-colorscheme molokai
-"""
+# # molokai
+# [[plugins]]
+# repo = 'tomasr/molokai'
+# hook_add = """
+# let g:molokai_original = 1
+# let g:rehash256 = 1
+# " let g:airline_theme = 'molokai' 
+# """
+# hook_post_source = """
+# colorscheme molokai
+# """
 
 # night owl
 # [[plugins]]
@@ -256,25 +256,8 @@ colorscheme molokai
 # """
 
 [[plugins]]
-repo = 'thosakwe/vim-flutter'
-on_ft = ['dart']
-hook_add = """
-nnoremap <leader>fa :FlutterRun<cr>
-nnoremap <leader>fq :FlutterQuit<cr>
-nnoremap <leader>fr :FlutterHotReload<cr>
-nnoremap <leader>fR :FlutterHotRestart<cr>
-"""
-
-[[plugins]]
 repo = 'mattn/vim-goimports'
 on_ft = ['go']
-
-[[plugins]]
-repo = 'dart-lang/dart-vim-plugin'
-on_ft = ['dart']
-hook_add = """
-let g:dart_format_on_save = 1
-"""
 
 
 [[plugins]]

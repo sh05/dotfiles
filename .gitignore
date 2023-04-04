@@ -4,3 +4,11 @@ htop/
 iterm2/
 yarn/
 .config/karabiner/automatic_backups/*
+.DS_Store
+.config/.DS_Store
+.config/NuGet/
+.config/anyenv/
+.config/configstore/
+.config/flutter/
+.config/stetic/
+.config/xbuild/

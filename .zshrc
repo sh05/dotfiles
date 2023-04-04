@@ -212,9 +212,7 @@ git_check
 
 ########################################
 # path
-
 export PATH=$PATH:/usr/local/sbin
-export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/usr/sbin/
 export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
@@ -223,8 +221,10 @@ export PATH=$PATH:/usr/local/opt/ruby/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
+export PATH=$PATH:$GOBIN
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH=$PATH:/usr/local/bin
 ########################################
 # alias
 
@@ -247,12 +247,6 @@ alias -g less='/usr/share/vim/vim82/macros/less.sh'
 alias -g L='| less'
 alias -g G='| rg'
 alias -g W='| wc -l'
-
-# editor alias
-alias v='vim -p'
-alias vim='/usr/local/bin/vim'
-alias npvim='vim --noplugin'
-alias e='emacs'
 
 # docker alias
 alias d='docker'
@@ -292,6 +286,7 @@ export Z="$HOME/.zshrc"
 export V="$HOME/.vimrc"
 # export DEIN="$HOME/.vim/rc/"
 export D="$HOME/.vim/rc/"
+export GOBIN="$HOME/go/1.19.0/bin"
 
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
@@ -329,3 +324,6 @@ if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/path.zsh.inc' ]; then . '/User
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc' ]; then . '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc'; fi
+source /Users/sh05/.zsh/zsh-syntax-highlighting.zsh
+
+export TEXMFHOME=/Library/TeX/Distributions/.FactoryDefaults/TeXLive-2021/Contents/AllTexmf/texmf

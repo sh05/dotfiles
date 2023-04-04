@@ -62,6 +62,10 @@ set incsearch
 " 検索パターンに大文字小文字を区別しない
 set ignorecase
 
+" tex
+set conceallevel=0
+let g:tex_conceal = ""
+
 " 検索パターンに大文字を含んでいたら大文字小文字を区別する
 " set smartcase
 
@@ -195,6 +199,12 @@ if dein#check_install()
   call dein#install()
 endif
 
+let s:removed_plugins = dein#check_clean()
+if len(s:removed_plugins) > 0
+  call map(s:removed_plugins, "delete(v:val, 'rf')")
+  call dein#recache_runtimepath()
+endif
+
 filetype plugin indent on
 
 " 色セット
@@ -222,19 +232,24 @@ highlight EndOfBuffer ctermbg=none
 " netrwをツリースタイルにしているとsession読み込み時に反映されないから開き直す
 au SessionLoadPost NetrwTreeListing Ex
 
-" golang lsp
+set completeopt+=menuone
+autocmd BufNewFile,BufRead *.log set filetype=log
+autocmd BufNewFile,BufRead .zshrc set filetype=sh
+set conceallevel=0
+
+" setting for lsp
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
-  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> gr <plug>(lsp-references)
-  nmap <buffer> gi <plug>(lsp-implementation)
-  nmap <buffer> gt <plug>(lsp-type-definition)
-  nmap <buffer> <leader>rn <plug>(lsp-rename)
-  nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-  nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-  nmap <buffer> K <plug>(lsp-hover)
+  nmap <buffer> <C-]> <plug>(lsp-definition)
+  nmap <buffer> <Leader>m <plug>(lsp-rename)
+  nmap <buffer> <Leader>d <plug>(lsp-type-definition)
+  nmap <buffer> <Leader>r <plug>(lsp-references)
+  nmap <buffer> <Leader>i <plug>(lsp-implementation)
+  nmap <buffer> <Leader>ca <plug>(lsp-code-action)
+  nmap <buffer> <Leader>cl <plug>(lsp-code-lens)
+  inoremap <expr> <cr> pumvisible() ? "\<c-y>\<cr>" : "\<cr>"
 endfunction
 
 augroup lsp_install
@@ -242,16 +257,6 @@ augroup lsp_install
   autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
-
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
-" let g:asyncomplete_auto_popup = 1
-" let g:asyncomplete_auto_completeopt = 0
-let g:asyncomplete_popup_delay = 200
-let g:lsp_text_edit_enabled = 1
-let g:lsp_preview_float = 1
-let g:lsp_diagnostics_float_cursor = 1
-let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
 
 let g:lsp_settings = {}
 let g:lsp_settings['gopls'] = {
@@ -269,35 +274,10 @@ let g:lsp_settings['gopls'] = {
   \  },
   \}
 
-if executable('dart')
-  augroup LspDart
-    au!
-    autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'analysis_server.dart.snapshot',
-          \ 'cmd': {server_info->[
-          \           $DART_SDK.'/usr/local/bin/dart',
-          \           $DART_SDK.'/bin/snapshots/analysis_server.dart.snapshot',
-          \           '--lsp',
-          \           ]},
-          \ 'root_uri':{server_info->lsp#utils#path_to_uri(
-          \     lsp#utils#find_nearest_parent_file_directory(
-          \         lsp#utils#get_buffer_path(),
-          \         ['.git/', 'analysis_options.yaml']
-          \     ))},
-          \ 'allowlist': ['dart'],
-          \ 'initialization_options': v:null,
-          \ 'config': {},
-          \ 'workspace_config': {},
-          \ })
-    autocmd FileType dart setlocal omnifunc=lsp#complete
-  augroup END
-endif
-
-" For snippets
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-
-set completeopt+=menuone
-autocmd BufNewFile,BufRead *.log set filetype=log
-autocmd BufNewFile,BufRead .zshrc set filetype=sh
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+let g:asyncomplete_popup_delay = 200
+let g:lsp_text_edit_enabled = 1
+let g:lsp_preview_float = 1
+let g:lsp_diagnostics_float_cursor = 1
+let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
