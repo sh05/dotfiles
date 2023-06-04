@@ -4,6 +4,9 @@ let mapleader = "\<Space>"
 " <Leader>i でコードをインデント整形
 map <Leader>i gg=<S-g><C-o><C-o>zz
 
+nmap <Leader>p3 :!python3 %
+nmap <Leader>py :!python %
+
 autocmd QuickFixCmdPost *grep* cwindow
 
 " nmap <Leader>v V
@@ -241,43 +244,103 @@ set conceallevel=0
 function! s:on_lsp_buffer_enabled() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
-  nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> <C-]> <plug>(lsp-definition)
-  nmap <buffer> <Leader>m <plug>(lsp-rename)
-  nmap <buffer> <Leader>d <plug>(lsp-type-definition)
-  nmap <buffer> <Leader>r <plug>(lsp-references)
-  nmap <buffer> <Leader>i <plug>(lsp-implementation)
+  imap <c-n> <Plug>(asyncomplete_force_refresh)
+  imap <c-p> <Plug>(asyncomplete_force_refresh)
+  imap <c-x> <Plug>(asyncomplete_force_refresh)
+  inoremap <expr> <cr> pumvisible() ? "\<c-y>\<cr>" : "\<cr>"
   nmap <buffer> <Leader>ca <plug>(lsp-code-action)
   nmap <buffer> <Leader>cl <plug>(lsp-code-lens)
-  inoremap <expr> <cr> pumvisible() ? "\<c-y>\<cr>" : "\<cr>"
+  nmap <buffer> <Leader>td <plug>(lsp-type-definition)
+  nmap <buffer> <Leader>gd <plug>(lsp-definition)
+  nmap <buffer> <Leader>im <plug>(lsp-implementation)
+  nmap <buffer> <Leader>rn <plug>(lsp-rename)
+  nmap <buffer> <Leader>rf <plug>(lsp-references)
+  nmap <buffer> <Leader>dd <plug>(lsp-document-diagnostics)
+  nmap <buffer> <Leader>df <plug>(lsp-document-format)
+  nnoremap <leader>pc :pclose<CR>
+  nnoremap <leader>ph :LspHover<CR>
+  nnoremap <leader>pn :LspNextDiagnostic<CR>
+  " Hide signcolumn.
+  " Show diagnostics message to status line
+  let g:asyncomplete_auto_completeopt = 1
+  let g:asyncomplete_auto_popup = 1
+  let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+  let g:asyncomplete_popup_delay = 200
+  let g:asyncomplete_remove_duplicates = 1
+  let g:asyncomplete_smart_completion = 1
+  let g:lsp_async_completion = 1
+  let g:lsp_auto_enable = 1
+  let g:lsp_diagnostics_enabled = 1
+  let g:lsp_diagnostics_echo_cursor = 1
+  let g:lsp_diagnostics_float_cursor = 1
+  let g:lsp_diagnostics_signs_enabled = 0
+  let g:lsp_fold_enabled = 0
+  let g:lsp_highlight_references_enabled = 1
+  let g:lsp_highlights_enabled = 1
+  let g:lsp_insert_text_enabled = 0
+  let g:lsp_log_file = expand('~/vim-lsp.log')
+  let g:lsp_log_verbose = 0
+  let g:lsp_preview_autoclose = 0
+  let g:lsp_preview_doubletap = 0
+  let g:lsp_preview_float = 1
+  let g:lsp_preview_keep_focus = 0
+  let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+  let g:lsp_signature_help_enabled = 0
+  let g:lsp_signs_enabled = 1
+  let g:lsp_signs_error = {'text': ' '}
+  let g:lsp_signs_hint = {'text': ' '}
+  let g:lsp_signs_warning = {'text': ' '}
+  let g:lsp_text_edit_enabled = 1
+  let g:lsp_textprop_enabled = 0
+  let g:lsp_virtual_text_enabled = 0
+
+  " Highlight LSP warnings strongly (like errors)
+  highlight link LspWarningHighlight Error
+
+  set completeopt-=preview
+  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+  function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~ '\s'
+  endfunction
+  inoremap <silent><expr> <TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ asyncomplete#force_refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 endfunction
 
 augroup lsp_install
   au!
   autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
-command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
 
-let g:lsp_settings = {}
-let g:lsp_settings['gopls'] = {
-  \  'workspace_config': {
-  \    'usePlaceholders': v:true,
-  \    'analyses': {
-  \      'fillstruct': v:true,
-  \    },
-  \  },
-  \  'initialization_options': {
-  \    'usePlaceholders': v:true,
-  \    'analyses': {
-  \      'fillstruct': v:true,
-  \    },
-  \  },
-  \}
-
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
-let g:asyncomplete_popup_delay = 200
-let g:lsp_text_edit_enabled = 1
-let g:lsp_preview_float = 1
-let g:lsp_diagnostics_float_cursor = 1
-let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+let g:lsp_settings = {
+      \    'gopls': {
+      \      'workspace_config': {
+      \        'usePlaceholders': v:true,
+      \        'analyses': { 'fillstruct': v:true, },
+      \      },
+      \      'initialization_options': {
+      \        'usePlaceholders': v:true,
+      \        'analyses': { 'fillstruct': v:true, },
+      \      },
+      \    },
+      \    'pylsp-all': {
+      \      'workspace_config': {
+      \        'pylsp': {
+      \          'configurationSources': ['flake8'],
+      \          'plugins': {
+      \            'flake8': { 'enabled': 1 },
+      \            'mccabe': { 'enabled': 0 },
+      \            'pycodestyle': { 'enabled': 0 },
+      \            'pyflakes': { 'enabled': 0 },
+      \            'pylsp_mypy': {'enabled': 1},
+      \            'comment': {'mypyはpylspのvenvに入れる必要がある': '~/.local/share/vim-lsp-settings/servers/pylsp-all/venv/bin/pip3 install pylsp-myp'}
+      \          }
+      \        }
+      \      }
+      \    }
+      \  }

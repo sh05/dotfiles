@@ -121,7 +121,7 @@ export HEAVY_PR=0
 export VIM_INFO=0
 export HOSTNAME_COLOR=200
 
-if [ `hostname` = "sh05MBP.local" ] ; then
+if [ `hostname` = "sh05MBP.local" -o `hostname` = "sh05MacMini.local" ] ; then
 export REMOTE_ALERT=""
 else
 export REMOTE_ALERT="%F{000}%K{$HOSTNAME_COLOR} REMOTE %k%f"
@@ -212,19 +212,20 @@ git_check
 
 ########################################
 # path
+export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/usr/local/sbin
 export PATH=$PATH:/usr/sbin/
-export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
 export PATH=$PATH:/usr/local/opt/ruby/bin
 export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PATH=$PATH:/opt/homebrew/bin/
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
 export PATH=$PATH:$GOBIN
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH=$PATH:/usr/local/bin
+export PATH=$PATH:/usr/bin
 ########################################
 # alias
 
@@ -290,7 +291,7 @@ export GOBIN="$HOME/go/1.19.0/bin"
 
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-eval "$(anyenv init -)"
+# eval "$(anyenv init -)"
 
 # complettion
 eval "$(gh completion -s zsh)"
@@ -298,7 +299,9 @@ eval "$(gh completion -s zsh)"
 # export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=196'
 # export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=27'
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=190'
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/Cellar/zsh-autosuggestions/0.7.0/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
@@ -324,6 +327,7 @@ if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/path.zsh.inc' ]; then . '/User
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc' ]; then . '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc'; fi
-source /Users/sh05/.zsh/zsh-syntax-highlighting.zsh
 
 export TEXMFHOME=/Library/TeX/Distributions/.FactoryDefaults/TeXLive-2021/Contents/AllTexmf/texmf
+
+. /opt/homebrew/opt/asdf/libexec/asdf.sh

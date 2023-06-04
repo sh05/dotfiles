@@ -1,118 +1,35 @@
+# プラグイン管理
 [[plugins]]
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
-repo = 'prabirshrestha/asyncomplete.vim'
-hook_add = '''
-  imap <c-n> <Plug>(asyncomplete_force_refresh)
-  imap <c-x> <Plug>(asyncomplete_force_refresh)
-  imap <c-p> <Plug>(asyncomplete_force_refresh)
-  let g:lsp_signs_enabled = 1
-  let g:lsp_highlight_references_enabled = 1
-  let g:lsp_highlights_enabled = 1
-  let g:lsp_diagnostics_enabled = 1
-  let g:lsp_async_completion = 1
-  let g:lsp_auto_enable = 1
-  let g:lsp_preview_autoclose = 0
-  let g:lsp_preview_keep_focus = 0
-  let g:lsp_preview_doubletap = 0
-  let g:lsp_insert_text_enabled = 0
-  let g:lsp_text_edit_enabled = 0
-  let g:lsp_diagnostics_echo_cursor = 1
-  let g:lsp_virtual_text_enabled = 0
-  let g:lsp_textprop_enabled = 0
-  let g:lsp_signature_help_enabled = 0
-  let g:lsp_fold_enabled = 0
-  let g:asyncomplete_auto_popup = 1
-  let g:asyncomplete_auto_completeopt = 1
-  let g:asyncomplete_remove_duplicates = 1
-  let g:asyncomplete_smart_completion = 1
-  set completeopt-=preview
-  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
-  function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~ '\s'
-  endfunction
-  inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ asyncomplete#force_refresh()
-  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-'''
+repo = 'github/copilot.vim'
+hook_add = """
+imap <silent><script><expr> <Leader><Tab> copilot#Accept("\<CR>")
+let g:copilot_no_tab_map = v:true
+"""
 
-[[plugins]]
-repo = 'prabirshrestha/asyncomplete-lsp.vim'
 
-[[plugins]]
-repo = 'prabirshrestha/async.vim'
-
+# lsp関連
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
-hook_add = '''
-  nnoremap <leader>ph :LspHover<CR>
-  nnoremap <leader>pn :LspNextDiagnostic<CR>
-  nnoremap <leader>pc :pclose<CR>
-  autocmd FileType go nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
-  autocmd FileType typescript nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
-  autocmd FileType typescriptreact nnoremap gd :<C-u> TagImposterAnticipateJump <Bar> LspDefinition<CR>
-  let g:lsp_signs_error = {'text': ' '}
-  let g:lsp_signs_warning = {'text': ' '}
-  let g:lsp_signs_hint = {'text': ' '}
-  let g:lsp_log_verbose = 0
-  " let g:lsp_log_file = expand('~/vim-lsp.log')
-  " for asyncomplete.vim log
-  " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-'''
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
-hook_add = '''
-    " let g:lsp_settings_servers_dir = '/Users/shnakamo/.vim/lsp/server'
-'''
 
-# [[plugins]]
-# repo = 'SirVer/ultisnips'
-# hook_add = '''
-#   let g:UltiSnipsExpandTrigger="<tab>"
-#   let g:UltiSnipsJumpForwardTrigger="<tab>"
-#   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-# '''
-
+# 補完
 [[plugins]]
-repo = 'honza/vim-snippets'
+repo = 'prabirshrestha/asyncomplete.vim'
 
+# 補完*lsp
 [[plugins]]
-repo = 'thomasfaingnaert/vim-lsp-snippets'
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
 
-# [[plugins]]
-# repo = 'thomasfaingnaert/vim-lsp-ultisnips'
-
-[[plugins]]
-repo = 'hrsh7th/vim-vsnip'
-
-[[plugins]]
-repo = 'hrsh7th/vim-vsnip-integ'
-
+# ]bでバッファを移動したり
 [[plugins]]
 repo = 'tpope/vim-unimpaired'
 
-# [[plugins]]
-# repo = 'Shougo/vimproc.vim'
-# hook_post_update = '''
-#   if dein#util#_is_windows()
-#     let cmd = 'tools\\update-dll-mingw'
-#   elseif dein#util#_is_cygwin()
-#     let cmd = 'make -f make_cygwin.mak'
-#   elseif executable('gmake')
-#     let cmd = 'gmake'
-#   else
-#     let cmd = 'make'
-#   endif
-#   let g:dein#plugin.build = cmd
-# '''
-
+# 移動
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
 hook_add = """
@@ -136,21 +53,26 @@ map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
 """
 
-[[plugins]]
-repo = 'osyo-manga/vim-precious'
-depends = ['context_filetype.vim']
+# カーソル位置のftにしてくれる
+# lspとの食い合わせが悪そうなので保留
+# [[plugins]]
+# repo = 'osyo-manga/vim-precious'
+# depends = ['context_filetype.vim']
 
-[[plugins]]
-repo = 'Shougo/context_filetype.vim'
+# dep of precious
+# [[plugins]]
+# repo = 'Shougo/context_filetype.vim'
 
+# 囲んでいるやつをうまいことやる
 [[plugins]]
 repo = 'tpope/vim-surround'
 
+# .の対象範囲を拡張
 [[plugins]]
 repo = 'tpope/vim-repeat'
 
-# [[plugins]]
-# repo = 'Yggdroot/indentLine'
+[[plugins]]
+repo = 'Yggdroot/indentLine'
 
 [[plugins]]
 repo = 'tpope/vim-commentary'
@@ -184,33 +106,40 @@ hook_add = '''
 '''
 hook_post_source = 'nmap <Leader>r :QuickRun'
 
-# onedark
 [[plugins]]
-repo = 'joshdick/onedark.vim'
-hook_add = """
-au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
-au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
-au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
-au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
-au ColorScheme * hi Statement    ctermfg=45
-au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
-au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
-"""
-hook_post_source = """
-colorscheme onedark
-"""
+repo = 'halkn/lightline-lsp'
 
+# Customize status line
 [[plugins]]
-repo = 'vim-airline/vim-airline-themes'
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+  let g:lightline = {
+  \  'mode_map': {'c': 'NORMAL'},
+  \  'active': {
+  \    'right': [
+  \      [ 'lsp_errors', 'lsp_warnings' ],
+  \    ]
+  \  },
+  \  'component_expand': {
+  \    'lsp_warnings': 'lightline_lsp#warnings',
+  \    'lsp_errors':   'lightline_lsp#errors',
+  \  },
+  \  'component_type': {
+  \    'lsp_warnings': 'warning',
+  \    'lsp_errors':   'errors',
+  \  },
+  \}
+'''
 
+# 日本語書きやすい
 [[plugins]]
-repo    = 'vim-airline/vim-airline'
-depends = ['vim-airline-themes']
-hook_add = """
-let g:airline#extensions#tabline#enabled = 1
-"""
+repo = 'junegunn/goyo.vim'
 
-# tokyonight
+# git
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+# colorscheme
 # [[plugins]]
 # repo = 'ghifarit53/tokyonight-vim'
 # hook_add = """
@@ -223,7 +152,6 @@ let g:airline#extensions#tabline#enabled = 1
 # colorscheme tokyonight
 # """
 
-# # hybrid
 # [[plugins]]
 # repo = 'w0ng/vim-hybrid'
 # hook_add = """
@@ -233,7 +161,6 @@ let g:airline#extensions#tabline#enabled = 1
 # colorscheme hybrid
 # """
 
-# # molokai
 # [[plugins]]
 # repo = 'tomasr/molokai'
 # hook_add = """
@@ -245,7 +172,6 @@ let g:airline#extensions#tabline#enabled = 1
 # colorscheme molokai
 # """
 
-# night owl
 # [[plugins]]
 # repo = 'haishanh/night-owl.vim'
 # hook_add = """
@@ -255,29 +181,41 @@ let g:airline#extensions#tabline#enabled = 1
 # colorscheme night-owl
 # """
 
-[[plugins]]
-repo = 'mattn/vim-goimports'
-on_ft = ['go']
+# [[plugins]]
+# repo = 'joshdick/onedark.vim'
+# hook_add = """
+# au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+# au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+# au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+# au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+# au ColorScheme * hi Statement    ctermfg=45
+# au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+# au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+# """
+# hook_post_source = """
+# colorscheme onedark
+# """
 
-
 [[plugins]]
-repo = 'sebdah/vim-delve'
-on_ft = ['go']
+repo = 'fenetikm/falcon'
 hook_add = """
-let g:delve_new_command = 'new'
+let g:falcon_lightline = 1
+let g:lightline = {'colorscheme': 'falcon'}
+set termguicolors
+" let g:falcon_background = 0
+" let g:falcon_inactive = 1
+colorscheme falcon
 """
 
-[[plugins]]
-repo = 'wakatime/vim-wakatime'
+# [[plugins]]
+# repo = 'hardhackerlabs/theme-vim'
+# hook_add = """
+# colorscheme hardhacker
+# set t_Co=256
+# """
 
-
-[[plugins]]
-repo = 'junegunn/goyo.vim'
-
-[[plugins]]
-repo = 'tpope/vim-fugitive'
-
-[[plugins]]
-repo = 'elzr/vim-json'
-if   = '''! has('kaoriya')'''
-
+# [[plugins]]
+# repo = 'EdenEast/nightfox.nvim'
+# hook_add = """
+# colorscheme nightfox
+# """
