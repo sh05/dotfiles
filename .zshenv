@@ -10,7 +10,6 @@ path=( \
         ~/.tmux/bin(N-/) \
         ~/.nimble/bin(N-/) \
         ~/.yarn/bin(N-/) \
-        ~/.julia/conda/3/bin(N-/) \
         ~/.nimble/bin(N-/) \
         ~/.deno/bin(N-/) \
         ~/Library/ApplicationSupport/Coursier/bin(N-/) \

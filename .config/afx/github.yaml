@@ -137,7 +137,6 @@ github:
     env:
       GOPATH: $HOME/ghq
       GOBIN: $GOPATH/bin
-      GOPRIVATE: "*.yahoo.co.jp"
 
 # - name: Rasukarusan/fzf-chrome-active-tab
 #   description: 🐧 Fuzzy search and activate Chrome tab via the terminal.
