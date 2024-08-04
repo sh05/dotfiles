@@ -6,9 +6,6 @@
   excludesfile = ~/.gitignore_global
   ignorecase = false
   editor = nvim
-[gpg]
-  program = gpg2
-	format = ssh
 [alias]
   st = status
   cm = checkout main
