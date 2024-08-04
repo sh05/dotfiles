@@ -1,0 +1,116 @@
+[[plugin]]
+repo = 'leafgarland/typescript-vim'
+on_ft = ['javascript', 'javascript.jsx', 'typescript', 'typescriptreact']
+
+[[plugin]]
+repo = 'peitalin/vim-jsx-typescript'
+on_ft = ['javascript', 'javascript.jsx', 'typescript', 'typescriptreact']
+
+
+# css
+[[plugins]]
+repo  = 'othree/html5.vim'
+on_ft = ['html']
+
+# R
+[[plugins]]
+repo  = 'jalvesaq/Nvim-R'
+rev = 'stable'
+on_ft = ['r']
+
+# toml syntax
+[[plugins]]
+repo = 'cespare/vim-toml'
+on_ft = ['toml']
+
+# emmet
+[[plugins]]
+repo = 'mattn/emmet-vim'
+on_ft = ['html', 'vue', 'javascript', 'htmldjango', 'typescriptreact']
+
+# markdown
+[[plugins]]
+repo = 'tpope/vim-markdown'
+on_ft = ['markdown']
+
+# arduino
+[[plugins]]
+repo = 'sudar/vim-arduino-syntax'
+on_ft = ['arduino']
+
+# vue
+[[plugins]]
+repo = 'posva/vim-vue'
+hook_post_source = """
+autocmd FileType vue syntax sync fromstart
+"""
+on_ft = ['vue']
+
+# tex
+[[plugins]]
+repo = 'lervag/vimtex'
+on_ft = 'tex'
+hook_add = '''
+  let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
+  let g:tex_flavor = "tex"
+  let g:vimtex_view_method= 'skim'
+  let g:tex_conceal = ""
+  let g:tex_fast = "mr"
+  " let g:tex_conceal = ""
+  " let g:vimtex_quickfix_latexlog = {'default': 0}
+'''
+hook_source = '''
+  if empty(v:servername) && exists('*remote_startserver')
+    call remote_startserver('VIM')
+  endif
+  set conceallevel=0
+'''
+hook_post_source = '''
+  set conceallevel=0
+  let g:tex_conceal = ""
+'''
+
+# 特定のコマンドを打ったら読み込む
+[[plugins]]
+repo      = 'thinca/vim-prettyprint'
+on_cmd    = ['PP', 'PrettyPrint']
+
+[[plugins]]
+repo  = 'chrisbra/csv.vim'
+on_ft = ['csv']
+
+[[plugins]]
+repo = 'thosakwe/vim-flutter'
+on_ft = ['dart']
+hook_add = """
+nnoremap <leader>fa :FlutterRun<cr>
+nnoremap <leader>fq :FlutterQuit<cr>
+nnoremap <leader>fr :FlutterHotReload<cr>
+nnoremap <leader>fR :FlutterHotRestart<cr>
+  let g:flutter_show_log_on_run = "tab"
+  let g:flutter_autoscroll = 1
+"""
+
+[[plugins]]
+repo = 'dart-lang/dart-vim-plugin'
+on_ft = ['dart']
+hook_add = """
+let g:dart_format_on_save = 1
+"""
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = ['go']
+
+
+[[plugins]]
+repo = 'sebdah/vim-delve'
+on_ft = ['go']
+hook_add = """
+let g:delve_new_command = 'new'
+"""
+
+[[plugins]]
+repo = 'elzr/vim-json'
+if   = '''! has('kaoriya')'''
+on_ft = ['json']

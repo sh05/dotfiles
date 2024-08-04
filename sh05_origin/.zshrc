@@ -1,15 +1,3 @@
-autoload -Uz tetris
-zle -N tetris
-# bindkey '...' tetris
-
-# インクリメンタル補完
-# autoload predict-on
-# predict-on 
-
-# 環境変数
-export LANG=ja_JP.UTF-8
-# export LANG=en_US.UTF-8
-
 # 色を使用出来るようにする
 autoload -Uz colors
 colors
@@ -124,21 +112,6 @@ elif which putclip >/dev/null 2>&1 ; then
 fi
 
 ########################################
-# OS 別の設定
-case ${OSTYPE} in
-    darwin*)
-        #Mac用の設定
-        export CLICOLOR=1
-        alias ls='ls -G'
-        # alias ls='ls -G -F'
-        ;;
-    linux*)
-        #Linux用の設定
-        alias ls='ls -F --color=auto'
-        ;;
-esac
-
-########################################
 # プロンプト
 # 色はこのワンライナで確認
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
@@ -148,16 +121,14 @@ export HEAVY_PR=0
 export VIM_INFO=0
 export HOSTNAME_COLOR=200
 
-if [ `hostname` = "sh05MBP.local" ] ; then
+if [ `hostname` = "sh05MBP.local" -o `hostname` = "sh05MacMini.local" ] ; then
 export REMOTE_ALERT=""
 else
 export REMOTE_ALERT="%F{000}%K{$HOSTNAME_COLOR} REMOTE %k%f"
 fi
 
-###
 # 表示毎にPROMPTで設定されている文字列を評価する
 setopt prompt_subst
-###
 
 # vcs_info
 autoload -Uz vcs_info
@@ -171,14 +142,29 @@ zstyle ':vcs_info:git:*' unstagedstr "[unstaged]"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
 # export VIM_NORMAL="%F{196}%K{black}->%k%f"
-export VIM_NORMAL="%F{196}%K{black}->%k%f"
-export VIM_INSERT="%F{039}%K{black}->%k%f"
+# export VIM_NORMAL="%F{196}->%f"
+# export VIM_INSERT="%F{039}->%f"
+export VIM_NORMAL="%F{196}$ %f"
+export VIM_INSERT="%F{039}$ %f"
 
 function zle-line-init zle-keymap-select {
     PROMPT=$PR_BODY"
 ${${KEYMAP/vicmd/$VIM_NORMAL}/(main|viins)/$VIM_INSERT}"
     zle reset-prompt
 }
+
+function _kube-current-context () {
+  # KUBE_PS1_CONTEXT=%F{207}[$(kubectl config current-context)]%f
+  KUBE_PS1_CONTEXT=$(kubectl config view --minify --output 'jsonpath=cluster:{.contexts..context.cluster}|ns:{..namespace}')
+
+  zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
+  # PROMPT=$REMOTE_ALERT"%K{black}%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%k"
+  PROMPT=$REMOTE_ALERT"%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%F{207}["$KUBE_PS1_CONTEXT"]%f"
+  PROMPT=$PROMPT\$vcs_info_msg_0_
+  export PR_BODY=$PROMPT
+}
+
+add-zsh-hook precmd _kube-current-context
 
 function show_mode() {
   ((VIM_INFO=!VIM_INFO))
@@ -205,7 +191,7 @@ function switch_pr() {
 # %K{196} %k%F{196}%f"
   else
     zstyle ':vcs_info:git:*' formats "%F{226}[%b]%c%u%f"
-    PROMPT=$REMOTE_ALERT"%K{black}%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%k"
+    PROMPT=$REMOTE_ALERT"%F{046}[%n@%m]%f%F{046}%F{214}[%d]%f%F{045}[%D %T]%f%F{207}["$KUBE_PS1_CONTEXT"]%f"
     PROMPT=$PROMPT\$vcs_info_msg_0_
     export PR_BODY=$PROMPT
     # PROMPT=$PROMPT"
@@ -228,20 +214,20 @@ git_check
 
 ########################################
 # path
-
-export PATH=/usr/local/sbin
+PATH=""
+export PATH=$PATH:/opt/homebrew/bin/
 export PATH=$PATH:/usr/local/bin
+export PATH=$PATH:/usr/local/sbin
 export PATH=$PATH:/usr/sbin/
-export PATH=$PATH:/usr/bin
 export PATH=$PATH:/sbin
 export PATH=$PATH:/bin
 export PATH=$PATH:/usr/local/opt/ruby/bin
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH=/Library/TeX/Root/bin/x86_64-darwin:$PATH
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-
+export PATH=$PATH:$GOBIN
+export PATH=$PATH:/usr/local/opt/gnu-sed/libexec/gnubin
+export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+export PATH=$PATH:/usr/bin
 ########################################
 # alias
 
@@ -260,13 +246,6 @@ alias hisg='cat ~/.zsh_history | grep'
 alias sudo='sudo '
 
 # グローバルalias
-alias -g L='| less'
-# alias -g G='| grep'
-alias -g G='| rg'
-
-# editor alias
-alias v='vim -p'
-alias e='emacs'
 
 # docker alias
 alias d='docker'
@@ -284,13 +263,14 @@ alias dcup='docker-compose up'
 alias dcbuild='docker-compose build'
 alias dcrun='docker-compose run --rm'
 
+# kubernetes alias
+alias k='kubectl'
+alias kapf='kubectl apply -f'
+alias kdef='kubectl delete -f'
+alias ぽ='kubectl get po'
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/nakamotoshogo/res_hot_dev/google-cloud-sdk/completion.zsh.inc'; fi
-export PATH="/usr/local/opt/ncurses/bin:$PATH"
+# source "/usr/local/opt/kube-ps1/share/kube-ps1.sh"
+# PS1='$(kube_ps1)'$PS1
 
 # env
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
@@ -300,25 +280,84 @@ export Z="$HOME/.zshrc"
 ## vimrc
 # export VIMRC="$HOME/.vimrc"
 export V="$HOME/.vimrc"
-## dein
 # export DEIN="$HOME/.vim/rc/"
 export D="$HOME/.vim/rc/"
+export GOBIN="$HOME/go/1.19.0/bin"
 
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# eval "$(anyenv init -)"
 
 # complettion
 eval "$(gh completion -s zsh)"
 
-# starship 
-# eval "$(starship init zsh)"
 
-# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=196'
-# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=27'
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=190'
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+
+function repo() {
+  open `git remote get-url origin | sed -e 's/^git@/https:\/\//' | sed -e 's/\.git$//' | sed -e 's/\.jp:/\.jp\//'`
+}
+
+function cd_newest_dir() {
+  cd `ls -dtr1 */ | head -n1`
+}
 
 # tmux attach || tmux
 # launch tmux when start zsh
+
 if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
     exec tmux
 fi
+
+
+source <(kubectl completion zsh)
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/path.zsh.inc' ]; then . '/Users/sh05/Downloads/google-cloud-sdk 2/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc' ]; then . '/Users/sh05/Downloads/google-cloud-sdk 2/completion.zsh.inc'; fi
+
+export TEXMFHOME=/Library/TeX/Distributions/.FactoryDefaults/TeXLive-2021/Contents/AllTexmf/texmf
+
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+export PATH="/opt/homebrew/sbin:$PATH"
+
+
+function create_session_with_ghq() {
+    # fzfで選んだghqのリポジトリのpathを取得
+    moveto=$(ghq root)/$(ghq list | fzf)
+
+    if [[ ! -z ${TMUX} ]]
+    then
+        # リポジトリ名を取得
+        repo_name=`basename $moveto`
+
+        # repositoryが選択されなかった時は実行しない
+        if [ $repo_name != `basename $(ghq root)` ]
+        then
+            # セッション作成（エラーは/dev/nullへ）
+            tmux new-session -d -c $moveto -s $repo_name  2> /dev/null
+
+            # セッション切り替え（エラーは/dev/nullへ）
+            tmux switch-client -t $repo_name 2> /dev/null
+        fi
+    fi
+}
+zle -N create_session_with_ghq
+bindkey '^G' create_session_with_ghq
+
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=190'
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
+pathlist_to_need_to_load=("${HOME}/.fzf.zsh"
+"$(ghq root)/github.com/wfxr/forgit/forgit.plugin.zsh"
+"$(ghq root)/github.com/Aloxaf/fzf-tab/fzf-tab.plugin.zsh"
+"${HOME}/.kubectl_aliases"
+"$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+"$(brew --prefix)/Cellar/zsh-autosuggestions/0.7.0/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+)
+for path_to_need_to_load in $pathlist_to_need_to_load; do
+[ -f $path_to_need_to_load ] && source $path_to_need_to_load
+done

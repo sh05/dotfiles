@@ -14,16 +14,17 @@
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
 # set by alacritty itself.
-#env:
+env:
   # TERM variable
   #
   # This value is used to set the `$TERM` environment variable for
   # each instance of Alacritty. If it is not present, alacritty will
   # check the local terminfo database and use `alacritty` if it is
   # available, otherwise `xterm-256color` is used.
-  #TERM: alacritty
+  TERM: xterm-256color
 
 window:
+  opacity: 0.7
   # Window dimensions (changes require restart)
   #
   # Number of lines/columns (not pixels) in the terminal. The number of columns
@@ -107,6 +108,10 @@ font:
   normal:
     family: Hack Nerd Font Mono
     style: Regular
+
+  non_ascii:
+    family: Droid Sans Nerd Font Complete
+    offset: 0
 
   # Bold font face
   bold:
@@ -201,6 +206,14 @@ font:
 
 # Colors (Tomorrow Night)
 colors:
+
+  # Transparent cell backgrounds
+  #
+  # Whether or not `window.opacity` applies to all cell backgrounds or only to
+  # the default background. When set to `true` all cells will be transparent
+  # regardless of their background color.
+  transparent_background_colors: true
+
    # Default colors
   primary:
     background: '#1d1f21'
@@ -248,7 +261,7 @@ colors:
       foreground: '#ffffff'
       background: '#000000'
 
-    bar:
+    footer_bar:
       background: '#c5c8c6'
       foreground: '#1d1f21'
 
@@ -381,7 +394,6 @@ colors:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 1.0
 
 #selection:
   # This string contains all characters that are used as separators for

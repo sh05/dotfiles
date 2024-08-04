@@ -3,4 +3,8 @@ gcloud/
 htop/
 iterm2/
 yarn/
-.config/karabiner/automatic_backups/*
+automatic_backups/
+anyenv/
+configstore/
+github-copilot/
+autoload/

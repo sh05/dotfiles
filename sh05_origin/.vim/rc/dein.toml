@@ -1,0 +1,221 @@
+# プラグイン管理
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'github/copilot.vim'
+hook_add = """
+imap <silent><script><expr> <Leader><Tab> copilot#Accept("\<CR>")
+let g:copilot_no_tab_map = v:true
+"""
+
+
+# lsp関連
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+
+# 補完
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+
+# 補完*lsp
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+
+# ]bでバッファを移動したり
+[[plugins]]
+repo = 'tpope/vim-unimpaired'
+
+# 移動
+[[plugins]]
+repo = 'easymotion/vim-easymotion'
+hook_add = """
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+map <Leader>l <Plug>(easymotion-lineforward)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+map <Leader>h <Plug>(easymotion-linebackward)
+
+let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
+"""
+
+# カーソル位置のftにしてくれる
+# lspとの食い合わせが悪そうなので保留
+# [[plugins]]
+# repo = 'osyo-manga/vim-precious'
+# depends = ['context_filetype.vim']
+
+# dep of precious
+# [[plugins]]
+# repo = 'Shougo/context_filetype.vim'
+
+# 囲んでいるやつをうまいことやる
+[[plugins]]
+repo = 'tpope/vim-surround'
+
+# .の対象範囲を拡張
+[[plugins]]
+repo = 'tpope/vim-repeat'
+
+[[plugins]]
+repo = 'Yggdroot/indentLine'
+
+[[plugins]]
+repo = 'tpope/vim-commentary'
+
+[[plugins]]
+repo = 'jiangmiao/auto-pairs'
+
+[[plugins]]
+repo = 'thinca/vim-quickrun'
+hook_add = '''
+    set splitbelow
+    set splitright
+    let g:quickrun_config = {}
+    let g:quickrun_config._ = {
+          \ 'outputter/error/success': 'buffer',
+          \ 'outputter/error/error': 'quickfix',
+          \ 'outputter/quickfix/open_cmd': 'copen',
+          \ 'runner': 'vimproc',
+          \ 'runner/vimproc/updatetime': 60,
+          \ 'hook/time/enable': 1
+          \ }
+    let g:quickrun_config.python = {
+          \ 'command': '~/.pyenv/shims/python',
+          \ 'cmdopt': '-u'
+          \ }
+    let g:quickrun_config.cpp = {
+          \ 'command': 'g++',
+          \ 'input': 'input',
+          \ 'runner': 'system'
+          \ }
+'''
+hook_post_source = 'nmap <Leader>r :QuickRun'
+
+[[plugins]]
+repo = 'halkn/lightline-lsp'
+
+# Customize status line
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+  let g:lightline = {
+  \  'mode_map': {'c': 'NORMAL'},
+  \  'active': {
+  \    'right': [
+  \      [ 'lsp_errors', 'lsp_warnings' ],
+  \    ]
+  \  },
+  \  'component_expand': {
+  \    'lsp_warnings': 'lightline_lsp#warnings',
+  \    'lsp_errors':   'lightline_lsp#errors',
+  \  },
+  \  'component_type': {
+  \    'lsp_warnings': 'warning',
+  \    'lsp_errors':   'errors',
+  \  },
+  \}
+'''
+
+# 日本語書きやすい
+[[plugins]]
+repo = 'junegunn/goyo.vim'
+
+# git
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+# colorscheme
+# [[plugins]]
+# repo = 'ghifarit53/tokyonight-vim'
+# hook_add = """
+# set termguicolors
+# let g:tokyonight_enable_italic = 1
+# let g:tokyonight_style = 'night'
+# let g:tokyonight_style = 'storm'
+# """
+# hook_post_source = """
+# colorscheme tokyonight
+# """
+
+# [[plugins]]
+# repo = 'w0ng/vim-hybrid'
+# hook_add = """
+# let g:hybrid_custom_term_colors = 1
+# """
+# hook_post_source = """
+# colorscheme hybrid
+# """
+
+# [[plugins]]
+# repo = 'tomasr/molokai'
+# hook_add = """
+# let g:molokai_original = 1
+# let g:rehash256 = 1
+# " let g:airline_theme = 'molokai' 
+# """
+# hook_post_source = """
+# colorscheme molokai
+# """
+
+# [[plugins]]
+# repo = 'haishanh/night-owl.vim'
+# hook_add = """
+# set termguicolors
+# """
+# hook_post_source = """
+# colorscheme night-owl
+# """
+
+# [[plugins]]
+# repo = 'joshdick/onedark.vim'
+# hook_add = """
+# au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+# au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+# au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+# au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+# au ColorScheme * hi Statement    ctermfg=45
+# au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+# au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+# """
+# hook_post_source = """
+# colorscheme onedark
+# """
+
+[[plugins]]
+repo = 'fenetikm/falcon'
+hook_add = """
+let g:falcon_lightline = 1
+let g:lightline = {'colorscheme': 'falcon'}
+set termguicolors
+" let g:falcon_background = 0
+" let g:falcon_inactive = 1
+colorscheme falcon
+"""
+
+# [[plugins]]
+# repo = 'hardhackerlabs/theme-vim'
+# hook_add = """
+# colorscheme hardhacker
+# set t_Co=256
+# """
+
+# [[plugins]]
+# repo = 'EdenEast/nightfox.nvim'
+# hook_add = """
+# colorscheme nightfox
+# """
