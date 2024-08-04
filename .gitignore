@@ -2,7 +2,7 @@
 *.pem
 *.swp
 .chef/
-.tmux/plugins/*
+.tmux/plugins/
 .zsh/Completion/_*
 .zsh/history/
 anyenv/
