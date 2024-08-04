@@ -135,7 +135,7 @@ github:
         mkdir -p $HOME/ghq
       fi
     env:
-      GOPATH: $HOME/ghq
+      GOPATH: $HOME/.go
       GOBIN: $GOPATH/bin
 
 # - name: Rasukarusan/fzf-chrome-active-tab

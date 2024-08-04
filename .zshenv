@@ -3,7 +3,7 @@ path=( \
         ~/bin(N-/) \
         /opt/homebrew/bin(N-/) \
         ~/.local/share/aquaproj-aqua/bin(N-/) \
-        ~/ghq/bin(N-/) \
+        ~/.go/bin(N-/) \
         /usr/local/bin(N-/) \
         /usr/sbin(N-/) \
         ~/.local/bin(N-/) \
@@ -24,6 +24,7 @@ path=( \
         ~/.cargo/bin(N-/) \
         ~/.rd/bin(N-/) \
         ~/.tmux/plugins/tpm/bin(N-/) \
+        $HOME/.mySetting(N-/) \
         "$path[@]" \
     )
 
@@ -41,11 +42,11 @@ fpath=( \
 # History file
 export HISTFILE=~/.zsh_history
 # History size in memory
-export HISTSIZE=10000
+export HISTSIZE=1000000
 # The number of histsize
 export SAVEHIST=1000000
 # The size of asking history
-export LISTMAX=50
+export LISTMAX=1000000
 # Do not add in root
 if [[ $UID == 0 ]]; then
     unset HISTFILE

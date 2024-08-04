@@ -98,16 +98,21 @@ get_os() {
     done
 }
 
-# gitlocal() {
-#     git config --local user.name "sh05"
-#     git config --local user.email "shogonakamoto0109@gmail.com"
-#     git config --local hub.host "github.com"
-#     git config --local gpg.program gpg
-#     git config --local user.signingkey 
-#     echo 'export GITHUB_TOKEN=${GITHUB_COM_TOKEN}' >> .envrc
-# }
+gitlocal() {
+    git config --local user.name "sh05"
+    git config --local user.email "shogonakamoto0107@gmail.com"
+    git config --local hub.host "github.com"
+    git config --local gpg.program gpg
+    git config --local user.signingkey
+    echo 'export GITHUB_TOKEN=${GITHUB_COM_TOKEN}' >> .envrc
+}
 
-gcd() {
-    local repo_path=`ghq list --full-path | fzf --reverse --preview "bat {1}/README.md"`
-    \cd ${repo_path}
+# You need to set a password in the Keychain Access as 'secureclient' application for the $(whoami) account.
+vpn_connect() {
+    if [ "$(get_vpn_status)" = "VPN DISCONNECTED" ] && [ "$(get_vpn_status)" != "${OFFICE_SSID}" ]; then
+        ${VPN_CMD_PATH} -s <<EOF
+connect ${VPN_SERVER}
+$(security find-generic-password -a "$(whoami)" -s secureclient -w)
+EOF
+    fi
 }

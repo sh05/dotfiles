@@ -1,4 +1,3 @@
-local solargraph = require("lspconfig.server_configurations.solargraph")
 return {
   {
     "nvimdev/lspsaga.nvim",
@@ -9,6 +8,9 @@ return {
     event = "BufReadPre",
     opts = {
       symbol_in_winbar = {
+        enable = false,
+      },
+      lightbulb = {
         enable = false,
       },
     },
@@ -41,8 +43,8 @@ return {
       map("g[", "<cmd>Lspsaga diagnostic_jump_prev<CR>", { desc = "Prev Diagnostic" })
       map("g]", "<cmd>Lspsaga diagnostic_jump_next<CR>", { desc = "Next Diagnostic" })
       map("go", "<cmd>Lspsaga outline<CR>", { desc = "Show Outline" })
-      map("<leader>sl", "<cmd>Lspsaga show_line_diagnostics<CR>", { desc = "Show Line Diagnostics" })
-      map("<leader>sc", "<cmd>Lspsaga show_cursor_diagnostics<CR>", { desc = "Show Cursor Diagnostics" })
+      map("sl", "<cmd>Lspsaga show_line_diagnostics<CR>", { desc = "Show Line Diagnostics" })
+      map("sc", "<cmd>Lspsaga show_cursor_diagnostics<CR>", { desc = "Show Cursor Diagnostics" })
 
       return {
         diagnostics = {
@@ -180,7 +182,7 @@ return {
             settings = {
               yaml = {
                 schemas = {
-                  kubernetes = { "*.yaml" },
+                  kubernetes = { "*.yaml", "*.yml" },
                   ["http://json.schemastore.org/kustomization"] = "kustomization.yaml",
                 },
               },
