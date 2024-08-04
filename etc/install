@@ -454,7 +454,7 @@ if [ -z "${DOTPATH:-}" ]; then
 	export DOTPATH
 fi
 
-DOTFILES_GITHUB="https://github.com/cappyzawa/dotfiles.git"
+DOTFILES_GITHUB="https://github.com/sh05/dotfiles.git"
 export DOTFILES_GITHUB
 
 # shellcheck disable=SC1078,SC1079,SC2016
@@ -465,11 +465,11 @@ dotfiles_logo='
   | (_| | (_) | |_| | | | |  __/\__ \
    \__,_|\___/ \__|_| |_|_|\___||___/
   *** WHAT IS INSIDE? ***
-  1. Download https://github.com/cappyzawa/dotfiles.git
+  1. Download https://github.com/sh05/dotfiles.git
   2. Symlinking dot files to your home directory
   3. Execute all sh files within `etc/` (optional)
   See the README for documentation.
-  https://github.com/cappyzawa/dotfiles
+  https://github.com/sh05/dotfiles
   Licensed under the MIT license.
 '
 
@@ -493,7 +493,7 @@ dotfiles_download() {
 
 		elif is_exists "curl" || is_exists "wget"; then
 			# curl or wget
-			local tarball="https://github.com/cappyzawa/dotfiles/archive/master.tar.gz"
+			local tarball="https://github.com/sh05/dotfiles/archive/master.tar.gz"
 			if is_exists "curl"; then
 				curl -L "$tarball"
 
