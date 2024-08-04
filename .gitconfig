@@ -1,0 +1,35 @@
+[include]
+  path = ~/.gitconfig.local
+[include]
+  path = ~/.gitconfig.themes
+[core]
+  excludesfile = ~/.gitignore_global
+  ignorecase = false
+  editor = nvim
+[gpg]
+  program = gpg2
+	format = ssh
+[alias]
+  cm = checkout main
+  graph = log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short
+  undo = reset --soft HEAD^
+[ghq]
+  root = ~/ghq
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  features = tokyonight
+  navigate = true
+  line-numbers = true
+  side-by-side = true
+[merge]
+  conflictstyle = diff3
+[diff]
+  tool = difftastic
+  external = difft
+[pull]
+  rebase = true
+[init]
+  defaultBranch = main
+[credential]
+  helper = cache --timeout=3600

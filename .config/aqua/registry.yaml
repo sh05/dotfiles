@@ -1,0 +1,6 @@
+packages:
+- type: go_install
+  name: sigs.k8s.io/controller-runtime/tools/setup-envtest
+  repo_owner: kubernetes-sigs
+  repo_name: controller-runtime
+  path: sigs.k8s.io/controller-runtime/tools/setup-envtest

@@ -1,0 +1,32 @@
+github:
+- name: aquaproj/aqua
+  description: |
+    Declarative CLI Version manager written in Go.
+    Support Lazy Install, Registry, and continuous update with Renovate.
+    CLI version is switched seamlessly
+  owner: aquaproj
+  repo: aqua
+  release:
+    name: aqua
+    tag: v2.29.0
+    asset:
+      filename: aqua_{{ .OS }}_arm64.tar.gz
+  command:
+    env:
+      AQUA_GLOBAL_CONFIG: $XDG_CONFIG_HOME/aqua/aqua.yaml
+      AQUA_PROGRESS_BAR: "true"
+      AQUA_POLICY_CONFIG: $XDG_CONFIG_HOME/aqua/aqua-policy.yaml
+      EDITOR: nvim
+    link:
+    - from: "**/aqua"
+      to: aqua
+    alias:
+      k: kubectl
+      ls: exa
+      lg: lazygit
+      ld: lazydocker
+      vim: nvim
+      vi: command vim
+    snippet: |
+      source <(setup-envtest use -i -p env 1.25.x!)
+      complete -C 'aws_completer' aws

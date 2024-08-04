@@ -1,0 +1,9 @@
+# default: https://yamllint.readthedocs.io/en/stable/configuration.html#default-configuration
+extends: default
+
+rules:
+  line-length: disable
+  document-start: disable
+  indentation:
+    spaces: 2
+    indent-sequences: false
