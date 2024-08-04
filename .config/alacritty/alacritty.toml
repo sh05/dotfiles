@@ -398,7 +398,7 @@ program = "/bin/zsh"
 args = ["-l", "-i", "-c", "tmux new-session -A -s zzz"]
 
 [window]
-decorations = "full"
+decorations = "none"
 dynamic_padding = true
 
 [window.padding]
