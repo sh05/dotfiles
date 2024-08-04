@@ -1,9 +1,5 @@
 alias p="print -l"
 
-if has 'git'; then
-  alias gst='git status'
-fi
-
 if has 'nvim'; then
   alias vim='nvim'
 fi
