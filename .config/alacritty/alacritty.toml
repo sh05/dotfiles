@@ -5,27 +5,20 @@ TERM = "xterm-256color"
 
 [font]
 builtin_box_drawing = true
-size = 22.0
+size = 20.0
 
 [font.bold]
 family = "Moralerspace Argon NF"
-# family = "Hack Nerd Font Mono"
 style = "Bold"
 
 [font.italic]
 family = "Moralerspace Argon NF"
-# family = "Hack Nerd Font Mono"
 style = "Italic"
 
 
 [font.normal]
 family = "Moralerspace Argon NF"
-# family = "Hack Nerd Font Mono"
 style = "Regular"
-
-[font.non_ascii]
-family = "Hack Nerd Font Mono"
-offset = 0
 
 # [[keyboard.bindings]]
 # chars = "¥"
