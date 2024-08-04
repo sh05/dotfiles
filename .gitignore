@@ -1,6 +1,7 @@
 *.log
 *.pem
 *.swp
+lazy-lock.json
 .chef/
 .tmux/plugins/
 .zsh/Completion/_*
