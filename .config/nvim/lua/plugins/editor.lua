@@ -116,14 +116,14 @@ return {
   },
   {
     "iamcco/markdown-preview.nvim",
-    ft = "markdown",
-    keys = {
-      { "<F12>", "<cmd>MarkdownPreview<cr>", desc = "Preview Markdown file" },
-    },
-    build = function()
-      vim.fn["mkdp#util#install"]()
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
     end,
+    ft = { "markdown" },
   },
+
   {
     "akinsho/git-conflict.nvim",
     config = true,

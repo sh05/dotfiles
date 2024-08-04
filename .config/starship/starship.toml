@@ -1,3 +1,6 @@
+# 色はこのワンライナで確認できる
+# for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
+
 add_newline = true
 command_timeout = 2000
 
@@ -5,12 +8,12 @@ command_timeout = 2000
 symbol = "  "
 
 [battery]
-disabled = true
+disabled = false
 
 [character]
-success_symbol = "[](bold green)"
-error_symbol = "[](bold red)"
-vicmd_symbol = "[](bold yellow)"
+success_symbol = '[\$](255)'
+error_symbol = '[\$](207)'
+vicmd_symbol = '[\$](196)'
 
 [cmd_duration]
 style = "yellow"
@@ -18,7 +21,9 @@ style = "yellow"
 [conda]
 
 [directory]
-truncation_length = 3
+truncation_length = 2
+style = "46"
+home_symbol = "HOME"
 
 [docker_context]
 disabled = true
@@ -37,13 +42,16 @@ symbol = " "
 
 [git_branch]
 symbol = " "
+style = "226"
 
 [git_commit]
 disabled = false
 commit_hash_length = 4
+style = "226"
 
 [git_state]
 disabled = true
+style = "226"
 
 [git_status]
 conflicted = "=${count}"
@@ -56,6 +64,7 @@ modified = "!${count}"
 staged = "+${count}"
 renamed = "»${count}"
 deleted = "✘${count}"
+style = "226"
 
 [gcloud]
 disabled = true
@@ -70,7 +79,7 @@ symbol = " "
 [kubernetes]
 symbol = "󱃾 "
 disabled = false
-style = "cyan"
+style = "45"
 
 [line_break]
 disabled = false
@@ -172,4 +181,4 @@ disabled = false
 [env_var.ARCH]
 variable = "ARCH"
 default = "x86_64"
-style = "bold yellow"
+style = "202"

@@ -4,7 +4,7 @@ return {
     opts = function()
       return {
         default_format_opt = {
-          timeout_ms = 5000,
+          timeout_ms = 15000,
         },
         formatters_by_ft = {
           css = { "prettier" },
@@ -12,7 +12,7 @@ return {
           html = { "prettier" },
           javascript = { "prettier" },
           json = { "prettier" },
-          -- json5 = { "prettier" },
+          json5 = { "prettier" },
           lua = { "stylua" },
           markdown = { "prettier" },
           rust = { "rustfmt" },

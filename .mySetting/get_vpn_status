@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# vpnコマンドパス
+vpn_cmd_path="${VPN_CMD_PATH}"
+# 接続状態判定用文字列
+office_ssid="${OFFICE_SSID}"
+connected_str="接続中"
+disconnected_str="切断されました"
+
+device=$(networksetup -listallhardwareports | awk '/Wi-Fi/ {getline; print $2}')
+ssid="$(networksetup -getairportnetwork "${device}" | awk '{print $4}')"
+if [ $(echo "${ssid}" | grep "${office_ssid}" | wc -l) -gt 0 ]; then
+  echo "${ssid}" >~/.last_vpn_status
+  cat ~/.last_vpn_status
+  exit 0
+fi
+
+vpn_status=$(${vpn_cmd_path} status | grep "state: " | tail -n 1 | awk '{ print $4}')
+if [ $(echo "${vpn_status}" | grep "${connected_str}" | wc -l) -gt 0 ]; then
+  echo "VPN CONNECTED" >~/.last_vpn_status
+  cat ~/.last_vpn_status
+  exit 0
+fi
+
+if [ $(echo $vpn_status | grep $disconnected_str | wc -l) -gt 0 ]; then
+  echo "VPN DISCONNECTED" >~/.last_vpn_status
+  cat ~/.last_vpn_status
+  exit 0
+fi
+
+echo "Unknown Pattern" >~/.last_vpn_status
+cat ~/.last_vpn_status

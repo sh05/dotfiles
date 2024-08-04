@@ -53,7 +53,7 @@ export HISTFILE=~/.zsh_history
 export HISTSIZE=1000000
 export SAVEHIST=1000000
 # The size of asking history
-export LISTMAX=50
+export LISTMAX=1000000
 # Do not add in root
 if [[ $UID == 0 ]]; then
     unset HISTFILE
@@ -71,3 +71,6 @@ elif [[ $ARCH == x86_64 ]]; then
 fi
 export ARCH
 export LDFLAGS="-L$HOMEBREW_PREFIX/lib"
+
+# enable command
+setopt interactivecomments

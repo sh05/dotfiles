@@ -1,3 +1,4 @@
+local HOME = os.getenv("HOME")
 return {
   {
     "mfussenegger/nvim-lint",
@@ -6,6 +7,11 @@ return {
         sh = { "shellcheck" },
         bash = { "shellcheck" },
         zsh = { "shellcheck" },
+      },
+      linters = {
+        ["markdownlint-cli2"] = {
+          args = { "--config", HOME .. "/.markdownlint-cli2.yaml", "--" },
+        },
       },
     },
   },

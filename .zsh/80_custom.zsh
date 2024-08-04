@@ -20,3 +20,5 @@ if [[ -f "$HOME/.config/op/plugins.sh" ]]; then
     # shellcheck source=/dev/null
     source "$HOME/.config/op/plugins.sh"
 fi
+
+export KUBECTL_EXTERNAL_DIFF="colordiff -u"

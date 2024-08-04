@@ -1,11 +1,10 @@
-import = ["~/.config/alacritty/tokyo-night.toml"]
 
 [env]
 TERM = "xterm-256color"
 
 [font]
 builtin_box_drawing = true
-size = 20.0
+size = 14.0
 
 [font.bold]
 family = "Moralerspace Argon NF"
@@ -394,14 +393,20 @@ style = "Regular"
 # key = "Backslash"
 # mods = "Alt|Shift"
 
-[shell]
+[terminal.shell]
 program = "/bin/zsh"
 args = ["-l", "-i", "-c", "tmux new-session -A -s zzz"]
 
 [window]
 decorations = "none"
 dynamic_padding = true
+opacity = 0.95
 
 [window.padding]
 x = 5
 y = 5
+
+[general]
+import = ["~/.config/alacritty/tokyo-night.toml"]
+
+[terminal]
