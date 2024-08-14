@@ -75,6 +75,16 @@ return {
     },
   },
   {
+    "tokyonight.nvim",
+    opts = {
+      transparent = true,
+      styles = {
+        sidebars = "transparent",
+        floats = "transparent",
+      },
+    },
+  },
+  {
     "nvim-lualine/lualine.nvim",
     dependencies = {
       { "folke/tokyonight.nvim" },

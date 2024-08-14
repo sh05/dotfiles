@@ -11,6 +11,10 @@ registries:
   - name: custom
     type: local
     path: ./registry.yaml
+  - name: private
+    type: local
+    path: ./private/registry.yaml
+    private: true
 packages:
   - name: junegunn/fzf@0.48.1
   - name: starship/starship@v1.19.0
@@ -30,7 +34,6 @@ packages:
   - name: golang/go@go1.22.5
   - name: sharkdp/bat@v0.24.0
   - name: aws/aws-cli@2.15.44
-
   - name: dandavison/delta@0.17.0
   - name: o2sh/onefetch@2.20.0
   - name: cheat/cheat@4.4.2

@@ -24,6 +24,7 @@ path=( \
         ~/.cargo/bin(N-/) \
         ~/.rd/bin(N-/) \
         ~/.tmux/plugins/tpm/bin(N-/) \
+        $HOME/.mySetting(N-/) \
         "$path[@]" \
     )
 

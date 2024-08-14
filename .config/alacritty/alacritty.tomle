@@ -401,7 +401,7 @@ args = ["-l", "-i", "-c", "tmux new-session -A -s zzz"]
 [window]
 decorations = "none"
 dynamic_padding = true
-opacity = 0.9
+opacity = 0.5
 
 [window.padding]
 x = 5

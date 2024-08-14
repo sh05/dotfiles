@@ -11,10 +11,11 @@ end
 -- tabstop,shiftwidth = 4 for some filetypes
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("tab4"),
-  pattern = { "elm" },
+  pattern = { "elm", "yaml" },
   callback = function()
     opt.tabstop = 4
     opt.shiftwidth = 4
+    vim.b.autoformat = false
   end,
 })
 
