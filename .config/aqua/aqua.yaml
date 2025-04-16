@@ -7,7 +7,7 @@
 #   - all
 registries:
   - type: standard
-    ref: v4.206.0 # renovate: depName=aquaproj/aqua-registry
+    ref: v4.346.0 # renovate: depName=aquaproj/aqua-registry
   - name: custom
     type: local
     path: ./registry.yaml
@@ -51,4 +51,4 @@ packages:
   - name: GoogleContainerTools/skaffold@v2.9.0
   - name: helm/helm@v3.15.3
   - name: docker/cli@v24.0.7
-  - name: rancher-sandbox/rancher-desktop@v1.15.0
+  - name: github/github-mcp-server@v0.1.1
