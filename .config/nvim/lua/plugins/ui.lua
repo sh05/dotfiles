@@ -95,6 +95,9 @@ return {
             end,
           },
         },
+        lualine_x = {
+          { require("mcphub.extensions.lualine") },
+        },
         lualine_y = { "progress" },
         lualine_z = { "location" },
       })

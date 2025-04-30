@@ -1,12 +1,67 @@
 {
   "mcpServers": {
+    "github_enterprise_1": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_HOST",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "disabled": false,
+      "command": "docker",
+      "env": {
+        "GITHUB_HOST": "${GITHUB_ENTERPRISE_2_HOST}",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_2_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "puppeteer": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--init",
+        "-e",
+        "DOCKER_CONTAINER=true",
+        "mcp/puppeteer"
+      ],
+      "command": "docker"
+    },
+    "github_enterprise_2": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_HOST",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "disabled": false,
+      "command": "docker",
+      "env": {
+        "GITHUB_HOST": "${GITHUB_ENTERPRISE_1_HOST}",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_1_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
     "github": {
-      "command": "github-mcp-server",
-      "args": ["stdio", "--read-only"],
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "disabled": false,
+      "command": "docker",
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": ""
       }
     }
-  },
-  "nativeMCPServers": []
+  }
 }

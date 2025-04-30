@@ -52,6 +52,17 @@ return {
     },
   },
   {
+    "ravitemer/mcphub.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim", -- Required for Job and HTTP requests
+    },
+    cmd = "MCPHub", -- lazy load
+    build = "npm install -g mcp-hub@latest", -- Installs required mcp-hub npm module
+    opts = {
+      auto_approve = false,
+    },
+  },
+  {
     "yetone/avante.nvim",
     event = "VeryLazy",
     version = false,
@@ -63,6 +74,30 @@ return {
         timeout = 30000,
         temperature = 0,
         max_completion_tokens = 4096,
+      },
+      -- system_prompt as function ensures LLM always has latest MCP server state
+      -- This is evaluated for every message, even in existing chats
+      system_prompt = function()
+        local hub = require("mcphub").get_hub_instance()
+        return hub:get_active_servers_prompt()
+      end,
+      -- Using function prevents requiring mcphub before it's loaded
+      custom_tools = function()
+        return {
+          require("mcphub.extensions.avante").mcp_tool(),
+        }
+      end,
+      disabled_tools = {
+        "list_files", -- Built-in file operations
+        "search_files",
+        "read_file",
+        "create_file",
+        "rename_file",
+        "delete_file",
+        "create_dir",
+        "rename_dir",
+        "delete_dir",
+        "bash", -- Built-in terminal access
       },
     },
     build = "make",
@@ -77,6 +112,7 @@ return {
       "ibhagwan/fzf-lua", -- for file_selector provider fzf
       "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
       "zbirenbaum/copilot.lua", -- for providers='copilot'
+      "ravitemer/mcphub.nvim",
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
@@ -95,83 +131,5 @@ return {
         },
       },
     },
-    -- config = function() end,
-  },
-  {
-    "ravitemer/mcphub.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    cmd = "MCPHub", -- lazy load by default
-    build = "npm install -g mcp-hub@latest", -- Installs globally
-    config = function()
-      require("mcphub").setup({
-        -- Server configuration
-        port = 37373, -- Port for MCP Hub Express API
-        config = vim.fn.expand("~/.config/mcphub/servers.json"), -- Config file path
-
-        native_servers = {}, -- add your native servers here
-        -- Extension configurations
-        auto_approve = false,
-        extensions = {
-          avante = {
-            make_slash_commands = true, -- make /slash commands from MCP server prompts
-          },
-        },
-
-        -- UI configuration
-        ui = {
-          window = {
-            width = 0.8, -- Window width (0-1 ratio)
-            height = 0.8, -- Window height (0-1 ratio)
-            border = "rounded", -- Window border style
-            relative = "editor", -- Window positioning
-            zindex = 50, -- Window stack order
-          },
-        },
-
-        -- Event callbacks
-        on_ready = function(hub) end, -- Called when hub is ready
-        on_error = function(err) end, -- Called on errors
-
-        -- Logging configuration
-        log = {
-          level = vim.log.levels.WARN, -- Minimum log level
-          to_file = false, -- Enable file logging
-          file_path = nil, -- Custom log file path
-          prefix = "MCPHub", -- Log message prefix
-        },
-      })
-
-      -- TODO: ここでいいのか確認
-      require("avante").setup({
-        -- system_prompt as function ensures LLM always has latest MCP server state
-        -- This is evaluated for every message, even in existing chats
-        system_prompt = function()
-          local hub = require("mcphub").get_hub_instance()
-          return hub:get_active_servers_prompt()
-        end,
-        -- Using function prevents requiring mcphub before it's loaded
-        custom_tools = function()
-          return {
-            require("mcphub.extensions.avante").mcp_tool(),
-          }
-        end,
-        require("avante").setup({
-          disabled_tools = {
-            "list_files", -- Built-in file operations
-            "search_files",
-            "read_file",
-            "create_file",
-            "rename_file",
-            "delete_file",
-            "create_dir",
-            "rename_dir",
-            "delete_dir",
-            "bash", -- Built-in terminal access
-          },
-        }),
-      })
-    end,
   },
 }
