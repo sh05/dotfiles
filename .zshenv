@@ -56,4 +56,7 @@ fi
 # Config
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
-. "$HOME/.cargo/env"
+source "$HOME/.cargo/env"
+
+export NPM_CONFIG_PREFIX=${XDG_DATA_HOME:-$HOME/.local/share}/npm-global
+export PATH=$NPM_CONFIG_PREFIX/bin:$PATH

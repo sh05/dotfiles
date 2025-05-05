@@ -48,3 +48,4 @@ packages:
   - name: helm/helm@v3.15.3
   - name: docker/cli@v24.0.7
   - name: github/github-mcp-server@v0.1.1
+  - name: nodejs/node@v22.15.0
