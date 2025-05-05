@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "puppeteer": {
-      "command": "docker",
       "disabled": false,
+      "command": "docker",
       "args": [
         "run",
         "-i",
@@ -13,7 +13,13 @@
         "mcp/puppeteer"
       ]
     },
-    "github_enterprise_1": {
+    "github_enterprise_2": {
+      "disabled": true,
+      "command": "docker",
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_1_PERSONAL_ACCESS_TOKEN}",
+        "GITHUB_HOST": "${GITHUB_ENTERPRISE_1_HOST}"
+      },
       "args": [
         "run",
         "-i",
@@ -23,15 +29,28 @@
         "-e",
         "GITHUB_HOST",
         "ghcr.io/github/github-mcp-server"
-      ],
+      ]
+    },
+    "filesystem": {
       "command": "docker",
-      "disabled": true,
-      "env": {
-        "GITHUB_HOST": "${GITHUB_ENTERPRISE_2_HOST}",
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_2_PERSONAL_ACCESS_TOKEN}"
-      }
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--mount",
+        "type=bind,src=/Users/username/Desktop,dst=/projects/Desktop",
+        "--mount",
+        "type=bind,src=/Users/nakamotoshougo/ghq,dst=/projects/ghq,ro",
+        "mcp/filesystem",
+        "/projects"
+      ]
     },
     "github": {
+      "disabled": true,
+      "command": "docker",
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      },
       "args": [
         "run",
         "-i",
@@ -39,14 +58,40 @@
         "-e",
         "GITHUB_PERSONAL_ACCESS_TOKEN",
         "ghcr.io/github/github-mcp-server"
-      ],
-      "command": "docker",
-      "disabled": true,
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
-      }
+      ]
     },
-    "github_enterprise_2": {
+    "sequentialthinking": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "mcp/sequentialthinking"
+      ]
+    },
+    "everything": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ]
+    },
+    "fetch": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/fetch"
+      ]
+    },
+    "github_enterprise_1": {
+      "disabled": true,
+      "command": "docker",
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_2_PERSONAL_ACCESS_TOKEN}",
+        "GITHUB_HOST": "${GITHUB_ENTERPRISE_2_HOST}"
+      },
       "args": [
         "run",
         "-i",
@@ -56,13 +101,7 @@
         "-e",
         "GITHUB_HOST",
         "ghcr.io/github/github-mcp-server"
-      ],
-      "command": "docker",
-      "disabled": true,
-      "env": {
-        "GITHUB_HOST": "${GITHUB_ENTERPRISE_1_HOST}",
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_ENTERPRISE_1_PERSONAL_ACCESS_TOKEN}"
-      }
+      ]
     }
   },
   "nativeMCPServers": [

@@ -29,3 +29,6 @@
   defaultBranch = main
 [credential]
   helper = cache --timeout=3600
+[user]
+	name = sh05
+	email = shogonakamoto0107@gmail.com

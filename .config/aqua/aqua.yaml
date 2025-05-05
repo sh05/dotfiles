@@ -11,10 +11,6 @@ registries:
   - name: custom
     type: local
     path: ./registry.yaml
-  - name: private
-    type: local
-    path: ./private/registry.yaml
-    private: true
 packages:
   - name: junegunn/fzf@0.48.1
   - name: starship/starship@v1.19.0
