@@ -38,7 +38,13 @@ export LSCOLORS=exfxcxdxbxegedabagacad
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 
 export PATH=$HOME/bin:/opt/homebrew/bin:$PATH
-export PATH=$(for p in $(asdf plugin list); do echo -n $(asdf where $p)/bin:; done)$PATH
+
+# Add asdf plugins to PATH if asdf is available
+if command -v asdf &> /dev/null; then
+  for p in $(asdf plugin list 2>/dev/null); do
+    PATH=$(echo -n "$(asdf where "${p}")/bin:${PATH}");
+  done
+fi
 
 # declare the environment variables
 export CORRECT_IGNORE='_*'
