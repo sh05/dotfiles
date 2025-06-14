@@ -31,7 +31,7 @@ packages:
   - name: sharkdp/bat@v0.24.0
   - name: aws/aws-cli@2.15.44
   - name: dandavison/delta@0.17.0
-  - name: o2sh/onefetch@2.20.0
+  - name: o2sh/onefetch@2.24.0
   - name: cheat/cheat@4.4.2
   - name: goreleaser/goreleaser@v1.21.2
   - name: koalaman/shellcheck@v0.10.0
