@@ -42,7 +42,7 @@ packages:
   - name: carvel-dev/ytt@v0.48.0
   - name: Aloxaf/silicon@v0.5.3
   - name: github/hub@v2.14.2
-  - name: Wilfred/difftastic@0.56.1
+  - name: Wilfred/difftastic@0.64.0
   - name: denisidoro/navi@v2.22.1
   - name: GoogleContainerTools/skaffold@v2.9.0
   - name: helm/helm@v3.15.3
