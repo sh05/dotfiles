@@ -44,7 +44,7 @@ packages:
   - name: github/hub@v2.14.2
   - name: Wilfred/difftastic@0.56.1
   - name: denisidoro/navi@v2.22.1
-  - name: GoogleContainerTools/skaffold@v2.9.0
+  - name: GoogleContainerTools/skaffold@v2.16.1
   - name: helm/helm@v3.15.3
   - name: docker/cli@v24.0.7
   - name: github/github-mcp-server@v0.1.1
