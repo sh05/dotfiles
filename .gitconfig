@@ -14,13 +14,6 @@
 	np = !git --no-pager
 [ghq]
   root = ~/ghq
-[interactive]
-  diffFilter = delta --color-only
-[delta]
-  features = tokyonight
-  navigate = true
-  line-numbers = true
-  side-by-side = true
 [merge]
   conflictstyle = diff3
 [pull]

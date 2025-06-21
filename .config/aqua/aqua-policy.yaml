@@ -6,6 +6,10 @@ registries:
 - name: custom
   type: local
   path: registry.yaml
+- name: private
+  type: local
+  path: ./private/registry.yaml
 packages:
 - registry: standard
 - registry: custom
+- registry: private
