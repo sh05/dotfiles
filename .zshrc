@@ -5,11 +5,26 @@ compinit
 autoload -Uz colors
 colors
 
-if ! command -v afx &> /dev/null; then
+
+tmp_cmd="afx"
+if ! command -v ${tmp_cmd} &> /dev/null; then
     curl -sL https://raw.githubusercontent.com/b4b4r07/afx/HEAD/hack/install | bash
 fi
 
-source <(afx init)
+source <(${tmp_cmd} init)
+
+tmp_cmd="sheldon"
+if ! command -v ${tmp_cmd} &> /dev/null; then
+    eval "$(${tmp_cmd} source)"
+fi
+
+tmp_cmd="starship"
+if ! command -v ${tmp_cmd} &> /dev/null; then
+    eval "$(${tmp_cmd} init zsh)"
+fi
+
+
+
 # word split: `-`, `_`, `.`, `=`
 export WORDCHARS='*?[]~&;!#$%^(){}<>'
 

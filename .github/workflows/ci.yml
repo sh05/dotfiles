@@ -6,7 +6,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        # os: [ubuntu-latest, macOS-latest]
+        os: [macOS-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install zsh

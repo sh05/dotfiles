@@ -1,8 +1,8 @@
 typeset -gx -U path
 path=( \
         ~/bin(N-/) \
+        "${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin" \
         /opt/homebrew/bin(N-/) \
-        ~/.local/share/aquaproj-aqua/bin(N-/) \
         ~/.go/bin(N-/) \
         /usr/local/bin(N-/) \
         /usr/sbin(N-/) \
@@ -60,3 +60,8 @@ source "$HOME/.cargo/env"
 
 export NPM_CONFIG_PREFIX=${XDG_DATA_HOME:-$HOME/.local/share}/npm-global
 export PATH=$NPM_CONFIG_PREFIX/bin:$PATH
+
+export AQUA_GLOBAL_CONFIG=$XDG_CONFIG_HOME/aqua/aqua.yaml
+export AQUA_PROGRESS_BAR="true"
+export AQUA_POLICY_CONFIG=$XDG_CONFIG_HOME/aqua/aqua-policy.yaml
+. "$HOME/.cargo/env"
