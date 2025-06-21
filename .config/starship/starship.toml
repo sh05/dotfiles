@@ -182,3 +182,9 @@ disabled = false
 variable = "ARCH"
 default = "x86_64"
 style = "202"
+
+[custom.nvimshell]
+command = "echo "
+when = "test -n \"$NVIM\""
+format = "in [$output]($style)"
+style = 'bold 040'

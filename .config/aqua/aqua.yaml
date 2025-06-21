@@ -12,25 +12,27 @@ registries:
     type: local
     path: ./registry.yaml
 packages:
-  - name: junegunn/fzf@v0.62.0
-  - name: starship/starship@v1.23.0
-  - name: hashicorp/terraform@v1.12.2
-  - name: jqlang/jq@jq-1.8.0
-  - name: kubernetes/kubectl@v1.33.2
-  - name: kubernetes-sigs/kustomize@kustomize/v5.6.0
-  - name: mikefarah/yq@v4.45.4
+  - name: aws/aws-cli@2.27.40
+  - name: direnv/direnv@v2.36.0
+  - name: docker/cli@v24.0.7
+  - name: eza-community/eza@v0.21.5
+  - name: github/github-mcp-server@v0.5.0
+  - name: golang/go@go1.24.4
   - name: golangci/golangci-lint@v2.1.6
   - name: google/yamlfmt@v0.17.1
-  - name: stern/stern@v1.32.0
-  - name: eza-community/eza@v0.21.5
-  - name: kubernetes-sigs/kubebuilder@v4.6.0
-  - name: kubernetes-sigs/krew@v0.4.5
-  - name: golang/go@go1.24.4
-  - name: sharkdp/bat@v0.25.0
-  - name: aws/aws-cli@2.27.40
-  - name: koalaman/shellcheck@v0.10.0
-  - name: direnv/direnv@v2.36.0
+  - name: hashicorp/terraform@v1.12.2
   - name: helm/helm@v3.18.3
-  - name: docker/cli@v24.0.7
-  - name: github/github-mcp-server@v0.5.0
+  - name: jqlang/jq@jq-1.8.0
+  - name: junegunn/fzf@v0.62.0
+  - name: koalaman/shellcheck@v0.10.0
+  - name: kubernetes-sigs/krew@v0.4.5
+  - name: kubernetes-sigs/kubebuilder@v4.6.0
+  - name: kubernetes-sigs/kustomize@kustomize/v5.6.0
+  - name: kubernetes/kubectl@v1.33.2
+  - name: kyverno/chainsaw@v0.2.12
+  - name: kyverno/kyverno@v1.14.2
+  - name: mfridman/tparse@v0.17.0
+  - name: mikefarah/yq@v4.45.4
   - name: nodejs/node@v24.2.0
+  - name: sharkdp/bat@v0.25.0
+  - name: stern/stern@v1.32.0

@@ -1,7 +1,6 @@
 typeset -gx -U path
 path=( \
         ~/bin(N-/) \
-        /opt/homebrew/bin(N-/) \
         ~/.local/share/aquaproj-aqua/bin(N-/) \
         ~/.go/bin(N-/) \
         /usr/local/bin(N-/) \
@@ -24,6 +23,7 @@ path=( \
         ~/.cargo/bin(N-/) \
         ~/.rd/bin(N-/) \
         ~/.tmux/plugins/tpm/bin(N-/) \
+        /opt/homebrew/bin(N-/) \
         $HOME/.mySetting(N-/) \
         "$path[@]" \
     )

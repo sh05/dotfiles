@@ -22,7 +22,7 @@ return {
       "CopilotChatCommit",
     },
     opts = {
-      model = "claude-3.7-sonnet",
+      model = "gpt-4.1",
       prompts = {
         Explain = {
           prompt = "選択したコードの説明を段落として書いてください。",
@@ -67,13 +67,28 @@ return {
     event = "VeryLazy",
     version = false,
     opts = {
-      provider = "copilot",
-      copilot = {
-        endpoint = "https://api.githubcopilot.com",
-        model = "claude-3.7-sonnet",
-        timeout = 30000,
-        temperature = 0,
-        max_completion_tokens = 4096,
+      provider = "ai_proxy", -- Default provider, can be overridden per chat
+      providers = {
+        copilot = {
+          endpoint = "https://api.githubcopilot.com",
+          model = "gpt-4.1",
+          timeout = 30000,
+          extra_request_body = {
+            options = {
+              temperature = 0,
+            },
+          },
+        },
+        ai_proxy_bedrock = {
+          endpoint = "mask",
+          model = "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+        },
+        ai_proxy = {
+          __inherited_from = "openai",
+          endpoint = "mask",
+          model = "o3",
+          api_key_name = "AI_PAT", -- environment variable name for your ai API key
+        },
       },
       -- system_prompt as function ensures LLM always has latest MCP server state
       -- This is evaluated for every message, even in existing chats
@@ -85,6 +100,40 @@ return {
       custom_tools = function()
         return {
           require("mcphub.extensions.avante").mcp_tool(),
+
+          {
+            name = "run_go_tests", -- Unique name for the tool
+            description = "Run Go unit tests and return results", -- Description shown to AI
+            command = "go test -v ./...", -- Shell command to execute
+            param = { -- Input parameters (optional)
+              type = "table",
+              fields = {
+                {
+                  name = "target",
+                  description = "Package or directory to test (e.g. './pkg/...' or './internal/pkg')",
+                  type = "string",
+                  optional = true,
+                },
+              },
+            },
+            returns = { -- Expected return values
+              {
+                name = "result",
+                description = "Result of the fetch",
+                type = "string",
+              },
+              {
+                name = "error",
+                description = "Error message if the fetch was not successful",
+                type = "string",
+                optional = true,
+              },
+            },
+            func = function(params, on_log, on_complete) -- Custom function to execute
+              local target = params.target or "./..."
+              return vim.fn.system(string.format("go test -v %s", target))
+            end,
+          },
         }
       end,
       disabled_tools = {

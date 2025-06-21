@@ -4,3 +4,12 @@ packages:
   repo_owner: kubernetes-sigs
   repo_name: controller-runtime
   path: sigs.k8s.io/controller-runtime/tools/setup-envtest
+- name: curl/curl
+  type: http
+  format: tar.gz
+  url: https://github.com/curl/curl/releases/download/curl-{{trimV .Version | replaceAll "." "_"}}/curl-{{trimV .Version}}.{{.Format}}
+  description: command-line tool for transferring data specified with URL syntax.
+  files:
+  - name: curl
+    src: curl-{{.Version}}/curl
+  version_source: github_tag
