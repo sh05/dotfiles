@@ -27,7 +27,7 @@ packages:
   - name: kubernetes-sigs/krew@v0.4.5
   - name: golang/go@go1.22.5
   - name: sharkdp/bat@v0.24.0
-  - name: aws/aws-cli@2.15.44
+  - name: aws/aws-cli@2.27.40
   - name: koalaman/shellcheck@v0.10.0
   - name: direnv/direnv@v2.34.0
   - name: helm/helm@v3.15.3
