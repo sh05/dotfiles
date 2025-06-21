@@ -29,7 +29,7 @@ packages:
   - name: sharkdp/bat@v0.25.0
   - name: aws/aws-cli@2.27.40
   - name: koalaman/shellcheck@v0.10.0
-  - name: direnv/direnv@v2.34.0
+  - name: direnv/direnv@v2.36.0
   - name: helm/helm@v3.18.3
   - name: docker/cli@v24.0.7
   - name: github/github-mcp-server@v0.5.0
