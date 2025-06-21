@@ -28,3 +28,4 @@ lazy-lock.json
 .config/waypoint/
 .config/yarn/
 .config/karabiner/automatic_backups/
+.config/argocd/config
