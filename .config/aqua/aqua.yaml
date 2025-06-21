@@ -30,7 +30,7 @@ packages:
   - name: aws/aws-cli@2.27.40
   - name: koalaman/shellcheck@v0.10.0
   - name: direnv/direnv@v2.34.0
-  - name: helm/helm@v3.15.3
+  - name: helm/helm@v3.18.3
   - name: docker/cli@v24.0.7
   - name: github/github-mcp-server@v0.1.1
   - name: nodejs/node@v24.2.0
