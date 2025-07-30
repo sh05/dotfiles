@@ -34,5 +34,7 @@ packages:
   - name: mfridman/tparse@v0.17.0
   - name: mikefarah/yq@v4.45.4
   - name: nodejs/node@v24.2.0
+  - name: ollama/ollama@v0.9.6
   - name: sharkdp/bat@v0.25.0
   - name: stern/stern@v1.32.0
+  - name: ynqa/jnv@v0.6.1
