@@ -1,0 +1,19 @@
+{
+  "extensions": [
+    {
+      "repo": "mislav/gh-branch"
+    },
+    {
+      "repo": "cappyzawa/gh-ghq-cd"
+    },
+    {
+      "repo": "dlvhdr/gh-dash"
+    },
+    {
+      "repo": "latest"
+    },
+    {
+      "repo": "vilmibm/gh-screensaver"
+    }
+  ]
+}
