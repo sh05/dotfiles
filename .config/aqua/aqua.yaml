@@ -15,7 +15,6 @@ packages:
   - name: aws/aws-cli@2.27.40
   - name: direnv/direnv@v2.36.0
   - name: docker/cli@v24.0.7
-  - name: eza-community/eza@v0.21.5
   - name: github/github-mcp-server@v0.5.0
   - name: golang/go@go1.24.4
   - name: golangci/golangci-lint@v2.1.6
@@ -38,3 +37,4 @@ packages:
   - name: sharkdp/bat@v0.25.0
   - name: stern/stern@v1.32.0
   - name: ynqa/jnv@v0.6.1
+  - name: eza-community/eza@v0.23.0
