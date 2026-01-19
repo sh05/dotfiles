@@ -24,7 +24,6 @@ path=( \
         ~/.rd/bin(N-/) \
         ~/.tmux/plugins/tpm/bin(N-/) \
         /opt/homebrew/bin(N-/) \
-        $HOME/.mySetting(N-/) \
         "$path[@]" \
     )
 

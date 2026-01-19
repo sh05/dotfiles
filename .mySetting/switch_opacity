@@ -1,8 +1,0 @@
-#!/bin/sh
-
-file_path="alacritty/alacritty.toml"
-alacritty_conf="${XDG_CONFIG_HOME}/${file_path}"
-current_setting="$(grep opacity "${alacritty_conf}")"
-next_setting="opacity = "$1
-
-sed -i '' "s/${current_setting}/${next_setting}/" "${alacritty_conf}"
