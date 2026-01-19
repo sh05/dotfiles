@@ -8,7 +8,7 @@ github:
   repo: aqua
   release:
     name: aqua
-    tag: v2.29.0
+    tag: v2.55.0
     asset:
       filename: aqua_{{ .OS }}_arm64.tar.gz
   command:
@@ -18,7 +18,7 @@ github:
       AQUA_POLICY_CONFIG: $XDG_CONFIG_HOME/aqua/aqua-policy.yaml
       EDITOR: nvim
     link:
-    - from: "**/aqua"
+    - from: "./aqua"
       to: aqua
     alias:
       k: kubectl

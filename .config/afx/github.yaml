@@ -137,18 +137,3 @@ github:
     env:
       GOPATH: $HOME/.go
       GOBIN: $GOPATH/bin
-
-# - name: Rasukarusan/fzf-chrome-active-tab
-#   description: 🐧 Fuzzy search and activate Chrome tab via the terminal.
-#   owner: Rasukarusan
-#   repo: fzf-chrome-active-tab
-#   release:
-#     name: chrome-tab-activate
-#     tag: "0.03"
-#     asset:
-#       filename: chrome-tab-activate
-#   command:
-#     link:
-#     - from: chrome-tab-activate
-#     alias:
-#       tl: chrome-tab-activate
