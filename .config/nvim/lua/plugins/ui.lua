@@ -30,23 +30,10 @@ return {
       })
       return opts
     end,
-    config = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        ---@type table<string, boolean>
-        local added = {}
-        opts.ensure_installed = vim.tbl_filter(function(lang)
-          if added[lang] then
-            return false
-          end
-          added[lang] = true
-          return true
-        end, opts.ensure_installed)
-      end
-      require("nvim-treesitter.configs").setup(opts)
-
-      -- additional config
-      vim.treesitter.language.register("starlark", "tiltfile")
-    end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    event = "CursorMoved",
   },
   {
     "folke/noice.nvim",
@@ -58,14 +45,11 @@ return {
     },
   },
   {
-    "folke/tokyonight.nvim",
-    opts = {
-      transparent = true,
-      styles = {
-        sidebars = "transparent",
-        floats = "transparent",
-      },
-    },
+    "cappyzawa/akari-nvim",
+    config = function()
+      require("akari").setup({ variant = "night" })
+      vim.cmd.colorscheme("akari")
+    end,
   },
   {
     "nvim-lualine/lualine.nvim",
