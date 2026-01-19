@@ -1,0 +1,13 @@
+theme = akari-night
+macos-titlebar-style = hidden
+
+font-family = "Moralerspace Argon NF"
+font-family-bold = "Moralerspace Argon NF"
+font-family-italic = "Moralerspace Argon NF"
+font-family-bold-italic = "Moralerspace Argon NF"
+
+font-family = "Hack Nerd Font Mono"
+font-family = "Hiragino Kaku Gothic ProN"
+
+# clear_screen
+keybind = command+k=text:\x0c
