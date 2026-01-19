@@ -32,3 +32,7 @@ map("n", "<leader>h", "^", { desc = "Move beginning of line" })
 map("n", "<leader>l", "$", { desc = "Move end of line" })
 map("v", "<leader>h", "^", { desc = "Move beginning of line" })
 map("v", "<leader>l", "$", { desc = "Move end of line" })
+
+map("t", "fj", "<C-\\><C-N>", { desc = "Escape from terminal" })
+
+map("v", "gp", '"_dP', { noremap = true, silent = true })

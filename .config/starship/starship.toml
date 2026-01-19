@@ -1,3 +1,7 @@
+# Akari Night — Starship palette
+# Named colors only — apply with: palette = 'akari-night'
+palette = 'akari-night'
+
 # 色はこのワンライナで確認できる
 # for c in {000..255}; do echo -n "\e[38;5;${c}m $c" ; [ $(($c%16)) -eq 15 ] && echo;done;echo
 
@@ -11,9 +15,9 @@ symbol = "  "
 disabled = false
 
 [character]
-success_symbol = '[\$](255)'
-error_symbol = '[\$](207)'
-vicmd_symbol = '[\$](196)'
+success_symbol = '[\$](white)'
+error_symbol = '[\$](muted)'
+vicmd_symbol = '[\$](ember)'
 
 [cmd_duration]
 style = "yellow"
@@ -22,16 +26,13 @@ style = "yellow"
 
 [directory]
 truncation_length = 2
-style = "46"
+style = "life"
 home_symbol = "HOME"
 
 [docker_context]
 disabled = true
 
 [dotnet]
-disabled = true
-
-[env_var]
 disabled = true
 
 [elixir]
@@ -42,16 +43,16 @@ symbol = " "
 
 [git_branch]
 symbol = " "
-style = "226"
+style = "muted"
 
 [git_commit]
 disabled = false
 commit_hash_length = 4
-style = "226"
+style = "muted"
 
 [git_state]
 disabled = true
-style = "226"
+style = "muted"
 
 [git_status]
 conflicted = "=${count}"
@@ -64,7 +65,7 @@ modified = "!${count}"
 staged = "+${count}"
 renamed = "»${count}"
 deleted = "✘${count}"
-style = "226"
+style = "muted"
 
 [gcloud]
 disabled = true
@@ -79,7 +80,7 @@ symbol = " "
 [kubernetes]
 symbol = "󱃾 "
 disabled = false
-style = "45"
+style = "bright-blue"
 
 [line_break]
 disabled = false
@@ -181,10 +182,39 @@ disabled = false
 [env_var.ARCH]
 variable = "ARCH"
 default = "x86_64"
-style = "202"
+style = "lantern"
 
 [custom.nvimshell]
 command = "echo "
 when = "test -n \"$NVIM\""
 format = "in [$output]($style)"
-style = 'bold 040'
+style = 'bold life'
+
+[palettes.akari-night]
+# Standard ANSI colors
+black = '#1E1C19'
+red = '#D25046'
+green = '#7FAF6A'
+yellow = '#D4A05A'
+blue = '#5A6F82'
+purple = '#8E7BA0'
+cyan = '#6F8F8A'
+white = '#E6DED3'
+
+# Bright variants
+bright-black = '#716A5F'
+bright-red = '#DE7F77'
+bright-green = '#A1C492'
+bright-yellow = '#E4C397'
+bright-blue = '#8195A8'
+bright-purple = '#B4A7C0'
+bright-cyan = '#9AB1AD'
+bright-white = '#EFEAE3'
+
+# Akari theme colors (use in your modules: fg:lantern, bg:night, etc.)
+lantern = '#E26A3B'
+ember = '#D65A3A'
+life = '#7FAF6A'
+night = '#5A6F82'
+rain = '#6F8F8A'
+muted = '#8E7BA0'

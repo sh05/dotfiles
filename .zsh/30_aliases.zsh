@@ -1,16 +1,20 @@
 alias p="print -l"
 
 if has 'nvim'; then
-  alias vim='nvim'
+    alias vim='nvim'
 fi
 
 if has 'kubectx'; then
-  alias ktx='kubectx'
+    alias ktx='kubectx'
+fi
+
+if has 'kubens'; then
+    alias kns='kubens'
 fi
 
 if has 'bat'; then
-  alias -g batj="| bat -l json -"
-  alias -g baty="| bat -l yaml -"
+    alias -g batj="| bat -l json -"
+    alias -g baty="| bat -l yaml -"
 fi
 
 # Common aliases
@@ -36,7 +40,7 @@ alias egrep='egrep --color=auto'
 alias flushdns='sudo killall -HUP mDNSResponder'
 
 if is_osx; then
-  alias ctags="`brew --prefix`/bin/ctags"
+    alias ctags="`brew --prefix`/bin/ctags"
 fi
 
 alias -g vy="| vim '+set filetype=yaml buftype=nofile'"

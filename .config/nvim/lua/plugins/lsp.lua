@@ -25,7 +25,7 @@ return {
       { "j-hui/fidget.nvim", opts = {} },
     },
     opts = function()
-      local keys = require("lazyvim.plugins.lsp.keymaps").get()
+      local keys = {}
       local function map(lhs, rhs, opts)
         local desc = opts and opts.desc or ""
         local has = opts and opts.has or ""
@@ -77,7 +77,13 @@ return {
         codelens = {
           enabled = false,
         },
+        folds = {
+          enabled = true,
+        },
         servers = {
+          ["*"] = {
+            keys = keys,
+          },
           gopls = {
             settings = {
               gopls = {
@@ -202,16 +208,14 @@ return {
           },
           html = {},
           cssls = {},
-          solargraph = {},
+          -- solargraph = {},
           tilt_ls = {},
-          ruby_lsp = {},
         },
       }
     end,
   },
   {
     "mason-org/mason.nvim",
-    version = "^1.0.0",
     opts = {
       ensure_installed = {
         "beautysh",
