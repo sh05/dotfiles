@@ -23,7 +23,5 @@ jobs:
 
       - name: Build all darwin configurations
         run: |
-          for host in $(nix flake show --json 2>/dev/null | jq -r '.darwinConfigurations | keys[]'); do
-            echo "Building $host..."
-            nix build ".#darwinConfigurations.$host.system"
-          done
+          echo "Building sh05MacMini..."
+          nix build ".#darwinConfigurations.sh05MacMini.system"
