@@ -23,5 +23,7 @@ jobs:
 
       - name: Build all darwin configurations
         run: |
-          echo "Building sh05MacMini..."
-          nix build ".#darwinConfigurations.sh05MacMini.system"
+          for config in $(nix eval --json '.#darwinConfigurations' --apply 'builtins.attrNames' | jq -r '.[]'); do
+            echo "Building $config..."
+            nix build ".#darwinConfigurations.$config.system"
+          done

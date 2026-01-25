@@ -230,7 +230,7 @@
         ".DS_Store"
       ];
 
-      extraConfig = {
+      settings = {
         core = {
           ignorecase = false;
           editor = "nvim";
@@ -250,14 +250,13 @@
         credential = {
           helper = "cache --timeout=3600";
         };
-      };
-
-      aliases = {
-        st = "status";
-        cm = "checkout main";
-        graph = "log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short";
-        undo = "reset --soft HEAD^";
-        np = "!git --no-pager";
+        alias = {
+          st = "status";
+          cm = "checkout main";
+          graph = "log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short";
+          undo = "reset --soft HEAD^";
+          np = "!git --no-pager";
+        };
       };
     };
 
