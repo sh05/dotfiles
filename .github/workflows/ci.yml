@@ -1,26 +1,29 @@
 name: CI
-on: push
+on:
+  push:
+    branches: [master, nix]
+  pull_request:
+    branches: [master]
+
 jobs:
-  setUP:
-    name: Set Up
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-    runs-on: ${{ matrix.os }}
+  check:
+    name: Nix Flake Check
+    runs-on: macos-latest
     steps:
-      - name: Install zsh
-        if: runner.os == 'Linux'
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build all darwin configurations
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y zsh curl make git
-      - name: setUP
-        run: |
-          curl -sL https://raw.githubusercontent.com/sh05/dotfiles/master/etc/install | bash
-      - name: Reboot shell
-        run: |
-          source ~/.zshenv
-          source ~/.zshrc
-        # https://github.com/actions/virtual-environments/issues/264#issuecomment-574032011
-        # use zsh
-        shell: zsh {0}
+          for host in $(nix flake show --json 2>/dev/null | jq -r '.darwinConfigurations | keys[]'); do
+            echo "Building $host..."
+            nix build ".#darwinConfigurations.$host.system"
+          done
