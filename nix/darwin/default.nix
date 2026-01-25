@@ -66,9 +66,7 @@
       cleanup = "zap";
       upgrade = true;
     };
-    taps = [
-      "homebrew/bundle"
-    ];
+    taps = [ ];
     brews = [
       "mas" # Mac App Store CLI
     ];

@@ -116,6 +116,7 @@
       "$HOME/.krew/bin"
       "$HOME/.cargo/bin"
       "$HOME/.rd/bin"
+      "$HOME/.lmstudio/bin"
     ];
   };
 

@@ -21,3 +21,6 @@ config/karabiner/automatic_backups/
 .config/
 .tmux/
 .zsh/
+
+# Claude Code local settings
+.claude/settings.local.json
