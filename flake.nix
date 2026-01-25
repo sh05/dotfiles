@@ -31,10 +31,7 @@
     in
     {
       darwinConfigurations = {
-        "sh05MacMini" = mkDarwin "sh05MacMini" {
-          gitUserName = "sh05";
-          gitUserEmail = "shogonakamoto0107@gmail.com";
-        };
+        "sh05MacMini" = mkDarwin "sh05MacMini" { };
       };
     };
 }

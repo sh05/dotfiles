@@ -3,8 +3,6 @@
   lib,
   username,
   tpm,
-  gitUserName,
-  gitUserEmail,
   ...
 }:
 {
@@ -135,6 +133,9 @@
       source = tpm;
       recursive = true;
     };
+    "gh-ext-manage/config.json".source = ../../config/gh-ext-manage/config.json;
+    "gh-dash/config.yml".source = ../../config/gh-dash/config.yml;
+    "bat/themes".source = ../../config/bat/themes;
   };
 
   # Programs configuration
@@ -147,6 +148,13 @@
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       enableCompletion = true;
+
+      plugins = [
+        {
+          name = "fzf-tab";
+          src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+        }
+      ];
 
       history = {
         size = 1000000;
@@ -208,8 +216,11 @@
     # Git
     git = {
       enable = true;
-      userName = gitUserName;
-      userEmail = gitUserEmail;
+      # userName, userEmail は ~/.gitconfig.local から読み込み
+
+      includes = [
+        { path = "~/.gitconfig.local"; }
+      ];
 
       ignores = [
         ".idea/*"
@@ -257,6 +268,19 @@
         navigate = true;
         side-by-side = true;
         line-numbers = true;
+        dark = true;
+        # Akari Night theme
+        minus-style = "syntax \"#3F2A25\"";
+        minus-emph-style = "syntax \"#5C3A32\"";
+        plus-style = "syntax \"#2A3F25\"";
+        plus-emph-style = "syntax \"#3A5C32\"";
+        line-numbers-minus-style = "#D25046";
+        line-numbers-plus-style = "#7FAF6A";
+        line-numbers-zero-style = "#716A5F";
+        hunk-header-style = "file line-number syntax";
+        hunk-header-decoration-style = "box ul #3F4346";
+        file-style = "#E26A3B bold";
+        file-decoration-style = "none";
       };
     };
 
@@ -566,14 +590,36 @@
     bat = {
       enable = true;
       config = {
-        theme = "ansi";
+        theme = "akari-night";
         pager = "less -FR";
+      };
+      themes = {
+        akari-night = {
+          src = ../../config/bat/themes;
+          file = "akari-night.tmTheme";
+        };
       };
     };
 
     # lazygit
     lazygit = {
       enable = true;
+      settings = {
+        gui = {
+          theme = {
+            # Akari Night theme
+            activeBorderColor = [ "#E26A3B" "bold" ];
+            inactiveBorderColor = [ "#3F4346" ];
+            optionsTextColor = [ "#E6DED3" ];
+            selectedLineBgColor = [ "#51422E" ];
+            cherryPickedCommitBgColor = [ "#3F2A25" ];
+            cherryPickedCommitFgColor = [ "#E26A3B" ];
+            unstagedChangesColor = [ "#D25046" ];
+            defaultFgColor = [ "#E6DED3" ];
+            searchingActiveBorderColor = [ "#D4A05A" ];
+          };
+        };
+      };
     };
 
     # direnv
@@ -589,6 +635,12 @@
       enableZshIntegration = true;
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
       defaultOptions = [
+        # Akari Night theme
+        "--color=fg:#E6DED3,bg:#25231F,hl:#E26A3B"
+        "--color=fg+:#E6DED3,bg+:#51422E,hl+:#E26A3B"
+        "--color=border:#3F4346,header:#9BABB9,gutter:#25231F"
+        "--color=spinner:#E26A3B,info:#7A8FA2"
+        "--color=pointer:#E26A3B,marker:#7FAF6A,prompt:#E26A3B"
         "--height 40%"
         "--reverse"
         "--border"

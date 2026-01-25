@@ -6,13 +6,11 @@ hostname:
 {
   system ? "aarch64-darwin",
   username ? "nakamotoshougo",
-  gitUserName ? "sh05",
-  gitUserEmail ? "shogonakamoto0107@gmail.com",
 }:
 nix-darwin.lib.darwinSystem {
   inherit system;
   specialArgs = {
-    inherit inputs username hostname tpm gitUserName gitUserEmail;
+    inherit inputs username hostname tpm;
   };
   modules = [
     ../hosts/${hostname}.nix
@@ -24,7 +22,7 @@ nix-darwin.lib.darwinSystem {
         useGlobalPkgs = true;
         useUserPackages = true;
         extraSpecialArgs = {
-          inherit inputs username hostname tpm gitUserName gitUserEmail;
+          inherit inputs username hostname tpm;
         };
         users.${username} = import ../nix/home;
         backupFileExtension = "backup";
