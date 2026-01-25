@@ -66,7 +66,6 @@
       AppleWindowTabbingMode = "manual";
       AppleInterfaceStyle = "Dark"; # ダークモード強制
       AppleInterfaceStyleSwitchesAutomatically = false;
-      NSAutomaticTextCompletionEnabled = false;
       NSWindowResizeTime = 0.001; # リサイズアニメーション高速化
     };
 
