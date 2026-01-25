@@ -4,6 +4,9 @@
   ...
 }:
 {
+  # Primary user for user-specific settings (required by nix-darwin)
+  system.primaryUser = username;
+
   # macOS system defaults
   system.defaults = {
     # Dock settings
