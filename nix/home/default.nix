@@ -70,7 +70,6 @@
 
       # Additional tools
       dyff
-      alertmanager
       ollama
       step-cli
       colordiff
