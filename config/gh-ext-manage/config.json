@@ -1,0 +1,7 @@
+{
+  "extensions": [
+    {"repo": "dlvhdr/gh-dash"},
+    {"repo": "mislav/gh-branch"},
+    {"repo": "cappyzawa/gh-ghq-cd", "alias": "cd"}
+  ]
+}

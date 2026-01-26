@@ -1,31 +1,26 @@
+# General
 *.log
 *.pem
 *.swp
 *.local
-lazy-lock.json
-.chef/
-.tmux/plugins/
-.zsh/Completion/_*
-.zsh/history/
-.config/anyenv/
-.config/aqua/private/
-.config/autoload/
-.config/automatic_backups/
-.config/cheat/cheatsheets
-.config/configstore/
-.config/.direnv/
-.config/gcloud/
-.config/gh/
-.config/github-copilot/
-.config/helm/
-.config/htop/
-.config/iterm2/
-.config/node_modules/
-.config/nvim/.luarc.json
-.config/nvim/lazy-lock.json
-.config/nvim/plugin/packer_compiled.lua
-.config/nvim/sessions
-.config/waypoint/
-.config/yarn/
-.config/karabiner/automatic_backups/
-.config/argocd/config
+
+# Nix
+result
+result-*
+
+# Neovim
+config/nvim/.luarc.json
+config/nvim/lazy-lock.json
+config/nvim/plugin/packer_compiled.lua
+config/nvim/sessions/
+
+# Karabiner
+config/karabiner/automatic_backups/
+
+# Legacy paths (can be removed after full migration)
+.config/
+.tmux/
+.zsh/
+
+# Claude Code local settings
+.claude/settings.local.json

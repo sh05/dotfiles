@@ -2,72 +2,105 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## リポジトリ概要
+## Repository Overview
 
-macOS開発環境用のdotfilesリポジトリ。25種類以上のツール設定を一元管理し、ワンコマンドでセットアップ可能。
+macOS development environment dotfiles managed with Nix Flakes + nix-darwin + home-manager.
 
-## セットアップコマンド
+## Setup Commands
 
 ```bash
-# 新規インストール（リモートから）
-curl -sL https://raw.githubusercontent.com/sh05/dotfiles/master/etc/install | bash
+# Install Nix (Determinate Systems installer)
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 
-# ローカルでの操作
-make deploy    # ホームディレクトリへシンボリックリンク作成
-make init      # 環境設定実行（etc/setup/配下のスクリプト）
-make update    # リポジトリ更新とサブモジュール同期
-make install   # update + deploy + init を順次実行
-make clean     # ドットファイルとリポジトリ削除
-make list      # リポジトリ内のドットファイル一覧表示
+# Initial setup
+make bootstrap NIXNAME=sh05MacMini
+
+# Apply changes
+make switch
+
+# Update flake inputs and apply
+make update
+
+# Rollback to previous generation
+make rollback
 ```
 
-## アーキテクチャ
+## Architecture
 
-### ディレクトリ構成
+### Directory Structure
 
-- **ルートレベル**: Zsh設定（`.zshrc`, `.zshenv`, `.zprofile`）、Tmux設定（`.tmux.conf`）
-- **`.config/`**: XDG標準に準拠した各ツールの設定ファイル群
-- **`etc/`**: セットアップスクリプト
-  - `etc/install` - メインインストールスクリプト
-  - `etc/setup/brew.sh` - Homebrewインストール
-  - `etc/setup/formula.sh` - 基本パッケージインストール
-  - `etc/setup/rust.sh` - Rustツールチェーン
+```
+dotfiles/
+├── flake.nix                    # Main entry point
+├── flake.lock                   # Auto-generated lock file
+├── Makefile                     # bootstrap, switch, update commands
+├── lib/
+│   └── mkdarwin.nix             # darwinSystem helper function
+├── hosts/
+│   └── sh05MacMini.nix          # Machine-specific settings
+├── config/                      # Source config files (symlinked via xdg.configFile)
+│   ├── nvim/                    # Neovim config (lazy.nvim managed)
+│   ├── karabiner/               # Karabiner-Elements config
+│   ├── zsh/                     # Zsh custom scripts
+│   └── ghostty/                 # Ghostty terminal config
+└── nix/
+    ├── modules/
+    │   └── shared.nix           # Shared options (Nix settings)
+    ├── darwin/
+    │   └── default.nix          # macOS settings + Homebrew
+    └── home/
+        └── default.nix          # Packages + programs.* settings
+```
 
-### パッケージ管理
+### Package Management
 
-- **afx** (`.config/afx/`): CLIツール管理の統合レイヤー
-- **Aqua** (`.config/aqua/`): CLIツールのバージョン管理
+- **Nix (home.packages)**: CLI tools, languages, LSP servers
+- **Homebrew (homebrew.casks)**: GUI applications, fonts
+- **programs.***: Shell, Git, Tmux, Starship, etc. (declarative config)
 
-### 主要ツール設定
+### Key Tools Configuration
 
-| ツール | 設定場所 | 備考 |
-|--------|---------|------|
-| Neovim | `.config/nvim/` | LazyVimベース、Lua設定 |
-| Tmux | `.tmux.conf` | プレフィックス: Ctrl-k、Vim風キーバインド |
-| Starship | `.config/starship/` | akari-nightテーマ |
-| Alacritty | `.config/alacritty/` | Moralerspace Argon NFフォント |
-| Git | `.config/git/` | グローバル除外設定 |
+| Tool | Managed By | Notes |
+|------|-----------|-------|
+| Neovim | xdg.configFile | lazy.nvim for plugins |
+| Tmux | programs.tmux | Prefix: Ctrl-k, Vim-style keybinds, auto-start |
+| Starship | programs.starship | akari-night theme |
+| Zsh | programs.zsh | autosuggestion, syntax-highlighting |
+| Git | programs.git | delta for diff |
+| Ghostty | xdg.configFile | akari themes |
+| lazygit | programs.lazygit | Git TUI |
+| fzf | programs.fzf | Fuzzy finder |
+| bat | programs.bat | cat alternative |
+| eza | programs.eza | ls alternative |
 
-### Zsh設定の読み込み順序
+### Symlink Strategy
 
-1. `.zshenv` - 環境変数（全シェル共通）
-2. `.zprofile` - PATH設定、ログインシェル初期化
-3. `.zshrc` - 対話的設定、afx自動インストール、Tmux自動起動
+Config files in `config/` are symlinked to `~/.config/` via `xdg.configFile`:
 
-### Tmuxキーバインド
+```nix
+xdg.configFile = {
+  "nvim".source = ../../config/nvim;
+  "ghostty".source = ../../config/ghostty;
+  # ...
+};
+```
 
-- プレフィックス: `Ctrl-k`
-- ペイン移動: `h/j/k/l`（Vim風）
-- 水平分割: `|`、垂直分割: `-`
-- ウィンドウ移動: `Ctrl-]`/`Ctrl-[`
+This allows version-controlled configs while maintaining standard XDG paths.
 
-## 必要要件
+### Tmux Keybindings
 
-- git
-- tmux 3.2以上
-- Moralerspaceフォント（Monaspace + IBM Plex Sans JP合成）
-- Alacrittyまたは対応ターミナル
+- Prefix: `Ctrl-k`
+- Pane navigation: `h/j/k/l` (Vim-style)
+- Horizontal split: `|`, Vertical split: `-`
+- Window navigation: `Ctrl-]`/`Ctrl-[`
 
-## ローカル設定
+## Requirements
 
-`~/.zshrc.local` でマシン固有の設定を追加可能（gitignore対象）。
+- Nix (Determinate Systems installer recommended)
+- macOS (aarch64-darwin)
+- Moralerspace font (installed via Homebrew casks)
+
+## Zsh Behavior
+
+- **Tmux auto-start**: Zsh automatically starts Tmux on terminal launch (skipped in VS Code terminal and existing Tmux sessions)
+- **Local config**: `~/.zshrc.local` for machine-specific settings (gitignored)

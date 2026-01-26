@@ -1,42 +1,75 @@
-DOTPATH    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-CANDIDATES := $(wildcard .??*)
-EXCLUSIONS := .DS_Store .git .gitignore .gitmodules .travis.yml .idea .github .envrc
-DOTFILES   := $(filter-out $(EXCLUSIONS), $(CANDIDATES))
+# Nix-based dotfiles management
+# Usage:
+#   make bootstrap NIXNAME=sh05MacMini  # Initial setup
+#   make switch                          # Apply changes
+#   make update                          # Update flake and apply
+
+HOST_FILE := $(HOME)/.config/nix/host
+NIXNAME ?= $(shell cat $(HOST_FILE) 2>/dev/null)
 
 .DEFAULT_GOAL := help
 
-all:
+.PHONY: bootstrap switch update rollback check gc clean help
 
-list: ## Show dot files in this repo
-	@$(foreach val, $(DOTFILES), /bin/ls -dF $(val);)
+bootstrap: ## Initial Nix-darwin setup (requires NIXNAME)
+	@if [ -z "$(NIXNAME)" ]; then \
+		echo "Error: NIXNAME is required. Usage: make bootstrap NIXNAME=<hostname>"; \
+		exit 1; \
+	fi
+	@echo "==> Bootstrapping nix-darwin for $(NIXNAME)..."
+	nix run nix-darwin -- switch --flake '.#$(NIXNAME)'
+	@mkdir -p $(dir $(HOST_FILE))
+	@echo "$(NIXNAME)" > $(HOST_FILE)
+	@echo "==> Bootstrap complete! Run 'make switch' for future updates."
 
-deploy: ## Create symlink to home directory
-	@echo '==> Start to deploy dotfiles to home directory.'
-	@echo ''
-	@$(foreach val, $(DOTFILES), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+switch: ## Apply configuration changes
+	@if [ -z "$(NIXNAME)" ]; then \
+		echo "Error: NIXNAME not set. Run 'make bootstrap NIXNAME=<hostname>' first or set in $(HOST_FILE)"; \
+		exit 1; \
+	fi
+	@echo "==> Switching to configuration for $(NIXNAME)..."
+	darwin-rebuild switch --flake '.#$(NIXNAME)'
 
-init: ## Setup environment settings
-	@DOTPATH=$(DOTPATH) bash $(DOTPATH)/etc/install
+update: ## Update flake inputs and apply
+	@if [ -z "$(NIXNAME)" ]; then \
+		echo "Error: NIXNAME not set. Run 'make bootstrap NIXNAME=<hostname>' first or set in $(HOST_FILE)"; \
+		exit 1; \
+	fi
+	@echo "==> Updating flake inputs..."
+	nix flake update
+	@echo "==> Applying updated configuration..."
+	darwin-rebuild switch --flake '.#$(NIXNAME)'
 
-test: ## Test dotfiles and init scripts
-	@#DOTPATH=$(DOTPATH) bash $(DOTPATH)/etc/test/test.sh
-	@echo "test is inactive temporarily"
+rollback: ## Rollback to previous generation
+	@echo "==> Rolling back to previous generation..."
+	darwin-rebuild switch --rollback
 
-update: ## Fetch changes for this repo
-	git pull origin master
-	git submodule init
-	git submodule update
-	git submodule foreach git pull origin master
+check: ## Check flake without applying
+	@echo "==> Checking flake..."
+	nix flake check
 
-install: update deploy init ## Run make update, deploy, init
-	@exec $$SHELL
+gc: ## Garbage collect old generations
+	@echo "==> Running garbage collection..."
+	nix-collect-garbage -d
+	@echo "==> Optimizing Nix store..."
+	nix store optimise
 
-clean: ## Remove the dot files and this repo
-	@echo 'Remove dot files in your home directory...'
-	@-$(foreach val, $(DOTFILES), rm -vrf $(HOME)/$(val);)
-	-rm -rf $(DOTPATH)
+list-generations: ## List all generations
+	darwin-rebuild --list-generations
 
-help: ## Self-documented Makefile
+switch-generation: ## Switch to specific generation (requires GEN=N)
+	@if [ -z "$(GEN)" ]; then \
+		echo "Error: GEN is required. Usage: make switch-generation GEN=<number>"; \
+		exit 1; \
+	fi
+	darwin-rebuild switch --switch-generation $(GEN)
+
+clean: ## Remove generated files (careful!)
+	@echo "==> This will remove backup files created by home-manager"
+	@read -p "Are you sure? [y/N] " confirm && [ "$$confirm" = "y" ]
+	find $(HOME) -name "*.backup" -type f -delete 2>/dev/null || true
+
+help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
