@@ -75,7 +75,6 @@
 
       # 入力デバイス
       "com.apple.keyboard.fnState" = false; # fnキー: 特殊キー優先
-      "com.apple.mouse.scaling" = 3.0; # マウス速度
       "com.apple.trackpad.scaling" = 3.0; # トラックパッド速度
       "com.apple.trackpad.forceClick" = true; # 強めのクリック有効
 
@@ -181,6 +180,7 @@
         AppleMiniaturizeOnDoubleClick = false; # ダブルクリックで最小化無効
         ContextMenuGesture = 1; # 副クリックジェスチャ有効
         "com.apple.sound.beep.flash" = 0; # 警告音時に画面を点滅させない
+        "com.apple.mouse.scaling" = 3.0; # マウス速度（nix-darwin に型付きオプションが無いため）
       };
     };
   };
