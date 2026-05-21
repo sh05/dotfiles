@@ -4,6 +4,8 @@
 
 macOS development environment managed with Nix Flakes + nix-darwin + home-manager.
 
+[日本語版はこちら](README.ja.md)
+
 ## Setup
 
 ### 1. Install Nix
@@ -56,24 +58,6 @@ darwin-rebuild --list-generations  # List generations
 make rollback                      # Rollback to previous
 ```
 
----
-
-## テスト
-
-システムに適用せずに設定を検証:
-
-```bash
-nix flake check                                          # flakeの検証
-nix build .#darwinConfigurations.sh05MacMini.system      # ビルドのみ（適用しない）
-```
-
-### ロールバック
-
-```bash
-darwin-rebuild --list-generations  # 世代一覧
-make rollback                      # 前の世代に戻す
-```
-
 ## Using on Different Machines
 
 ### Required Steps
@@ -102,39 +86,6 @@ make rollback                      # 前の世代に戻す
    ```bash
    make bootstrap NIXNAME=YourHostName
    ```
-
----
-
-## 別マシンでの利用
-
-### 必要な手順
-
-1. **ホスト設定ファイルを作成** (`hosts/YourHostName.nix`)
-   ```nix
-   { pkgs, username, hostname, ... }:
-   {
-     networking = {
-       hostName = "YourHostName";
-       computerName = "YourHostName";
-     };
-   }
-   ```
-
-2. **flake.nixにホストを追加**
-   ```nix
-   darwinConfigurations = {
-     "YourHostName" = mkDarwin "YourHostName" {
-       username = "yourusername";
-     };
-   };
-   ```
-
-3. **ブートストラップ**
-   ```bash
-   make bootstrap NIXNAME=YourHostName
-   ```
-
----
 
 ## Requirements
 
