@@ -52,7 +52,7 @@
       wget
       curl
       htop
-      neofetch
+      fastfetch
 
       # Formatters/Linters
       shellcheck
@@ -65,8 +65,8 @@
       nil
       yaml-language-server
       stylua
-      nodePackages.prettier
-      nodePackages.typescript-language-server
+      prettier
+      typescript-language-server
 
       # Additional tools
       dyff
