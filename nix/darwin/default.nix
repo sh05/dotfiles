@@ -14,10 +14,10 @@
       autohide = true;
       mru-spaces = false;
       show-recents = false;
-      tilesize = 48;
+      tilesize = 16;
       autohide-delay = 0.0; # 即座に表示
       autohide-time-modifier = 0.5; # 表示アニメーション高速化
-      orientation = "bottom"; # Dock位置
+      orientation = "left"; # Dock位置
       show-process-indicators = true; # 実行中アプリの●表示
       mineffect = "scale"; # 最小化エフェクト（高速）
       launchanim = false; # 起動バウンドアニメーション無効化
@@ -37,7 +37,7 @@
       AppleShowAllFiles = true;
       FXPreferredViewStyle = "Nlsv"; # List view
       ShowPathbar = true;
-      ShowStatusBar = true;
+      ShowStatusBar = false;
       _FXShowPosixPathInTitle = true; # タイトルバーにフルパス表示
       _FXSortFoldersFirst = true; # フォルダを先頭にソート
       FXEnableExtensionChangeWarning = false; # 拡張子変更警告を無効化
@@ -52,23 +52,21 @@
 
     # Global system settings
     NSGlobalDomain = {
-      # キーボード設定（既存）
-      AppleKeyboardUIMode = 3;
+      # キーボード設定
+      AppleKeyboardUIMode = 2;
       ApplePressAndHoldEnabled = false;
       InitialKeyRepeat = 15;
       KeyRepeat = 2;
-      NSAutomaticCapitalizationEnabled = false;
       NSAutomaticDashSubstitutionEnabled = false;
-      NSAutomaticPeriodSubstitutionEnabled = false;
       NSAutomaticQuoteSubstitutionEnabled = false;
       NSAutomaticSpellingCorrectionEnabled = false;
 
       # 追加設定
-      AppleShowScrollBars = "WhenScrolling";
+      AppleShowScrollBars = "Always";
       AppleScrollerPagingBehavior = true;
       AppleWindowTabbingMode = "manual";
-      AppleInterfaceStyle = "Dark"; # ダークモード強制
-      AppleInterfaceStyleSwitchesAutomatically = false;
+      AppleInterfaceStyle = "Dark"; # ダークモード
+      AppleInterfaceStyleSwitchesAutomatically = true; # 自動切替有効
       NSWindowResizeTime = 0.001; # リサイズアニメーション高速化
     };
 
@@ -76,7 +74,7 @@
     trackpad = {
       Clicking = true;
       TrackpadRightClick = true;
-      TrackpadThreeFingerDrag = true;
+      TrackpadThreeFingerDrag = false;
       FirstClickThreshold = 0; # クリック感度: 軽い（0:軽い, 1:中, 2:強い）
       ActuationStrength = 0; # サイレントクリック有効
       TrackpadThreeFingerTapGesture = 2; # 3本指タップで調べる
