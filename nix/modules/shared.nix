@@ -13,8 +13,8 @@
 
   # Nix settings
   nix = {
-    # Determinate Systems Nix installer manages Nix itself
-    enable = false;
+    # nix-darwin manages the Nix daemon and /etc/nix/nix.conf
+    enable = true;
     settings = {
       experimental-features = [
         "nix-command"

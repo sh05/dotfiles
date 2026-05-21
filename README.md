@@ -8,13 +8,44 @@ macOS development environment managed with Nix Flakes + nix-darwin + home-manage
 
 ## Setup
 
-### 1. Install Nix
+### 1. Install Xcode Command Line Tools
+
+Required for `git` and `make` on a fresh macOS:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+xcode-select --install
 ```
 
-### 2. Clone and Bootstrap
+### 2. Install Nix
+
+Use the [official installer](https://nixos.org/download/#nix-install-macos):
+
+```bash
+sh <(curl -L https://nixos.org/nix/install)
+```
+
+Open a new terminal afterwards so Nix is available on your `PATH`.
+
+### 3. Enable Flakes
+
+The official installer does not enable flakes. Enable them before bootstrapping:
+
+```bash
+mkdir -p ~/.config/nix
+echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+```
+
+After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf`, so this file is only needed for the initial setup.
+
+### 4. Install Homebrew
+
+nix-darwin manages Homebrew packages but does not install Homebrew itself:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### 5. Clone and Bootstrap
 
 ```bash
 git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
@@ -22,7 +53,9 @@ cd ~/ghq/github.com/sh05/dotfiles
 make bootstrap NIXNAME=sh05MacMini
 ```
 
-### 3. Configure Git (Required)
+If your hostname is not `sh05MacMini`, follow [Using on Different Machines](#using-on-different-machines) first to create a host config.
+
+### 6. Configure Git (Required)
 
 Create `~/.gitconfig.local` with your Git credentials:
 
@@ -34,7 +67,7 @@ cat > ~/.gitconfig.local << 'EOF'
 EOF
 ```
 
-### 4. Daily Usage
+### 7. Daily Usage
 
 ```bash
 make switch    # Apply configuration changes
@@ -90,7 +123,7 @@ make rollback                      # Rollback to previous
 ## Requirements
 
 - macOS (Apple Silicon)
-- Nix (Determinate Systems installer)
+- Nix (official installer)
 
 ## Features
 

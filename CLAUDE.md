@@ -9,8 +9,8 @@ macOS development environment dotfiles managed with Nix Flakes + nix-darwin + ho
 ## Setup Commands
 
 ```bash
-# Install Nix (Determinate Systems installer)
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+# Install Nix (official installer)
+sh <(curl -L https://nixos.org/nix/install)
 
 # Initial setup
 make bootstrap NIXNAME=sh05MacMini
@@ -96,7 +96,7 @@ This allows version-controlled configs while maintaining standard XDG paths.
 
 ## Requirements
 
-- Nix (Determinate Systems installer recommended)
+- Nix (official installer)
 - macOS (aarch64-darwin)
 - Moralerspace font (installed via Homebrew casks)
 

@@ -8,13 +8,44 @@ Nix Flakes + nix-darwin + home-manager で管理する macOS 開発環境。
 
 ## セットアップ
 
-### 1. Nix のインストール
+### 1. Xcode Command Line Tools のインストール
+
+まっさらな macOS では `git` と `make` のために必要:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+xcode-select --install
 ```
 
-### 2. クローンとブートストラップ
+### 2. Nix のインストール
+
+[公式インストーラ](https://nixos.org/download/#nix-install-macos)を使用:
+
+```bash
+sh <(curl -L https://nixos.org/nix/install)
+```
+
+インストール後はターミナルを開き直し、Nix を `PATH` に反映させてください。
+
+### 3. Flakes の有効化
+
+公式インストーラは flakes を有効化しません。ブートストラップ前に有効化します:
+
+```bash
+mkdir -p ~/.config/nix
+echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+```
+
+初回 `make bootstrap` 以降は nix-darwin が `/etc/nix/nix.conf` を管理するため、このファイルは初期セットアップ時のみ必要です。
+
+### 4. Homebrew のインストール
+
+nix-darwin は Homebrew パッケージを管理しますが、Homebrew 自体はインストールしません:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### 5. クローンとブートストラップ
 
 ```bash
 git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
@@ -22,7 +53,9 @@ cd ~/ghq/github.com/sh05/dotfiles
 make bootstrap NIXNAME=sh05MacMini
 ```
 
-### 3. Git の設定（必須）
+ホスト名が `sh05MacMini` 以外の場合は、先に[別マシンでの利用](#別マシンでの利用)に従ってホスト設定を作成してください。
+
+### 6. Git の設定（必須）
 
 `~/.gitconfig.local` に Git の認証情報を設定:
 
@@ -34,7 +67,7 @@ cat > ~/.gitconfig.local << 'EOF'
 EOF
 ```
 
-### 4. 日常の使い方
+### 7. 日常の使い方
 
 ```bash
 make switch    # 設定変更を適用
@@ -90,7 +123,7 @@ make rollback                      # 前の世代に戻す
 ## 要件
 
 - macOS (Apple Silicon)
-- Nix (Determinate Systems installer)
+- Nix (公式インストーラ)
 
 ## 機能
 
