@@ -28,14 +28,13 @@ sh <(curl -L https://nixos.org/nix/install)
 
 ### 3. Flakes の有効化
 
-公式インストーラは flakes を有効化しません。ブートストラップ前に有効化します:
+公式インストーラは flakes を有効化しません。bootstrap 時の `sudo` 実行でも root が flakes を使えるよう、システム全体で有効化します:
 
 ```bash
-mkdir -p ~/.config/nix
-echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
 ```
 
-初回 `make bootstrap` 以降は nix-darwin が `/etc/nix/nix.conf` を管理するため、このファイルは初期セットアップ時のみ必要です。
+初回 `make bootstrap` 以降は nix-darwin が `/etc/nix/nix.conf` を管理するため、この手動編集は初期セットアップ時のみ必要です。
 
 ### 4. Homebrew のインストール
 
@@ -52,6 +51,8 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 make bootstrap NIXNAME=sh05MacMini
 ```
+
+`make bootstrap` は `darwin-rebuild` を `sudo` で実行するため、macOS のパスワード入力を求められます。
 
 ホスト名が `sh05MacMini` 以外の場合は、先に[別マシンでの利用](#別マシンでの利用)に従ってホスト設定を作成してください。
 

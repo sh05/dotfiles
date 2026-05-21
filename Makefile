@@ -17,7 +17,7 @@ bootstrap: ## Initial Nix-darwin setup (requires NIXNAME)
 		exit 1; \
 	fi
 	@echo "==> Bootstrapping nix-darwin for $(NIXNAME)..."
-	nix run nix-darwin -- switch --flake '.#$(NIXNAME)'
+	sudo nix run nix-darwin -- switch --flake '.#$(NIXNAME)'
 	@mkdir -p $(dir $(HOST_FILE))
 	@echo "$(NIXNAME)" > $(HOST_FILE)
 	@echo "==> Bootstrap complete! Run 'make switch' for future updates."
@@ -28,7 +28,7 @@ switch: ## Apply configuration changes
 		exit 1; \
 	fi
 	@echo "==> Switching to configuration for $(NIXNAME)..."
-	darwin-rebuild switch --flake '.#$(NIXNAME)'
+	sudo darwin-rebuild switch --flake '.#$(NIXNAME)'
 
 update: ## Update flake inputs and apply
 	@if [ -z "$(NIXNAME)" ]; then \
@@ -38,11 +38,11 @@ update: ## Update flake inputs and apply
 	@echo "==> Updating flake inputs..."
 	nix flake update
 	@echo "==> Applying updated configuration..."
-	darwin-rebuild switch --flake '.#$(NIXNAME)'
+	sudo darwin-rebuild switch --flake '.#$(NIXNAME)'
 
 rollback: ## Rollback to previous generation
 	@echo "==> Rolling back to previous generation..."
-	darwin-rebuild switch --rollback
+	sudo darwin-rebuild switch --rollback
 
 check: ## Check flake without applying
 	@echo "==> Checking flake..."
@@ -62,7 +62,7 @@ switch-generation: ## Switch to specific generation (requires GEN=N)
 		echo "Error: GEN is required. Usage: make switch-generation GEN=<number>"; \
 		exit 1; \
 	fi
-	darwin-rebuild switch --switch-generation $(GEN)
+	sudo darwin-rebuild switch --switch-generation $(GEN)
 
 clean: ## Remove generated files (careful!)
 	@echo "==> This will remove backup files created by home-manager"

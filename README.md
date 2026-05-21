@@ -28,14 +28,13 @@ Open a new terminal afterwards so Nix is available on your `PATH`.
 
 ### 3. Enable Flakes
 
-The official installer does not enable flakes. Enable them before bootstrapping:
+The official installer does not enable flakes. Enable them system-wide so both your user and `sudo` (used during bootstrap) can use them:
 
 ```bash
-mkdir -p ~/.config/nix
-echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
 ```
 
-After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf`, so this file is only needed for the initial setup.
+After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf`, so this manual edit is only needed for the initial setup.
 
 ### 4. Install Homebrew
 
@@ -52,6 +51,8 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 make bootstrap NIXNAME=sh05MacMini
 ```
+
+`make bootstrap` runs `darwin-rebuild` with `sudo`, so it will prompt for your macOS password.
 
 If your hostname is not `sh05MacMini`, follow [Using on Different Machines](#using-on-different-machines) first to create a host config.
 
