@@ -26,6 +26,9 @@
       magnification = true; # 拡大機能有効
       largesize = 128; # 拡大時のサイズ
       minimize-to-application = true; # アプリケーションに最小化
+      # ホットコーナー設定
+      wvous-br-corner = 14; # 右下: クイックメモ
+      wvous-br-modifier = 0; # 修飾キーなし
     };
 
     # Finder settings
@@ -65,6 +68,9 @@
       AppleInterfaceStyle = "Dark"; # ダークモード
       AppleInterfaceStyleSwitchesAutomatically = true; # 自動切替有効
       NSWindowResizeTime = 0.001; # リサイズアニメーション高速化
+      # 追加設定
+      "com.apple.keyboard.fnState" = false; # fnキー: 特殊キー優先
+      AppleSpacesSwitchOnActivate = true; # アプリ切替時にスペース移動
     };
 
     # Trackpad settings
@@ -72,9 +78,9 @@
       Clicking = true;
       TrackpadRightClick = true;
       TrackpadThreeFingerDrag = false;
-      FirstClickThreshold = 0; # クリック感度: 軽い（0:軽い, 1:中, 2:強い）
-      ActuationStrength = 0; # サイレントクリック有効
-      TrackpadThreeFingerTapGesture = 2; # 3本指タップで調べる
+      FirstClickThreshold = 1; # クリック感度: 中（0:軽い, 1:中, 2:強い）
+      ActuationStrength = 1; # 通常のクリック音
+      TrackpadThreeFingerTapGesture = 0; # 3本指タップ無効
     };
 
     # Control Center settings
@@ -105,6 +111,7 @@
       reduceMotion = true; # アニメーション削減
       reduceTransparency = false; # 透明度は維持
       closeViewScrollWheelToggle = true; # Ctrl+スクロールでズーム
+      mouseDriverCursorSize = 2.5; # カーソルサイズ（大きめ）
     };
 
     # Custom user preferences
@@ -118,6 +125,10 @@
       };
       "com.apple.ImageCapture" = {
         disableHotPlug = true; # iPhone接続時に写真アプリを起動しない
+      };
+      NSGlobalDomain = {
+        AppleMenuBarVisibleInFullscreen = true; # フルスクリーンでメニューバー表示
+        AppleMiniaturizeOnDoubleClick = false; # ダブルクリックで最小化無効
       };
     };
   };
