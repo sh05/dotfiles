@@ -20,7 +20,19 @@ cd ~/ghq/github.com/sh05/dotfiles
 make bootstrap NIXNAME=sh05MacMini
 ```
 
-### 3. Daily Usage
+### 3. Configure Git (Required)
+
+Create `~/.gitconfig.local` with your Git credentials:
+
+```bash
+cat > ~/.gitconfig.local << 'EOF'
+[user]
+    name = your-name
+    email = your-email@example.com
+EOF
+```
+
+### 4. Daily Usage
 
 ```bash
 make switch    # Apply configuration changes
@@ -82,8 +94,6 @@ make rollback                      # 前の世代に戻す
    darwinConfigurations = {
      "YourHostName" = mkDarwin "YourHostName" {
        username = "yourusername";
-       gitUserName = "your-github-username";
-       gitUserEmail = "your-email@example.com";
      };
    };
    ```
@@ -115,8 +125,6 @@ make rollback                      # 前の世代に戻す
    darwinConfigurations = {
      "YourHostName" = mkDarwin "YourHostName" {
        username = "yourusername";
-       gitUserName = "your-github-username";
-       gitUserEmail = "your-email@example.com";
      };
    };
    ```
