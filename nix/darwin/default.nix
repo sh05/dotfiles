@@ -130,7 +130,7 @@
     menuExtraClock = {
       ShowDayOfWeek = true; # 曜日表示
       ShowAMPM = true; # AM/PM表示
-      ShowDate = false; # 日付非表示
+      ShowDate = 2; # 日付非表示 (0:スペース次第, 1:常に, 2:表示しない)
       ShowSeconds = false; # 秒非表示
     };
 
