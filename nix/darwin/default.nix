@@ -23,12 +23,9 @@
       launchanim = false; # 起動バウンドアニメーション無効化
       expose-animation-duration = 0.1; # Mission Controlアニメーション高速化
       expose-group-apps = true; # Mission Controlでアプリをグループ化
-
-      # ホットコーナー
-      wvous-tl-corner = 2; # 左上: Mission Control
-      wvous-tr-corner = 4; # 右上: デスクトップ表示
-      wvous-bl-corner = 11; # 左下: Launchpad
-      wvous-br-corner = 13; # 右下: ロック画面
+      magnification = true; # 拡大機能有効
+      largesize = 128; # 拡大時のサイズ
+      minimize-to-application = true; # アプリケーションに最小化
     };
 
     # Finder settings
@@ -89,8 +86,6 @@
 
     # Menu bar clock settings
     menuExtraClock = {
-      Show24Hour = true; # 24時間表示
-      ShowDate = 1; # 日付表示（0:なし, 1:常時, 2:ホバー時）
       ShowDayOfWeek = true; # 曜日表示
       ShowSeconds = false; # 秒非表示
     };
@@ -100,18 +95,9 @@
       GuestEnabled = false;
     };
 
-    # Screenshot settings
-    screencapture = {
-      location = "~/Screenshots";
-      type = "png";
-      disable-shadow = true; # ウィンドウの影を無効化
-      show-thumbnail = false; # 撮影後のサムネイル非表示（即座に保存）
-      include-date = true; # ファイル名に日時を含める
-    };
-
     # Software update settings
     SoftwareUpdate = {
-      AutomaticallyInstallMacOSUpdates = false; # macOS自動アップデート無効
+      AutomaticallyInstallMacOSUpdates = true;
     };
 
     # Accessibility settings
