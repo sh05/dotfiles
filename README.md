@@ -151,6 +151,12 @@ Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different ma
        hostName = "<HostName>";
        computerName = "<HostName>";
      };
+
+     # Optional: install personal-only Mac App Store apps on this host
+     # homebrew.masApps = {
+     #   "LINE" = 539883307;
+     #   "Kindle" = 302584613;
+     # };
    }
    ```
 
