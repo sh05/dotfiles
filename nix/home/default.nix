@@ -3,6 +3,8 @@
   lib,
   username,
   tpm,
+  gh-branch-pkg,
+  gh-ghq-cd-pkg,
   ...
 }:
 {
@@ -133,7 +135,6 @@
       source = tpm;
       recursive = true;
     };
-    "gh-ext-manage/config.json".source = ../../config/gh-ext-manage/config.json;
     "gh-dash/config.yml".source = ../../config/gh-dash/config.yml;
     "bat/themes".source = ../../config/bat/themes;
   };
@@ -576,12 +577,19 @@
     # gh (GitHub CLI)
     gh = {
       enable = true;
-      extensions = with pkgs; [
-        gh-dash
+      # gh-dash は nixpkgs、gh-branch / gh-ghq-cd は flake input から
+      # パッケージ化したものを lib/mkdarwin.nix 経由で受け取る。
+      extensions = [
+        pkgs.gh-dash
+        gh-branch-pkg
+        gh-ghq-cd-pkg
       ];
       settings = {
         git_protocol = "ssh";
         prompt = "enabled";
+        aliases = {
+          cd = "ghq-cd"; # `gh cd` で gh-ghq-cd を起動
+        };
       };
     };
 

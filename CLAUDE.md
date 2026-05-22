@@ -36,8 +36,9 @@ dotfiles/
 ├── Makefile                     # bootstrap, switch, update commands
 ├── lib/
 │   └── mkdarwin.nix             # darwinSystem helper function
-├── hosts/
-│   └── sh05MacMini.nix          # Machine-specific settings
+├── hosts/                       # Per-host directories: hosts/<name>/default.nix
+│   ├── sh05MacMini/             # Machine-specific settings (user: nakamotoshougo)
+│   └── sh05MacMini-test/        # Verification host (user: test)
 ├── config/                      # Source config files (symlinked via xdg.configFile)
 │   ├── nvim/                    # Neovim config (lazy.nvim managed)
 │   ├── karabiner/               # Karabiner-Elements config

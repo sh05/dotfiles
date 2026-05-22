@@ -57,7 +57,11 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-このリポジトリは作者のマシン（`sh05MacMini`・ユーザー `nakamotoshougo`）向けの設定です。macOS のアカウント名とホスト名の**両方**が一致しない限り、先に[別マシンでの利用](#別マシンでの利用)に従ってホストエントリを追加してください。`username` は自分の macOS アカウント名（`whoami`）と一致させる必要があります — 一致しないと、Homebrew (`/opt/homebrew`) が自分のアカウント所有のため `brew bundle` が失敗します。
+`darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。既定の `sh05MacMini` エントリは作者アカウント `nakamotoshougo` 向けです。
+
+> **重要:** `make switch` は、ホストエントリの `user` に指定されたアカウントにしか home 環境（Starship・gh 拡張・パッケージ・dotfiles の symlink など）を適用しません。別マシンでは macOS アカウント名が `nakamotoshougo` 以外になることがほとんどです。その場合は **自分用のホストエントリ（正しい `user`）を必ず追加**してください。怠ると `make switch` 自体は成功しても、設定はすべて `nakamotoshougo` 宛に適用され、自分のアカウントには何も反映されません。
+
+自分の macOS アカウント名（`whoami` で確認）が `nakamotoshougo` でない場合は、先に[別マシン・別ユーザーでの利用](#別マシン別ユーザーでの利用)へ進んでください。
 
 #### Full Disk Access の付与
 
@@ -133,36 +137,54 @@ darwin-rebuild --list-generations  # 世代一覧
 make rollback                      # 前の世代に戻す
 ```
 
-## 別マシンでの利用
+## 別マシン・別ユーザーでの利用
 
-### 必要な手順
+`darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。別マシンでは macOS アカウント名が `nakamotoshougo` 以外になることがほとんどなので、その場合は自分専用のエントリが必要です。
 
-1. **ホスト設定ファイルを作成** (`hosts/YourHostName.nix`)
+### 新しいマシン／ユーザーを追加する
+
+1. **ホスト設定ディレクトリを作成** (`hosts/<HostName>/default.nix`)
    ```nix
-   { pkgs, username, hostname, ... }:
+   { ... }:
    {
      networking = {
-       hostName = "YourHostName";
-       computerName = "YourHostName";
+       hostName = "<HostName>";
+       computerName = "<HostName>";
      };
    }
    ```
 
-2. **flake.nix にホストを追加**
+2. **flake.nix にエントリを追加**
    ```nix
    darwinConfigurations = {
-     "YourHostName" = mkDarwin "YourHostName" {
-       username = "yourusername";
+     "<HostName>" = mkDarwin "<HostName>" {
+       user = "<yourusername>"; # ホスト名と同じなら省略可
      };
    };
    ```
 
-   `username` は実際の macOS アカウント名（`whoami` で確認）と**必ず**一致させてください。`system.primaryUser`・home-manager の対象（`/Users/<username>`）・Homebrew を実行するユーザーを決定します。不一致だと activation 中に `brew bundle` が失敗します。
+   > **`user` は必ず `whoami` の出力と一致させてください。** `user` は `system.primaryUser`・home-manager の対象（`/Users/<user>`）・Homebrew の実行ユーザーを決定します。指定を省略するとホスト名にフォールバックします。不一致だと activation 中に `brew bundle` が失敗したり、home 環境が別アカウントへ適用されたりします。
 
 3. **ブートストラップ**
    ```bash
-   make bootstrap NIXNAME=YourHostName
+   make bootstrap NIXNAME=<HostName>
    ```
+
+### 同一マシンの別ユーザーで検証する
+
+このリポジトリには動作確認用に `sh05MacMini-test`（`user = "test"`）エントリがあります。`test` アカウントで検証するときは、そのアカウントにログインして:
+
+```bash
+make switch NIXNAME=sh05MacMini-test
+```
+
+検証後は本来の構成へ戻します:
+
+```bash
+make switch NIXNAME=sh05MacMini
+```
+
+macOS 上の nix-darwin システム構成は常に1つなので、`make switch` するたびに最後のエントリの `primaryUser` でシステムが上書きされる点に注意してください。
 
 ## 要件
 

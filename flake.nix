@@ -15,6 +15,17 @@
       url = "github:tmux-plugins/tpm";
       flake = false;
     };
+
+    # gh extensions (not in nixpkgs) — packaged via flake inputs.
+    # gh-ghq-cd ships its own flake; gh-branch is a single shell script.
+    gh-ghq-cd = {
+      url = "github:cappyzawa/gh-ghq-cd";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    gh-branch = {
+      url = "github:mislav/gh-branch";
+      flake = false;
+    };
   };
 
   outputs =
@@ -31,7 +42,12 @@
     in
     {
       darwinConfigurations = {
-        "sh05MacMini" = mkDarwin "sh05MacMini" { };
+        # Each entry is a (machine, user) pair. `user` MUST match the macOS
+        # account name (`whoami`) of whoever runs `make switch` for that host.
+        "sh05MacMini" = mkDarwin "sh05MacMini" { user = "nakamotoshougo"; };
+
+        # Verification host: same machine, applied to the `test` account.
+        "sh05MacMini-test" = mkDarwin "sh05MacMini-test" { user = "test"; };
       };
     };
 }

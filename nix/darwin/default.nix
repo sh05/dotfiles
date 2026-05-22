@@ -182,6 +182,127 @@
         "com.apple.sound.beep.flash" = 0; # 警告音時に画面を点滅させない
         "com.apple.mouse.scaling" = 3.0; # マウス速度（nix-darwin に型付きオプションが無いため）
       };
+
+      # Rectangle (ウィンドウ管理アプリ) の設定。
+      # 旧 RectangleConfig.json を翻訳したもの。Rectangle は JSON ではなく
+      # この defaults ドメインを読むため、宣言的に書き込む。
+      # plist では defaults / shortcuts が同じ階層のフラットなキーになる。
+      "com.knollsoft.Rectangle" = {
+        # --- defaults ---
+        allowAnyShortcut = true;
+        almostMaximizeHeight = 0.0;
+        almostMaximizeWidth = 0.0;
+        alternateDefaultShortcuts = true;
+        altThirdCycle = 0;
+        alwaysAccountForStage = 0;
+        applyGapsToMaximize = 0;
+        applyGapsToMaximizeHeight = 0;
+        attemptMatchOnNextPrevDisplay = 0;
+        autoMaximize = 0;
+        cascadeAllDeltaSize = 30.0;
+        centeredDirectionalMove = 0;
+        centerHalfCycles = 0;
+        cornerSnapAreaSize = 20.0;
+        curtainChangeSize = 0;
+        doubleClickTitleBar = 0;
+        doubleClickTitleBarRestore = 0;
+        dragFromStage = 0;
+        enhancedUI = 1;
+        footprintAlpha = 0.3;
+        footprintAnimationDurationMultiplier = 0.75;
+        footprintBorderWidth = 2.0;
+        footprintFade = 0;
+        gapSize = 5.0;
+        hideMenubarIcon = false;
+        ignoreDragSnapToo = 0;
+        ignoredSnapAreas = 0;
+        landscapeSnapAreas = "[3,{\"action\":16},5,{\"compound\":-3},6,{\"action\":13},7,{\"compound\":-4},1,{\"action\":15},4,{\"compound\":-2},2,{\"action\":2},8,{\"action\":14}]";
+        launchOnLogin = true;
+        minimumWindowHeight = 0.0;
+        minimumWindowWidth = 0.0;
+        missionControlDragging = 0;
+        missionControlDraggingAllowedOffscreenDistance = 25.0;
+        missionControlDraggingDisallowedDuration = 250;
+        moveCursor = 0;
+        moveCursorAcrossDisplays = 0;
+        notifiedOfProblemApps = false;
+        obtainWindowOnClick = 0;
+        portraitSnapAreas = "[7,{\"compound\":-6},8,{\"action\":14},4,{\"compound\":-5},1,{\"action\":15},6,{\"action\":13},5,{\"compound\":-5},2,{\"action\":2},3,{\"action\":16}]";
+        relaunchOpensMenu = false;
+        resizeOnDirectionalMove = false;
+        screenEdgeGapBottom = 0.0;
+        screenEdgeGapLeft = 0.0;
+        screenEdgeGapRight = 0.0;
+        screenEdgeGapsOnMainScreenOnly = false;
+        screenEdgeGapTop = 0.0;
+        shortEdgeSnapAreaSize = 145.0;
+        showAllActionsInMenu = 0;
+        sixthsSnapArea = 0;
+        sizeOffset = 0.0;
+        snapEdgeMarginBottom = 5.0;
+        snapEdgeMarginLeft = 5.0;
+        snapEdgeMarginRight = 5.0;
+        snapEdgeMarginTop = 5.0;
+        snapModifiers = 0;
+        specifiedHeight = 1050.0;
+        specifiedWidth = 1680.0;
+        stageSize = 190.0;
+        subsequentExecutionMode = 4;
+        SUEnableAutomaticChecks = false;
+        systemWideMouseDown = 0;
+        todo = 0;
+        todoMode = false;
+        todoSidebarSide = 1;
+        todoSidebarWidth = 400.0;
+        traverseSingleScreen = 0;
+        unsnapRestore = 0;
+        windowSnapping = 0;
+        # --- shortcuts (plist 上はトップレベルのフラットなキー) ---
+        bottomHalf = {
+          keyCode = 38;
+          modifierFlags = 524288;
+        };
+        bottomLeft = {
+          keyCode = 38;
+          modifierFlags = 1572864;
+        };
+        bottomRight = {
+          keyCode = 37;
+          modifierFlags = 1572864;
+        };
+        leftHalf = {
+          keyCode = 4;
+          modifierFlags = 524288;
+        };
+        maximize = {
+          keyCode = 36;
+          modifierFlags = 1572864;
+        };
+        reflowTodo = {
+          keyCode = 45;
+          modifierFlags = 786432;
+        };
+        rightHalf = {
+          keyCode = 37;
+          modifierFlags = 524288;
+        };
+        toggleTodo = {
+          keyCode = 11;
+          modifierFlags = 786432;
+        };
+        topHalf = {
+          keyCode = 40;
+          modifierFlags = 524288;
+        };
+        topLeft = {
+          keyCode = 4;
+          modifierFlags = 1572864;
+        };
+        topRight = {
+          keyCode = 40;
+          modifierFlags = 1572864;
+        };
+      };
     };
   };
 

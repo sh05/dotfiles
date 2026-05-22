@@ -57,7 +57,11 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-This repo is configured for the author's machine (`sh05MacMini`, user `nakamotoshougo`). Unless **both** your macOS account name and hostname match, follow [Using on Different Machines](#using-on-different-machines) first to add a host entry. `username` must equal your macOS account name (`whoami`) — otherwise `brew bundle` fails because Homebrew (`/opt/homebrew`) is owned by your account, not by `nakamotoshougo`.
+Each `darwinConfigurations` entry is a `(machine, user)` pair. The default `sh05MacMini` entry targets the author's account `nakamotoshougo`.
+
+> **Important:** `make switch` only applies the home environment (Starship, gh extensions, packages, dotfile symlinks, …) to the account named by the host entry's `user`. On a different machine your macOS account name is almost certainly not `nakamotoshougo`, so you **must add your own host entry with the correct `user`**. If you skip this, `make switch` still succeeds but every setting is applied to `nakamotoshougo` and nothing reaches your account.
+
+If your macOS account name (`whoami`) is not `nakamotoshougo`, go to [Using on Different Machines](#using-on-different-machines) first.
 
 #### Grant Full Disk Access
 
@@ -135,34 +139,52 @@ make rollback                      # Rollback to previous
 
 ## Using on Different Machines
 
-### Required Steps
+Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different machine your macOS account name is almost always something other than `nakamotoshougo`, so you need your own entry.
 
-1. **Create host config file** (`hosts/YourHostName.nix`)
+### Add a new machine / user
+
+1. **Create the host config directory** (`hosts/<HostName>/default.nix`)
    ```nix
-   { pkgs, username, hostname, ... }:
+   { ... }:
    {
      networking = {
-       hostName = "YourHostName";
-       computerName = "YourHostName";
+       hostName = "<HostName>";
+       computerName = "<HostName>";
      };
    }
    ```
 
-2. **Add host to flake.nix**
+2. **Add an entry to flake.nix**
    ```nix
    darwinConfigurations = {
-     "YourHostName" = mkDarwin "YourHostName" {
-       username = "yourusername";
+     "<HostName>" = mkDarwin "<HostName>" {
+       user = "<yourusername>"; # may be omitted if it equals the host name
      };
    };
    ```
 
-   `username` **must** be your actual macOS account name (check with `whoami`). It sets `system.primaryUser`, the home-manager target (`/Users/<username>`), and the user that Homebrew runs as. A mismatch makes `brew bundle` fail during activation.
+   > **`user` must equal your macOS account name (`whoami`).** It sets `system.primaryUser`, the home-manager target (`/Users/<user>`), and the user Homebrew runs as. If omitted it falls back to the host name. A mismatch makes `brew bundle` fail during activation, or applies the home environment to the wrong account.
 
 3. **Bootstrap**
    ```bash
-   make bootstrap NIXNAME=YourHostName
+   make bootstrap NIXNAME=<HostName>
    ```
+
+### Verifying with another user on the same machine
+
+This repo ships a `sh05MacMini-test` entry (`user = "test"`) for verification. To verify under the `test` account, log in as that user and run:
+
+```bash
+make switch NIXNAME=sh05MacMini-test
+```
+
+Switch back to the real configuration afterwards:
+
+```bash
+make switch NIXNAME=sh05MacMini
+```
+
+A Mac has a single nix-darwin system configuration, so each `make switch` overwrites the system with the `primaryUser` of the last entry applied.
 
 ## Requirements
 

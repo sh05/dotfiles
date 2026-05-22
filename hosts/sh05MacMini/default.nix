@@ -1,9 +1,4 @@
-{
-  pkgs,
-  username,
-  hostname,
-  ...
-}:
+{ ... }:
 {
   # Host-specific configuration for sh05MacMini
   networking = {
