@@ -341,7 +341,6 @@
 
       # Browsers
       "google-chrome"
-      "arc"
 
       # Communication
       "slack"
