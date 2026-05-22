@@ -28,13 +28,19 @@ sh <(curl -L https://nixos.org/nix/install)
 
 ### 3. Flakes の有効化
 
-公式インストーラは flakes を有効化しません。bootstrap 時の `sudo` 実行でも root が flakes を使えるよう、システム全体で有効化します:
+公式インストーラは flakes を有効化しません。per-user の Nix 設定ファイルで有効化します。`/etc/nix/nix.conf` は **編集しないでください** — bootstrap 時に nix-darwin が引き継ぐファイルで、編集すると初回 activation が中断します。
 
 ```bash
-echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
+# あなたのユーザー用（nix build / nix flake check で使用）
+mkdir -p ~/.config/nix
+echo 'extra-experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+
+# root 用（make bootstrap の sudo 実行で使用）
+sudo mkdir -p /var/root/.config/nix
+echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /var/root/.config/nix/nix.conf
 ```
 
-初回 `make bootstrap` 以降は nix-darwin が `/etc/nix/nix.conf` を管理するため、この手動編集は初期セットアップ時のみ必要です。
+初回 `make bootstrap` 以降は nix-darwin が `/etc/nix/nix.conf` を管理し flakes がシステム全体で有効になるため、この2ファイルは冗長になります（残しても削除しても無害）。
 
 ### 4. Homebrew のインストール
 
@@ -55,6 +61,28 @@ make bootstrap NIXNAME=sh05MacMini
 `make bootstrap` は `darwin-rebuild` を `sudo` で実行するため、macOS のパスワード入力を求められます。
 
 ホスト名が `sh05MacMini` 以外の場合は、先に[別マシンでの利用](#別マシンでの利用)に従ってホスト設定を作成してください。
+
+#### 初回 activation の「Unexpected files in /etc」
+
+公式インストーラで Nix を入れたマシンでは、初回 activation が中断します。nix-darwin は自分が作成していないシステムファイルを上書きしないためです:
+
+```
+error: Unexpected files in /etc, aborting activation
+  /etc/nix/nix.conf
+  /etc/bashrc
+  /etc/zshrc
+```
+
+これは想定どおりの挙動です。表示された各ファイルを `.before-nix-darwin` を付けてリネーム（退避バックアップ。nix-darwin が新しいものを生成します）し、bootstrap を再実行してください:
+
+```bash
+sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
+sudo mv /etc/bashrc       /etc/bashrc.before-nix-darwin
+sudo mv /etc/zshrc        /etc/zshrc.before-nix-darwin
+make bootstrap NIXNAME=sh05MacMini
+```
+
+flakes は手順3で per-user 設定ファイルに有効化済みのため、`/etc/nix/nix.conf` をリネームしても安全です — 再実行時も flakes は使えます。
 
 ### 6. Git の設定（必須）
 

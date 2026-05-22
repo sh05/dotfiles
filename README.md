@@ -28,13 +28,19 @@ Open a new terminal afterwards so Nix is available on your `PATH`.
 
 ### 3. Enable Flakes
 
-The official installer does not enable flakes. Enable them system-wide so both your user and `sudo` (used during bootstrap) can use them:
+The official installer does not enable flakes. Enable them in per-user Nix config files. Do **not** edit `/etc/nix/nix.conf` — nix-darwin takes that file over during bootstrap, and editing it makes the first activation abort.
 
 ```bash
-echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
+# For your user (used by `nix build` / `nix flake check`)
+mkdir -p ~/.config/nix
+echo 'extra-experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+
+# For root (used by `sudo` during `make bootstrap`)
+sudo mkdir -p /var/root/.config/nix
+echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /var/root/.config/nix/nix.conf
 ```
 
-After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf`, so this manual edit is only needed for the initial setup.
+After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf` with flakes enabled system-wide, so these two files become redundant (harmless to keep or remove).
 
 ### 4. Install Homebrew
 
@@ -55,6 +61,28 @@ make bootstrap NIXNAME=sh05MacMini
 `make bootstrap` runs `darwin-rebuild` with `sudo`, so it will prompt for your macOS password.
 
 If your hostname is not `sh05MacMini`, follow [Using on Different Machines](#using-on-different-machines) first to create a host config.
+
+#### First activation: "Unexpected files in /etc"
+
+On a machine where Nix was installed with the official installer, the first activation aborts because nix-darwin will not overwrite system files it did not create:
+
+```
+error: Unexpected files in /etc, aborting activation
+  /etc/nix/nix.conf
+  /etc/bashrc
+  /etc/zshrc
+```
+
+This is expected. Rename each listed file with a `.before-nix-darwin` suffix (a backup — nix-darwin generates fresh ones), then re-run bootstrap:
+
+```bash
+sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
+sudo mv /etc/bashrc       /etc/bashrc.before-nix-darwin
+sudo mv /etc/zshrc        /etc/zshrc.before-nix-darwin
+make bootstrap NIXNAME=sh05MacMini
+```
+
+Because flakes were enabled in the per-user config files (step 3), renaming `/etc/nix/nix.conf` is safe — flakes stay available for the re-run.
 
 ### 6. Configure Git (Required)
 
