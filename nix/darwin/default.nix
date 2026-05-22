@@ -211,7 +211,6 @@
 
       # Fonts
       "font-moralerspace"
-      "font-moralerspace-nf"
       "font-hackgen"
       "font-hackgen-nerd"
 
