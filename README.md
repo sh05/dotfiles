@@ -55,12 +55,25 @@ nix-darwin manages Homebrew packages but does not install Homebrew itself:
 ```bash
 git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
+```
+
+This repo is configured for the author's machine (`sh05MacMini`, user `nakamotoshougo`). Unless **both** your macOS account name and hostname match, follow [Using on Different Machines](#using-on-different-machines) first to add a host entry. `username` must equal your macOS account name (`whoami`) — otherwise `brew bundle` fails because Homebrew (`/opt/homebrew`) is owned by your account, not by `nakamotoshougo`.
+
+#### Grant Full Disk Access
+
+nix-darwin's activation writes TCC-protected preference domains such as `com.apple.universalaccess`. Grant **Full Disk Access** to the terminal app you run bootstrap from (System Settings → Privacy & Security → Full Disk Access), then **quit and reopen** the terminal so the grant takes effect. Without it, activation aborts with:
+
+```
+defaults[...] Could not write domain com.apple.universalaccess; exiting
+```
+
+#### Run bootstrap
+
+```bash
 make bootstrap NIXNAME=sh05MacMini
 ```
 
 `make bootstrap` runs `darwin-rebuild` with `sudo`, so it will prompt for your macOS password.
-
-If your hostname is not `sh05MacMini`, follow [Using on Different Machines](#using-on-different-machines) first to create a host config.
 
 #### First activation: "Unexpected files in /etc"
 
@@ -143,6 +156,8 @@ make rollback                      # Rollback to previous
      };
    };
    ```
+
+   `username` **must** be your actual macOS account name (check with `whoami`). It sets `system.primaryUser`, the home-manager target (`/Users/<username>`), and the user that Homebrew runs as. A mismatch makes `brew bundle` fail during activation.
 
 3. **Bootstrap**
    ```bash
