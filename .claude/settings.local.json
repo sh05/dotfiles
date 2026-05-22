@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(gh repo view:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(nix flake check:*)",
+      "Bash(brew list:*)",
+      "Bash(mas list:*)"
+    ]
+  }
+}
