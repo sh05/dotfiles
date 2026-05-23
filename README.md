@@ -57,6 +57,8 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
+`xdg.configFile` is linked with out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Keep the clone path above (or update `dotfilesConfigRoot` in `nix/home/default.nix` if you use a different location).
+
 Each `darwinConfigurations` entry is a `(machine, user)` pair. The default `sh05MacMini` entry targets the author's account `nakamotoshougo`.
 
 > **Important:** `make switch` only applies the home environment (Starship, gh extensions, packages, dotfile symlinks, …) to the account named by the host entry's `user`. On a different machine your macOS account name is almost certainly not `nakamotoshougo`, so you **must add your own host entry with the correct `user`**. If you skip this, `make switch` still succeeds but every setting is applied to `nakamotoshougo` and nothing reaches your account.
@@ -120,6 +122,8 @@ make switch    # Apply configuration changes
 make update    # Update flake inputs and apply
 make rollback  # Rollback to previous generation
 ```
+
+> Note: Home Manager still manages `~/.zshrc`, so installers that append directly to `~/.zshrc` can fail. Put machine-local script output in `~/.zshrc.local` (already sourced from this config).
 
 ## Testing
 
