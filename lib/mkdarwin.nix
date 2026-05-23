@@ -33,6 +33,31 @@ let
   # gh-ghq-cd ships its own flake exposing a `gh-ghq-cd` package.
   gh-ghq-cd-pkg = inputs.gh-ghq-cd.packages.${system}.gh-ghq-cd;
 
+  # ccstatusline — Claude Code status line formatter, fetched from npm registry.
+  # The npm tarball ships a pre-built Bun bundle at dist/ccstatusline.js.
+  # To update: bump version, re-run nix-prefetch-url, update hash.
+  ccstatusline-pkg = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "ccstatusline";
+    version = "2.2.19";
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/ccstatusline/-/ccstatusline-${version}.tgz";
+      hash = "sha256-ZECyfJStzolhs1EQrrbq6svXCtvcpj6YJRPjFIazLSw=";
+    };
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    dontConfigure = true;
+    dontBuild = true;
+    unpackPhase = ''
+      tar xzf $src
+      cd package
+    '';
+    installPhase = ''
+      mkdir -p $out/lib/ccstatusline $out/bin
+      cp -r . $out/lib/ccstatusline/
+      makeWrapper ${pkgs.nodejs}/bin/node $out/bin/ccstatusline \
+        --add-flags "$out/lib/ccstatusline/dist/ccstatusline.js"
+    '';
+  };
+
   specialArgs = {
     inherit inputs tpm;
     configName = name;
@@ -55,7 +80,7 @@ nix-darwin.lib.darwinSystem {
         useUserPackages = true;
         backupFileExtension = "backup";
         extraSpecialArgs = specialArgs // {
-          inherit gh-branch-pkg gh-ghq-cd-pkg;
+          inherit gh-branch-pkg gh-ghq-cd-pkg ccstatusline-pkg;
         };
         users.${user} = {
           imports = [
