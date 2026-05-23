@@ -4,12 +4,13 @@
   config,
   username,
   tpm,
+  dotfilesRoot,
   gh-branch-pkg,
   gh-ghq-cd-pkg,
   ...
 }:
 let
-  dotfilesConfigRoot = "${config.home.homeDirectory}/ghq/github.com/sh05/dotfiles/config";
+  dotfilesConfigRoot = "${dotfilesRoot}/config";
   mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesConfigRoot}/${path}";
 in
 {

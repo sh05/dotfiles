@@ -57,7 +57,7 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-`xdg.configFile` は out-of-store symlink で `~/.config` にリンクされるため、NeoVim などのツールが直接更新できます。別の場所へ clone する場合は `nix/home/default.nix` の `dotfilesConfigRoot` も合わせて変更してください。
+`xdg.configFile` は out-of-store symlink で `~/.config` にリンクされるため、NeoVim などのツールが直接更新できます。別の場所へ clone する場合は、`mkDarwin` のホストエントリで `dotfilesRoot` を指定してください。
 
 `darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。既定の `sh05MacMini` エントリは作者アカウント `nakamotoshougo` 向けです。
 
@@ -169,6 +169,7 @@ make rollback                      # 前の世代に戻す
    darwinConfigurations = {
      "<HostName>" = mkDarwin "<HostName>" {
        user = "<yourusername>"; # ホスト名と同じなら省略可
+       # dotfilesRoot = "/Users/<yourusername>/path/to/dotfiles"; # 任意
      };
    };
    ```

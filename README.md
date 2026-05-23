@@ -57,7 +57,7 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-`xdg.configFile` is linked with out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Keep the clone path above (or update `dotfilesConfigRoot` in `nix/home/default.nix` if you use a different location).
+`xdg.configFile` is linked with out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Keep the clone path above (or set `dotfilesRoot` in your `mkDarwin` host entry if you use a different location).
 
 Each `darwinConfigurations` entry is a `(machine, user)` pair. The default `sh05MacMini` entry targets the author's account `nakamotoshougo`.
 
@@ -169,6 +169,7 @@ Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different ma
    darwinConfigurations = {
      "<HostName>" = mkDarwin "<HostName>" {
        user = "<yourusername>"; # may be omitted if it equals the host name
+       # dotfilesRoot = "/Users/<yourusername>/path/to/dotfiles"; # optional
      };
    };
    ```
