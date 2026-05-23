@@ -467,7 +467,7 @@
 
         os.disabled = true;
 
-        "os.symbols" = {
+        os.symbols = {
           Alpaquita = " ";
           Alpine = " ";
           Amazon = " ";
@@ -525,13 +525,13 @@
         time.disabled = true;
         username.disabled = false;
 
-        "env_var.ARCH" = {
+        env_var.ARCH = {
           variable = "ARCH";
           default = "x86_64";
           style = "lantern";
         };
 
-        "custom.nvimshell" = {
+        custom.nvimshell = {
           command = "echo ";
           when = "test -n \"$NVIM\"";
           format = "in [$output]($style)";
