@@ -55,7 +55,12 @@ nix-darwin.lib.darwinSystem {
         extraSpecialArgs = specialArgs // {
           inherit gh-branch-pkg gh-ghq-cd-pkg;
         };
-        users.${user} = import ../nix/home;
+        users.${user} = {
+          imports = [
+            ../nix/home
+            inputs.akari-theme.homeModules.akari
+          ];
+        };
       };
     }
   ];
