@@ -121,6 +121,10 @@ make update    # Update flake inputs and apply
 make rollback  # Rollback to previous generation
 ```
 
+- Edit files under `config/` and `nix/` in this repository, then run `make switch` to apply them.
+- If you edited `~/.config/...` directly, copy those changes back into `config/...` in this repo first, then run `make switch`.
+- Files in `~/.config` managed by home-manager are recreated during `make switch`, so direct edits not committed to this repo are lost on the next apply.
+
 ## Testing
 
 Verify configuration without applying to the system:

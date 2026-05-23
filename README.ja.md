@@ -121,6 +121,10 @@ make update    # flake inputs を更新して適用
 make rollback  # 前の世代にロールバック
 ```
 
+- 基本はリポジトリ配下の `config/` や `nix/` を編集して、`make switch` で反映します。
+- `~/.config/...` を直接編集した場合は、その差分をリポジトリ側の `config/...` に反映してから `make switch` を実行してください。
+- home-manager 管理下の `~/.config` ファイルは `make switch` 時に再生成されるため、リポジトリに戻していない直接編集は次回適用時に失われます。
+
 ## テスト
 
 システムに適用せずに設定を検証:
