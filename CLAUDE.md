@@ -57,7 +57,15 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 
 ### Config symlink strategy
 
-Files in `config/` are version-controlled and symlinked into `~/.config/` by `xdg.configFile` in `nix/home/default.nix`. To add a new tool's config: drop files into `config/<tool>/` and add an `xdg.configFile."<tool>".source = ../../config/<tool>;` entry. Editing through the symlink edits the repo file.
+Files in `config/` are version-controlled and symlinked into `~/.config/` by `xdg.configFile` in `nix/home/default.nix`. The symlinks are **out-of-store** (via `config.lib.file.mkOutOfStoreSymlink`), so `~/.config/<tool>` points directly to the repo's `config/<tool>/` — editing through the symlink IS editing the repo file, no copy-back step needed. `make switch` re-creates the symlink but does not overwrite file contents, so uncommitted repo edits survive a re-run.
+
+To add a new tool's config: drop files into `config/<tool>/` and add an entry using the `mutableConfigSource` helper (defined at the top of `nix/home/default.nix`):
+
+```nix
+xdg.configFile."<tool>".source = mutableConfigSource "<tool>";
+```
+
+The helper falls back to the Nix store path when the repo checkout isn't present (e.g. in CI).
 
 `config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 

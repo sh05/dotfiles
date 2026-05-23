@@ -124,8 +124,8 @@ make rollback  # Rollback to previous generation
 ```
 
 - Edit files under `config/` and `nix/` in this repository, then run `make switch` to apply them.
-- If you edited `~/.config/...` directly, copy those changes back into `config/...` in this repo first, then run `make switch`.
-- Files in `~/.config` managed by home-manager are recreated during `make switch`, so direct edits not committed to this repo are lost on the next apply.
+- `~/.config/<tool>` entries managed by home-manager are out-of-store symlinks that point directly to `config/<tool>/` in this repo. Editing them is the same as editing the repo file — no copy-back needed.
+- `make switch` re-creates the symlinks to the same location; it does not overwrite file contents, so uncommitted edits in the repo survive a re-run. Commit them to avoid losing them on a `git checkout` or `git reset`.
 - `make switch` rebuilds and applies the current host configuration using the current `flake.lock` (it does not update dependency versions).
 - `make update` runs `nix flake update` first, then applies the configuration (it includes dependency version updates in `flake.lock`).
 - `make rollback` moves the current host back to the **previous darwin generation**. It rolls back declarative settings managed by nix-darwin / home-manager, but not manually created user data (app data, arbitrary files, etc.).
