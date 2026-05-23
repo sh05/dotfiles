@@ -57,6 +57,8 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
+`xdg.configFile` は out-of-store symlink で `~/.config` にリンクされるため、NeoVim などのツールが直接更新できます。別の場所へ clone する場合は、`mkDarwin` のホストエントリで `dotfilesRoot` を指定してください。
+
 `darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。既定の `sh05MacMini` エントリは作者アカウント `nakamotoshougo` 向けです。
 
 > **重要:** `make switch` は、ホストエントリの `user` に指定されたアカウントにしか home 環境（Starship・gh 拡張・パッケージ・dotfiles の symlink など）を適用しません。別マシンでは macOS アカウント名が `nakamotoshougo` 以外になることがほとんどです。その場合は **自分用のホストエントリ（正しい `user`）を必ず追加**してください。怠ると `make switch` 自体は成功しても、設定はすべて `nakamotoshougo` 宛に適用され、自分のアカウントには何も反映されません。
@@ -128,6 +130,8 @@ make rollback  # 前の世代にロールバック
 - `make update` は `nix flake update` で `flake.lock` を更新したうえで適用します（依存バージョン更新を含みます）。
 - `make rollback` は現在ホストの **1つ前の darwin generation** に戻します。戻るのは nix-darwin / home-manager が管理する宣言的設定で、手動で作成したユーザーデータ（アプリ内データや任意ファイルなど）は戻りません。
 
+> 注意: `~/.zshrc` は引き続き Home Manager 管理です。`~/.zshrc` へ直接追記するインストーラは失敗することがあります。マシン固有の追記先は `~/.zshrc.local`（この設定から source 済み）を使ってください。
+
 ## テスト
 
 システムに適用せずに設定を検証:
@@ -172,6 +176,7 @@ make rollback                      # 前の世代に戻す
    darwinConfigurations = {
      "<HostName>" = mkDarwin "<HostName>" {
        user = "<yourusername>"; # ホスト名と同じなら省略可
+       # dotfilesRoot = "/Users/<yourusername>/path/to/dotfiles"; # 任意
      };
    };
    ```

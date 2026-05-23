@@ -57,6 +57,8 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
+`xdg.configFile` is linked with out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Keep the clone path above (or set `dotfilesRoot` in your `mkDarwin` host entry if you use a different location).
+
 Each `darwinConfigurations` entry is a `(machine, user)` pair. The default `sh05MacMini` entry targets the author's account `nakamotoshougo`.
 
 > **Important:** `make switch` only applies the home environment (Starship, gh extensions, packages, dotfile symlinks, …) to the account named by the host entry's `user`. On a different machine your macOS account name is almost certainly not `nakamotoshougo`, so you **must add your own host entry with the correct `user`**. If you skip this, `make switch` still succeeds but every setting is applied to `nakamotoshougo` and nothing reaches your account.
@@ -128,6 +130,8 @@ make rollback  # Rollback to previous generation
 - `make update` runs `nix flake update` first, then applies the configuration (it includes dependency version updates in `flake.lock`).
 - `make rollback` moves the current host back to the **previous darwin generation**. It rolls back declarative settings managed by nix-darwin / home-manager, but not manually created user data (app data, arbitrary files, etc.).
 
+> Note: Home Manager still manages `~/.zshrc`, so installers that append directly to `~/.zshrc` can fail. Put machine-local script output in `~/.zshrc.local` (already sourced from this config).
+
 ## Testing
 
 Verify configuration without applying to the system:
@@ -172,6 +176,7 @@ Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different ma
    darwinConfigurations = {
      "<HostName>" = mkDarwin "<HostName>" {
        user = "<yourusername>"; # may be omitted if it equals the host name
+       # dotfilesRoot = "/Users/<yourusername>/path/to/dotfiles"; # optional
      };
    };
    ```
