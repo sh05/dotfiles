@@ -10,7 +10,15 @@
   ...
 }:
 let
-  mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/config/${path}";
+  mutableConfigSource =
+    path:
+    let
+      outOfStorePath = "${dotfilesRoot}/config/${path}";
+    in
+    if builtins.pathExists outOfStorePath then
+      config.lib.file.mkOutOfStoreSymlink outOfStorePath
+    else
+      "${../../config}/${path}";
 in
 {
   home = {
