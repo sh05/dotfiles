@@ -345,7 +345,6 @@
       # Communication
       "slack"
       "discord"
-      "zoom"
 
       # Other
       "1password"
@@ -353,7 +352,6 @@
       "notion"
 
       # Productivity
-      "cheatsheet"
       "clipy"
       "figma"
       "miro"
