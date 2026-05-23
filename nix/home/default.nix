@@ -7,6 +7,7 @@
   dotfilesRoot,
   gh-branch-pkg,
   gh-ghq-cd-pkg,
+  ccstatusline-pkg,
   ...
 }:
 let
@@ -107,6 +108,9 @@ in
       # Media processing
       imagemagick
       ffmpeg
+
+      # Claude Code
+      ccstatusline-pkg
     ];
 
     # Session variables
@@ -145,6 +149,7 @@ in
   # XDG config file symlinks
   xdg.configFile = {
     "nvim".source = mutableConfigSource "nvim";
+    "ccstatusline".source = mutableConfigSource "ccstatusline";
     "karabiner/karabiner.json".source = mutableConfigSource "karabiner/karabiner.json";
     "zsh/10_utils.zsh".source = mutableConfigSource "zsh/10_utils.zsh";
     "zsh/20_keybinds.zsh".source = mutableConfigSource "zsh/20_keybinds.zsh";

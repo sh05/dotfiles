@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "displayLines": [
+    {
+      "widgets": ["Model", "GitBranch", "GitChanges", "GitWorktree"]
+    },
+    {
+      "widgets": [
+        "ContextBar",
+        "ContextLength",
+        "ContextPercentage",
+        "SessionCost",
+        "WeeklyUsage"
+      ]
+    }
+  ],
+  "powerline": {
+    "enabled": true,
+    "separators": [""],
+    "separatorInvertBackground": [true],
+    "startCaps": [""],
+    "endCaps": [""],
+    "theme": null,
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  },
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 3,
+  "gitCacheTtl": 5,
+  "updateMessaging": {
+    "enabled": false
+  },
+  "installationMetadata": {
+    "type": "self-managed",
+    "packageManager": "npm"
+  }
+}
