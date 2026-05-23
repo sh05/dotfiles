@@ -1,9 +1,9 @@
 { ... }:
 {
-  # Host-specific configuration for sh05MacMini
+  # Host-specific configuration for sh05MacminiM2
   networking = {
-    hostName = "sh05MacMini";
-    computerName = "sh05MacMini";
+    hostName = "sh05MacminiM2";
+    computerName = "sh05MacminiM2";
   };
 
   # Personal Mac App Store apps (exclude these on work hosts)

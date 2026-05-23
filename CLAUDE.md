@@ -4,104 +4,86 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-macOS development environment dotfiles managed with Nix Flakes + nix-darwin + home-manager.
+macOS (Apple Silicon, `aarch64-darwin`) development environment managed with Nix Flakes + nix-darwin + home-manager.
 
-## Setup Commands
+## Common Commands
 
 ```bash
-# Install Nix (official installer)
-sh <(curl -L https://nixos.org/nix/install)
+make switch              # Apply current configuration
+make update              # nix flake update + apply
+make rollback            # Roll back to previous generation
+make check               # nix flake check (validate without applying)
+make gc                  # Garbage collect old generations
+make list-generations    # List generations
+make switch-generation GEN=N   # Switch to specific generation
 
-# Initial setup
-make bootstrap NIXNAME=sh05MacMini
-
-# Apply changes
-make switch
-
-# Update flake inputs and apply
-make update
-
-# Rollback to previous generation
-make rollback
+# Build only, no activation (useful for verifying a change before applying):
+nix build .#darwinConfigurations.sh05MacminiM2.system
 ```
+
+`NIXNAME` is read from `~/.config/nix/host` (written during `make bootstrap`). To target a different host, pass `NIXNAME=<host>` on the command line.
 
 ## Architecture
 
-### Directory Structure
+### Host model: `(machine, user)` pairs
 
-```
-dotfiles/
-├── flake.nix                    # Main entry point
-├── flake.lock                   # Auto-generated lock file
-├── Makefile                     # bootstrap, switch, update commands
-├── lib/
-│   └── mkdarwin.nix             # darwinSystem helper function
-├── hosts/                       # Per-host directories: hosts/<name>/default.nix
-│   ├── sh05MacMini/             # Machine-specific settings (user: nakamotoshougo)
-│   └── sh05MacMini-test/        # Verification host (user: test)
-├── config/                      # Source config files (symlinked via xdg.configFile)
-│   ├── nvim/                    # Neovim config (lazy.nvim managed)
-│   ├── karabiner/               # Karabiner-Elements config
-│   ├── zsh/                     # Zsh custom scripts
-│   └── ghostty/                 # Ghostty terminal config
-└── nix/
-    ├── modules/
-    │   └── shared.nix           # Shared options (Nix settings)
-    ├── darwin/
-    │   └── default.nix          # macOS settings + Homebrew
-    └── home/
-        └── default.nix          # Packages + programs.* settings
-```
+`flake.nix` declares one `darwinConfigurations.<name>` entry per host via `mkDarwin name { user = "..."; }` from `lib/mkdarwin.nix`. The current entry is `sh05MacminiM2` (user `sh05`).
 
-### Package Management
+Critical invariants enforced by `lib/mkdarwin.nix`:
 
-- **Nix (home.packages)**: CLI tools, languages, LSP servers
-- **Homebrew (homebrew.casks)**: GUI applications, fonts
-- **programs.***: Shell, Git, Tmux, Starship, etc. (declarative config)
+- `user` MUST equal the macOS account name (`whoami`) of whoever runs `make switch`. It sets `system.primaryUser`, the home-manager target (`/Users/<user>`), and the user Homebrew runs as. Mismatch means activation silently configures the wrong account or `brew bundle` fails.
+- There is no fallback default — a missing/wrong `user` surfaces immediately.
+- A Mac has a single nix-darwin system config. Each `make switch` overwrites the system with the most recently applied entry's `primaryUser`.
 
-### Key Tools Configuration
+When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` entry in `flake.nix`. Personal-only Mac App Store apps belong in `hosts/<name>/default.nix` (`homebrew.masApps`), NOT in `nix/darwin/default.nix` — this is how personal vs work hosts are separated.
 
-| Tool | Managed By | Notes |
-|------|-----------|-------|
-| Neovim | xdg.configFile | lazy.nvim for plugins |
-| Tmux | programs.tmux | Prefix: Ctrl-k, Vim-style keybinds, auto-start |
-| Starship | programs.starship | akari-night theme |
-| Zsh | programs.zsh | autosuggestion, syntax-highlighting |
-| Git | programs.git | delta for diff |
-| Ghostty | xdg.configFile | akari themes |
-| lazygit | programs.lazygit | Git TUI |
-| fzf | programs.fzf | Fuzzy finder |
-| bat | programs.bat | cat alternative |
-| eza | programs.eza | ls alternative |
+### Module layout
 
-### Symlink Strategy
+- `nix/darwin/default.nix` — macOS `system.defaults` (Dock/Finder/trackpad/Rectangle plist), Homebrew `casks`/`brews`/`masApps` shared across hosts, system fonts.
+- `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, tmux, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
+- `nix/modules/shared.nix` — `nix` daemon settings, `nixpkgs.config.allowUnfree`, `system.stateVersion`.
+- `hosts/<name>/default.nix` — `networking.hostName`, `networking.computerName`, host-specific `homebrew.masApps`.
+- `lib/mkdarwin.nix` — assembles all of the above; also packages `gh-branch` (shell script from flake input) and `gh-ghq-cd` (flake input's own package) since they aren't in nixpkgs.
 
-Config files in `config/` are symlinked to `~/.config/` via `xdg.configFile`:
+### Package management split
 
-```nix
-xdg.configFile = {
-  "nvim".source = ../../config/nvim;
-  "ghostty".source = ../../config/ghostty;
-  # ...
-};
-```
+| Where | Manages |
+|-------|---------|
+| `home.packages` (`nix/home`) | CLI tools, language toolchains, LSP servers |
+| `homebrew.casks` (`nix/darwin`) | GUI apps, fonts |
+| `homebrew.masApps` (`hosts/<name>`) | Personal Mac App Store apps — host-specific |
+| `programs.*` (`nix/home`) | Declarative config for zsh/git/tmux/starship/etc. |
+| `xdg.configFile` (`nix/home`) | Symlinks from `config/<tool>/` to `~/.config/<tool>/` |
 
-This allows version-controlled configs while maintaining standard XDG paths.
+### Config symlink strategy
 
-### Tmux Keybindings
+Files in `config/` are version-controlled and symlinked into `~/.config/` by `xdg.configFile` in `nix/home/default.nix`. To add a new tool's config: drop files into `config/<tool>/` and add an `xdg.configFile."<tool>".source = ../../config/<tool>;` entry. Editing through the symlink edits the repo file.
 
-- Prefix: `Ctrl-k`
-- Pane navigation: `h/j/k/l` (Vim-style)
-- Horizontal split: `|`, Vertical split: `-`
-- Window navigation: `Ctrl-]`/`Ctrl-[`
+`config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim.
 
-## Requirements
+### Theme
 
-- Nix (official installer)
-- macOS (aarch64-darwin)
-- Moralerspace font (installed via Homebrew casks)
+The Akari Night palette is hardcoded across `delta`, `starship`, `lazygit`, `fzf`, `bat` (custom theme in `config/bat/themes/`), and `tmux` (via `cappyzawa/akari-tmux` plugin). Changing palette colors requires touching all of these in `nix/home/default.nix`.
 
-## Zsh Behavior
+## Required local files (gitignored)
 
-- **Tmux auto-start**: Zsh automatically starts Tmux on terminal launch (skipped in VS Code terminal and existing Tmux sessions)
-- **Local config**: `~/.zshrc.local` for machine-specific settings (gitignored)
+- `~/.gitconfig.local` — `[user] name = ... / email = ...`. Included by `programs.git.includes`; activation works without it but commits will be unattributed.
+- `~/.zshrc.local` — sourced at the end of zsh init for machine-specific overrides.
+
+## Tmux
+
+- Prefix: `Ctrl-k` (not the default `Ctrl-b`)
+- Vim-style pane nav: `h/j/k/l`; splits: `|` (horizontal), `-` (vertical)
+- Window cycle: `Ctrl-]` / `Ctrl-[`
+- Auto-starts from zsh on terminal launch, except inside VS Code or an existing tmux session
+
+## CI
+
+`.github/workflows/ci.yml` validates the flake on push/PR. Renovate (`.github/renovate.json`) keeps flake inputs updated.
+
+## Gotchas for first-time bootstrap
+
+These are not relevant for day-to-day work but matter when applying on a fresh machine — full details in `README.md`:
+
+- nix-darwin owns `/etc/nix/nix.conf` after bootstrap; first activation aborts on pre-existing `/etc/{nix/nix.conf,bashrc,zshrc}` and they must be renamed to `*.before-nix-darwin`.
+- The terminal running `make bootstrap` needs Full Disk Access (nix-darwin writes TCC-protected preference domains like `com.apple.universalaccess`).

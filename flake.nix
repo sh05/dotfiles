@@ -44,10 +44,10 @@
       darwinConfigurations = {
         # Each entry is a (machine, user) pair. `user` MUST match the macOS
         # account name (`whoami`) of whoever runs `make switch` for that host.
-        "sh05MacMini" = mkDarwin "sh05MacMini" { user = "nakamotoshougo"; };
+        "sh05MacminiM2" = mkDarwin "sh05MacminiM2" { user = "sh05"; };
 
         # Verification host: same machine, applied to the `test` account.
-        "sh05MacMini-test" = mkDarwin "sh05MacMini-test" { user = "test"; };
+        # "sh05MacMini-test" = mkDarwin "sh05MacMini-test" { user = "test"; };
       };
     };
 }
