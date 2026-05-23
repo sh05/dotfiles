@@ -134,6 +134,14 @@ in
     ];
   };
 
+  # Akari theme — centralised theme/palette management via the upstream
+  # home-manager module (cappyzawa/akari-theme). Covers bat, delta, fzf,
+  # gh-dash, ghostty, lazygit, starship, tmux, and zsh-syntax-highlighting.
+  akari = {
+    enable = true;
+    variant = "night";
+  };
+
   # XDG config file symlinks
   xdg.configFile = {
     "nvim".source = mutableConfigSource "nvim";
@@ -143,13 +151,10 @@ in
     "zsh/30_aliases.zsh".source = mutableConfigSource "zsh/30_aliases.zsh";
     "zsh/50_setopt.zsh".source = mutableConfigSource "zsh/50_setopt.zsh";
     "zsh/80_custom.zsh".source = mutableConfigSource "zsh/80_custom.zsh";
-    "ghostty".source = mutableConfigSource "ghostty";
     "tmux/plugins/tpm" = {
       source = tpm;
       recursive = true;
     };
-    "gh-dash/config.yml".source = mutableConfigSource "gh-dash/config.yml";
-    "bat/themes".source = mutableConfigSource "bat/themes";
   };
 
   # Programs configuration
@@ -214,6 +219,9 @@ in
             source "$config_file"
           done
 
+          # Append non-theme fzf flags to FZF_DEFAULT_OPTS (akari sets --color=*)
+          export FZF_DEFAULT_OPTS="''${FZF_DEFAULT_OPTS:-} --height 40% --reverse --border"
+
           # Local configuration
           if [[ -f ~/.zshrc.local ]]; then
             source ~/.zshrc.local
@@ -274,26 +282,12 @@ in
       };
     };
 
-    # Delta (git diff)
+    # Delta (git diff). Theme-related options are provided by the akari module.
     delta = {
       enable = true;
       options = {
         navigate = true;
         side-by-side = true;
-        line-numbers = true;
-        dark = true;
-        # Akari Night theme
-        minus-style = "syntax \"#3F2A25\"";
-        minus-emph-style = "syntax \"#5C3A32\"";
-        plus-style = "syntax \"#2A3F25\"";
-        plus-emph-style = "syntax \"#3A5C32\"";
-        line-numbers-minus-style = "#D25046";
-        line-numbers-plus-style = "#7FAF6A";
-        line-numbers-zero-style = "#716A5F";
-        hunk-header-style = "file line-number syntax";
-        hunk-header-decoration-style = "box ul #3F4346";
-        file-style = "#E26A3B bold";
-        file-decoration-style = "none";
       };
     };
 
@@ -391,9 +385,6 @@ in
         set -g @plugin 'tmux-plugins/tmux-resurrect'
         set -g @plugin 'tmux-plugins/tmux-continuum'
 
-        set -g @plugin 'cappyzawa/akari-tmux'
-        set -g @akari_variant 'night'
-
         # Initialize TMUX plugin manager
         run -b '~/.config/tmux/plugins/tpm/tpm'
       '';
@@ -404,7 +395,7 @@ in
       enable = true;
       enableZshIntegration = true;
       settings = {
-        palette = "akari-night";
+        # palette and palette definitions are injected by the akari module.
         add_newline = true;
         command_timeout = 2000;
 
@@ -489,7 +480,7 @@ in
 
         os.disabled = true;
 
-        "os.symbols" = {
+        os.symbols = {
           Alpaquita = " ";
           Alpine = " ";
           Amazon = " ";
@@ -547,42 +538,17 @@ in
         time.disabled = true;
         username.disabled = false;
 
-        "env_var.ARCH" = {
+        env_var.ARCH = {
           variable = "ARCH";
           default = "x86_64";
           style = "lantern";
         };
 
-        "custom.nvimshell" = {
+        custom.nvimshell = {
           command = "echo ";
           when = "test -n \"$NVIM\"";
           format = "in [$output]($style)";
           style = "bold life";
-        };
-
-        "palettes.akari-night" = {
-          black = "#1E1C19";
-          red = "#D25046";
-          green = "#7FAF6A";
-          yellow = "#D4A05A";
-          blue = "#5A6F82";
-          purple = "#8E7BA0";
-          cyan = "#6F8F8A";
-          white = "#E6DED3";
-          bright-black = "#716A5F";
-          bright-red = "#DE7F77";
-          bright-green = "#A1C492";
-          bright-yellow = "#E4C397";
-          bright-blue = "#8195A8";
-          bright-purple = "#B4A7C0";
-          bright-cyan = "#9AB1AD";
-          bright-white = "#EFEAE3";
-          lantern = "#E26A3B";
-          ember = "#D65A3A";
-          life = "#7FAF6A";
-          night = "#5A6F82";
-          rain = "#6F8F8A";
-          muted = "#8E7BA0";
         };
       };
     };
@@ -606,41 +572,58 @@ in
       };
     };
 
-    # bat
-    bat = {
-      enable = true;
-      config = {
-        theme = "akari-night";
-        pager = "less -FR";
-      };
-      themes = {
-        akari-night = {
-          src = ../../config/bat/themes;
-          file = "akari-night.tmTheme";
-        };
-      };
-    };
-
-    # lazygit
-    lazygit = {
+    # gh-dash — theme is provided by the akari module; sections/layout below.
+    gh-dash = {
       enable = true;
       settings = {
-        gui = {
-          theme = {
-            # Akari Night theme
-            activeBorderColor = [ "#E26A3B" "bold" ];
-            inactiveBorderColor = [ "#3F4346" ];
-            optionsTextColor = [ "#E6DED3" ];
-            selectedLineBgColor = [ "#51422E" ];
-            cherryPickedCommitBgColor = [ "#3F2A25" ];
-            cherryPickedCommitFgColor = [ "#E26A3B" ];
-            unstagedChangesColor = [ "#D25046" ];
-            defaultFgColor = [ "#E6DED3" ];
-            searchingActiveBorderColor = [ "#D4A05A" ];
+        prSections = [
+          {
+            title = "My Pull Requests";
+            filters = "is:open author:@me";
+          }
+          {
+            title = "Needs My Review";
+            filters = "is:open review-requested:@me";
+          }
+          {
+            title = "Involved";
+            filters = "is:open involves:@me -author:@me";
+          }
+        ];
+        issuesSections = [
+          {
+            title = "My Issues";
+            filters = "is:open author:@me";
+          }
+          {
+            title = "Assigned";
+            filters = "is:open assignee:@me";
+          }
+        ];
+        defaults = {
+          prsLimit = 20;
+          issuesLimit = 20;
+          view = "prs";
+          layout = {
+            prs = {
+              repoName.width = 20;
+              author.width = 15;
+            };
           };
         };
       };
     };
+
+    # bat — theme is provided by the akari module.
+    bat = {
+      enable = true;
+      config = {
+        pager = "less -FR";
+      };
+    };
+
+    # lazygit — theme is layered in by the akari module via LG_CONFIG_FILE.
+    lazygit.enable = true;
 
     # direnv
     direnv = {
@@ -649,22 +632,13 @@ in
       nix-direnv.enable = true;
     };
 
-    # fzf
+    # fzf — colours are injected via FZF_DEFAULT_OPTS by the akari module.
+    # Leaving defaultOptions empty so we don't define the same env var twice;
+    # the non-colour flags (height/reverse/border) are appended in zsh init below.
     fzf = {
       enable = true;
       enableZshIntegration = true;
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
-      defaultOptions = [
-        # Akari Night theme
-        "--color=fg:#E6DED3,bg:#25231F,hl:#E26A3B"
-        "--color=fg+:#E6DED3,bg+:#51422E,hl+:#E26A3B"
-        "--color=border:#3F4346,header:#9BABB9,gutter:#25231F"
-        "--color=spinner:#E26A3B,info:#7A8FA2"
-        "--color=pointer:#E26A3B,marker:#7FAF6A,prompt:#E26A3B"
-        "--height 40%"
-        "--reverse"
-        "--border"
-      ];
     };
 
     # eza (modern ls)
@@ -673,6 +647,27 @@ in
       enableZshIntegration = true;
       icons = "auto";
       git = true;
+    };
+
+    # Ghostty — theme is supplied by the akari module; remaining options below.
+    # The Ghostty app itself is installed via Homebrew (no aarch64-darwin pkg
+    # in nixpkgs), so we null the home-manager package and only generate the
+    # config + theme files under $XDG_CONFIG_HOME/ghostty/.
+    ghostty = {
+      enable = true;
+      package = null;
+      settings = {
+        macos-titlebar-style = "hidden";
+        font-family = [
+          "Moralerspace Argon NF"
+          "Hack Nerd Font Mono"
+          "Hiragino Kaku Gothic ProN"
+        ];
+        font-family-bold = "Moralerspace Argon NF";
+        font-family-italic = "Moralerspace Argon NF";
+        font-family-bold-italic = "Moralerspace Argon NF";
+        keybind = [ "command+k=text:\\x0c" ];
+      };
     };
 
     # Neovim (minimal - plugins managed by lazy.nvim)

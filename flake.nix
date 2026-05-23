@@ -26,6 +26,12 @@
       url = "github:mislav/gh-branch";
       flake = false;
     };
+
+    # Akari theme — centralised palette/theme management for supported tools.
+    akari-theme = {
+      url = "github:cappyzawa/akari-theme";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

@@ -59,11 +59,19 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 
 Files in `config/` are version-controlled and symlinked into `~/.config/` by `xdg.configFile` in `nix/home/default.nix`. To add a new tool's config: drop files into `config/<tool>/` and add an `xdg.configFile."<tool>".source = ../../config/<tool>;` entry. Editing through the symlink edits the repo file.
 
-`config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim.
+`config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 
 ### Theme
 
-The Akari Night palette is hardcoded across `delta`, `starship`, `lazygit`, `fzf`, `bat` (custom theme in `config/bat/themes/`), and `tmux` (via `cappyzawa/akari-tmux` plugin). Changing palette colors requires touching all of these in `nix/home/default.nix`.
+Akari Night is applied centrally via the [`cappyzawa/akari-theme`](https://github.com/cappyzawa/akari-theme) home-manager module. The flake input `akari-theme` is composed into the home configuration in `lib/mkdarwin.nix`, and `nix/home/default.nix` enables it with `akari = { enable = true; variant = "night"; };`. The module owns the theme for `bat`, `delta`, `fzf`, `gh-dash`, `ghostty`, `lazygit`, `starship`, `tmux`, and `zsh-syntax-highlighting`, so per-tool blocks in `nix/home/default.nix` must **not** redefine palettes or theme colours — doing so will collide with the module's settings.
+
+Out of scope for the module (managed differently or not managed):
+
+- **Neovim** uses the `cappyzawa/akari-nvim` plugin loaded by lazy.nvim in `config/nvim/lua/plugins/ui.lua`.
+- **Helix / Zellij / Alacritty** are unused in this setup.
+- **VSCode / macOS Terminal / Slack / Chrome** are intentionally not centralised — install/import their Akari themes manually from the upstream repo if desired.
+
+To bump to a newer Akari release: `nix flake update akari-theme` then `make switch`.
 
 ## Required local files (gitignored)
 

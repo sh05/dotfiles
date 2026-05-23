@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "akari-theme": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777003056,
+        "narHash": "sha256-b8XQgCnWEKQoAdF0WrYVKO/NxqSsiFYgFjQ8iD8x7IY=",
+        "owner": "cappyzawa",
+        "repo": "akari-theme",
+        "rev": "e1c675f5f52e49b8af4748b1f9a9d18a5f7c0c22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cappyzawa",
+        "repo": "akari-theme",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -159,6 +179,7 @@
     },
     "root": {
       "inputs": {
+        "akari-theme": "akari-theme",
         "gh-branch": "gh-branch",
         "gh-ghq-cd": "gh-ghq-cd",
         "home-manager": "home-manager",
