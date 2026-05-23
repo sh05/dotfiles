@@ -124,6 +124,9 @@ make rollback  # 前の世代にロールバック
 - 基本はリポジトリ配下の `config/` や `nix/` を編集して、`make switch` で反映します。
 - `~/.config/...` を直接編集した場合は、その差分をリポジトリ側の `config/...` に反映してから `make switch` を実行してください。
 - home-manager 管理下の `~/.config` ファイルは `make switch` 時に再生成されるため、リポジトリに戻していない直接編集は次回適用時に失われます。
+- `make switch` は「今の `flake.lock` を使って」現在ホストの設定を再ビルドして適用します（依存バージョンは更新しません）。
+- `make update` は `nix flake update` で `flake.lock` を更新したうえで適用します（依存バージョン更新を含みます）。
+- `make rollback` は現在ホストの **1つ前の darwin generation** に戻します。戻るのは nix-darwin / home-manager が管理する宣言的設定で、手動で作成したユーザーデータ（アプリ内データや任意ファイルなど）は戻りません。
 
 ## テスト
 
