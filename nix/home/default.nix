@@ -10,8 +10,7 @@
   ...
 }:
 let
-  dotfilesConfigRoot = "${dotfilesRoot}/config";
-  mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesConfigRoot}/${path}";
+  mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/config/${path}";
 in
 {
   home = {
