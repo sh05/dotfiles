@@ -1,12 +1,25 @@
 {
   pkgs,
   lib,
+  config,
   username,
   tpm,
+  dotfilesRoot,
   gh-branch-pkg,
   gh-ghq-cd-pkg,
   ...
 }:
+let
+  mutableConfigSource =
+    path:
+    let
+      outOfStorePath = "${dotfilesRoot}/config/${path}";
+    in
+    if builtins.pathExists outOfStorePath then
+      config.lib.file.mkOutOfStoreSymlink outOfStorePath
+    else
+      "${../../config}/${path}";
+in
 {
   home = {
     username = username;
@@ -131,13 +144,13 @@
 
   # XDG config file symlinks
   xdg.configFile = {
-    "nvim".source = ../../config/nvim;
-    "karabiner/karabiner.json".source = ../../config/karabiner/karabiner.json;
-    "zsh/10_utils.zsh".source = ../../config/zsh/10_utils.zsh;
-    "zsh/20_keybinds.zsh".source = ../../config/zsh/20_keybinds.zsh;
-    "zsh/30_aliases.zsh".source = ../../config/zsh/30_aliases.zsh;
-    "zsh/50_setopt.zsh".source = ../../config/zsh/50_setopt.zsh;
-    "zsh/80_custom.zsh".source = ../../config/zsh/80_custom.zsh;
+    "nvim".source = mutableConfigSource "nvim";
+    "karabiner/karabiner.json".source = mutableConfigSource "karabiner/karabiner.json";
+    "zsh/10_utils.zsh".source = mutableConfigSource "zsh/10_utils.zsh";
+    "zsh/20_keybinds.zsh".source = mutableConfigSource "zsh/20_keybinds.zsh";
+    "zsh/30_aliases.zsh".source = mutableConfigSource "zsh/30_aliases.zsh";
+    "zsh/50_setopt.zsh".source = mutableConfigSource "zsh/50_setopt.zsh";
+    "zsh/80_custom.zsh".source = mutableConfigSource "zsh/80_custom.zsh";
     "tmux/plugins/tpm" = {
       source = tpm;
       recursive = true;

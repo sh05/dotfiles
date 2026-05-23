@@ -10,6 +10,7 @@ name:
 {
   system ? "aarch64-darwin",
   user ? name,
+  dotfilesRoot ? "/Users/${user}/ghq/github.com/sh05/dotfiles",
 }:
 
 let
@@ -37,6 +38,7 @@ let
     configName = name;
     currentUser = user;
     username = user; # backward compatibility
+    inherit dotfilesRoot;
   };
 in
 nix-darwin.lib.darwinSystem {
