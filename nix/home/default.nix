@@ -214,6 +214,8 @@ in
           # Word split characters
           export WORDCHARS='*?[]~&;!#$%^(){}<>'
 
+          export ARCH=$(uname -m)
+
           # Source custom zsh configs
           for config_file in $XDG_CONFIG_HOME/zsh/*.zsh(N); do
             source "$config_file"
@@ -540,7 +542,6 @@ in
 
         env_var.ARCH = {
           variable = "ARCH";
-          default = "x86_64";
           style = "lantern";
         };
 
