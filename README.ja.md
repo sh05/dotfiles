@@ -151,6 +151,12 @@ make rollback                      # 前の世代に戻す
        hostName = "<HostName>";
        computerName = "<HostName>";
      };
+
+     # 任意: 私用端末にだけ入れたい Mac App Store アプリ
+     # homebrew.masApps = {
+     #   "LINE" = 539883307;
+     #   "Kindle" = 302584613;
+     # };
    }
    ```
 

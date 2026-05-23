@@ -372,8 +372,6 @@
       "font-menlo-for-powerline"
     ];
     masApps = {
-      "Kindle" = 302584613;
-      "LINE" = 539883307;
       "Xcode" = 497799835;
     };
   };
