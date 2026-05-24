@@ -42,9 +42,9 @@ echo 'extra-experimental-features = nix-command flakes' | sudo tee -a /var/root/
 
 After the first `make bootstrap`, nix-darwin manages `/etc/nix/nix.conf` with flakes enabled system-wide, so these two files become redundant (harmless to keep or remove).
 
-### 4. Install Homebrew
+### 4. Install Homebrew (Optional)
 
-nix-darwin manages Homebrew packages but does not install Homebrew itself:
+CLI tools are managed by Nix/home-manager. Install Homebrew only if you want the macOS GUI/Mac App Store apps managed by nix-darwin:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

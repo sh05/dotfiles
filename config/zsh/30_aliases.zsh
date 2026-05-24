@@ -39,10 +39,6 @@ alias egrep='egrep --color=auto'
 
 alias flushdns='sudo killall -HUP mDNSResponder'
 
-if is_osx; then
-    alias ctags="`brew --prefix`/bin/ctags"
-fi
-
 alias -g vy="| vim '+set filetype=yaml buftype=nofile'"
 
 alias arm="exec arch -arch arm64 /bin/zsh --login"
