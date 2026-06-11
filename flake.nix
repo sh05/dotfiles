@@ -54,6 +54,7 @@
 
         # Verification host: same machine, applied to the `test` account.
         # "sh05MacMini-test" = mkDarwin "sh05MacMini-test" { user = "test"; };
+        "shogonakamotoubie-partnerscoms-MacBook-Pro" = mkDarwin "shogonakamotoubie-partnerscoms-MacBook-Pro" { user = "shogo.nakamoto"; };
       };
     };
 }

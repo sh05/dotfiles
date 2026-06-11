@@ -316,6 +316,7 @@
       autoUpdate = true;
       cleanup = "zap";
       upgrade = true;
+      extraFlags = [ "--force" ];
     };
     taps = [ ];
     brews = [
@@ -369,9 +370,6 @@
       # Additional fonts
       "font-menlo-for-powerline"
     ];
-    masApps = {
-      "Xcode" = 497799835;
-    };
   };
 
   # Enable fonts

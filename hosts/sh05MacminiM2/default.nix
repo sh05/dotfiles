@@ -10,6 +10,7 @@
   homebrew.masApps = {
     "Kindle" = 302584613;
     "LINE" = 539883307;
+    "Xcode" = 497799835;
   };
 
   # Enable SSH (optional, can be disabled if not needed)

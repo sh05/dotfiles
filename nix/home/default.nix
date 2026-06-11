@@ -40,7 +40,7 @@ in
 
       # Languages
       go
-      nodejs_22
+      nodejs_24
       bun
       uv
 
@@ -51,6 +51,8 @@ in
       opentofu
       ko
       kubebuilder
+      mise
+      lefthook
 
       # Utils
       fzf
@@ -124,12 +126,15 @@ in
       GOPATH = "$HOME/.go";
       KUBECTL_EXTERNAL_DIFF = "colordiff -u";
       GOEXPERIMENT = "synctest";
+      # npm global install を書き込み可能な prefix へ（Nix管理のnodeと共存）
+      NPM_CONFIG_PREFIX = "$HOME/.npm-global";
     };
 
     # Session path
     sessionPath = [
       "$HOME/bin"
       "$HOME/.local/bin"
+      "$HOME/.npm-global/bin"
       "$HOME/.go/bin"
       "$HOME/.krew/bin"
       "$HOME/.cargo/bin"
@@ -232,6 +237,10 @@ in
           # Local configuration
           if [[ -f ~/.zshrc.local ]]; then
             source ~/.zshrc.local
+          fi
+
+          if command -v mise &> /dev/null; then
+            eval "$(mise activate zsh)"
           fi
 
           # Auto start tmux
