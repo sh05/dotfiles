@@ -391,8 +391,8 @@ in
         bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "pbcopy"
         bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "pbcopy"
 
-        set-environment -g PATH "/opt/homebrew/bin:/usr/local/bin:/bin:/usr/bin:$PATH"
-        TMUX_FZF_SED="/usr/local/opt/gnu-sed/libexec/gnubin/sed"
+        set-environment -g PATH "$HOME/.nix-profile/bin:/usr/local/bin:/bin:/usr/bin:$PATH"
+        set-environment -g TMUX_FZF_SED "sed"
 
         # List of plugins
         set -g @plugin 'tmux-plugins/tpm'
