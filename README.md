@@ -73,6 +73,8 @@ nix-darwin's activation writes TCC-protected preference domains such as `com.app
 defaults[...] Could not write domain com.apple.universalaccess; exiting
 ```
 
+> **Running inside tmux (or another terminal multiplexer)?** The grant will *not* take effect even after reopening the terminal: the multiplexer's server process keeps running with its old TCC context, and every shell inside it inherits that context. Run `tmux kill-server`, open a fresh terminal, and retry.
+
 #### Run bootstrap
 
 ```bash
@@ -102,6 +104,35 @@ make bootstrap NIXNAME=sh05MacMini
 ```
 
 Because flakes were enabled in the per-user config files (step 3), renaming `/etc/nix/nix.conf` is safe — flakes stay available for the re-run.
+
+#### Existing shell dotfiles: "would be clobbered"
+
+home-manager refuses to overwrite `~/.zshrc` / `~/.zshenv` files it did not create — including symlinks left behind by a previous dotfiles setup, which `backupFileExtension` does not cover:
+
+```
+Existing file '/Users/<you>/.zshrc' would be clobbered
+```
+
+Move the listed files aside (for symlinks, simply delete them — the targets stay intact) and re-run bootstrap. Machine-local settings belong in `~/.zshrc.local`, which the generated zshrc sources at the end.
+
+#### Corporate networks with TLS interception
+
+If your network re-encrypts HTTPS with a corporate CA (a MITM proxy), set the CA bundle in your host module so it lands in `/etc/nix/nix.conf`:
+
+```nix
+nix.settings.ssl-cert-file = "/path/to/corporate-ca-bundle.pem";
+```
+
+Exporting `NIX_SSL_CERT_FILE` in your shell is *not* enough: substitutions (`.narinfo`/NAR downloads) are performed by the nix-daemon, a launchd service that never sees your shell environment. The symptom is confusing — `curl` and `nix eval` succeed while `nix build` fails with `unable to get local issuer certificate`. For the very first bootstrap (before nix-darwin manages `nix.conf`), temporarily inject the variable into the daemon's launchd plist, and pass it via `sudo env` for the client side.
+
+#### Cask upgrades failing with Swift errors
+
+If `brew bundle` fails during activation with `redefinition of module 'SwiftBridging'` or `this SDK is not supported by the compiler`, the Xcode Command Line Tools are out of sync with the macOS SDK (Homebrew compiles a small Swift helper when upgrading casks; fresh installs are unaffected). Reinstall them and re-run:
+
+```bash
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
+```
 
 ### 6. Configure Git (Required)
 
@@ -187,6 +218,26 @@ Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different ma
    ```bash
    make bootstrap NIXNAME=<HostName>
    ```
+
+### Keep a machine private (wrapper flake)
+
+If a machine's hostname or configuration should not appear in this public repository (e.g. a work laptop), create a *private wrapper flake* in a separate repository instead of adding an entry here. This repo exports `lib.mkDarwin`, and its `hostModule` argument lets the wrapper inject the host config from outside:
+
+```nix
+# flake.nix (private repository)
+{
+  inputs.dotfiles.url = "github:sh05/dotfiles";
+
+  outputs = { self, dotfiles }: {
+    darwinConfigurations."<HostName>" = dotfiles.lib.mkDarwin "<HostName>" {
+      user = "<yourusername>";
+      hostModule = ./hosts/<HostName>; # networking, masApps, private packages, …
+    };
+  };
+}
+```
+
+Run `sudo darwin-rebuild switch --flake '.#<HostName>'` from the wrapper repository. Nothing about the machine ever touches this repo; shared configuration is picked up by re-locking the input (`nix flake update dotfiles`). The host module is a regular nix-darwin module, so it can also carry machine-private packages via `home-manager.users.<user>.home.packages`.
 
 ### Verifying with another user on the same machine
 

@@ -1,38 +1,211 @@
 {
   "version": 3,
-  "displayLines": [
-    {
-      "widgets": ["Model", "GitBranch", "GitChanges", "GitWorktree"]
-    },
-    {
-      "widgets": [
-        "ContextBar",
-        "ContextLength",
-        "ContextPercentage",
-        "SessionCost",
-        "WeeklyUsage"
-      ]
-    }
+  "lines": [
+    [
+      {
+        "id": "478becb8-10b7-442c-b959-900f444cb717",
+        "type": "custom-command",
+        "color": "cyan",
+        "commandPath": "get_context"
+      },
+      {
+        "id": "667b836c-87a9-4302-99fd-40d63a0a5f80",
+        "type": "custom-command",
+        "color": "green",
+        "commandPath": "get_cwd_from_grandparent"
+      },
+      {
+        "id": "5",
+        "type": "git-branch",
+        "color": "blue",
+        "metadata": {
+          "hideNoGit": "true",
+          "linkToRepo": "true"
+        }
+      },
+      {
+        "id": "7",
+        "type": "git-worktree",
+        "color": "blue",
+        "metadata": {
+          "hideNoGit": "true"
+        }
+      },
+      {
+        "id": "e9391ea1-ed66-452e-b48c-87c12799d946",
+        "type": "git-changes",
+        "color": "yellow",
+        "metadata": {
+          "hideNoGit": "true"
+        }
+      },
+      {
+        "id": "c99f2b7e-72a1-4baa-a6a6-09a8b36b2163",
+        "type": "git-review",
+        "color": "brightRed",
+        "metadata": {
+          "hideStatus": "false",
+          "hideNoGit": "true",
+          "hideTitle": "false"
+        }
+      }
+    ],
+    [
+      {
+        "id": "0269c780-d0b6-4428-9b62-1d0263135783",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "17f001e5-7352-4d5b-8430-3e43539aa5ef",
+        "type": "session-name",
+        "color": "cyan"
+      },
+      {
+        "id": "503101d6-a399-4594-9c10-52561bdedb77",
+        "type": "tokens-input",
+        "color": "green"
+      },
+      {
+        "id": "b53c17c6-f645-4e1b-9d4c-da8404ae57a9",
+        "type": "tokens-output",
+        "color": "green"
+      },
+      {
+        "id": "4a7a4faf-a54e-4bc3-b739-06913cc2333b",
+        "type": "tokens-cached",
+        "color": "green"
+      },
+      {
+        "id": "33c05d84-b984-463e-b331-e7533ffab970",
+        "type": "tokens-total",
+        "color": "green"
+      },
+      {
+        "id": "605527eb-ceee-4a52-9f08-9ff52c159302",
+        "type": "context-length",
+        "color": "blue"
+      },
+      {
+        "id": "29015cae-d41e-4c47-9fe3-76d6fe9ac4e3",
+        "type": "context-percentage",
+        "color": "blue",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "5d26cd81-4fec-481a-8ff1-ea6d8bb963f9",
+        "type": "context-percentage-usable",
+        "color": "blue",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "01a916e3-281f-45fc-ab9d-260b7ed025b0",
+        "type": "session-cost",
+        "color": "brightRed"
+      }
+    ],
+    [
+      {
+        "id": "eeadc486-085c-43d6-96e8-fc143e510172",
+        "type": "block-timer",
+        "color": "brightRed",
+        "metadata": {
+          "display": "time"
+        }
+      },
+      {
+        "id": "ff77bfa4-54dd-445e-b2b3-6c4efa029e97",
+        "type": "reset-timer",
+        "color": "brightRed",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "63fd3558-9ce6-4fec-856f-bbac9784f17e",
+        "type": "weekly-reset-timer",
+        "color": "brightRed",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "4596daee-cf15-4cda-9242-5bbc912cf31d",
+        "type": "session-usage",
+        "color": "brightMagenta",
+        "metadata": {
+          "display": "slider",
+          "cursor": "true"
+        }
+      },
+      {
+        "id": "bbf3cb18-2f14-404a-8fc9-6f2efa9f1577",
+        "type": "weekly-opus-usage",
+        "color": "brightMagenta",
+        "metadata": {
+          "display": "slider",
+          "cursor": "true"
+        }
+      },
+      {
+        "id": "531c4b1b-1e97-4be2-93af-7b88323bde46",
+        "type": "weekly-sonnet-usage",
+        "color": "brightMagenta",
+        "metadata": {
+          "display": "slider",
+          "invert": "false",
+          "cursor": "true"
+        }
+      },
+      {
+        "id": "f6f8ce75-3faa-4ba7-9231-1e2caa138d71",
+        "type": "weekly-usage",
+        "color": "brightYellow",
+        "metadata": {
+          "display": "slider",
+          "cursor": "true"
+        }
+      }
+    ],
+    [
+      {
+        "id": "b0686888-94b2-47aa-90b1-81ed9427cf7a",
+        "type": "skills",
+        "color": "brightMagenta",
+        "metadata": {
+          "hideWhenEmpty": "true",
+          "mode": "list"
+        }
+      }
+    ]
   ],
+  "flexMode": "full",
+  "compactThreshold": 60,
+  "colorLevel": 1,
+  "defaultSeparator": "|",
+  "defaultPadding": "",
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 5,
+  "minimalistMode": false,
   "powerline": {
-    "enabled": true,
-    "separators": [""],
-    "separatorInvertBackground": [true],
-    "startCaps": [""],
-    "endCaps": [""],
-    "theme": null,
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [
+      ""
+    ],
+    "theme": "nord-aurora",
     "autoAlign": false,
     "continueThemeAcrossLines": false
-  },
-  "flexMode": "full-minus-40",
-  "compactThreshold": 60,
-  "colorLevel": 3,
-  "gitCacheTtl": 5,
-  "updateMessaging": {
-    "enabled": false
-  },
-  "installationMetadata": {
-    "type": "self-managed",
-    "packageManager": "npm"
   }
 }

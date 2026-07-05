@@ -119,6 +119,19 @@ in
       ccstatusline-pkg
       claude-code
 
+      # Helper scripts for ccstatusline custom-command widgets
+      # (config/ccstatusline/settings.json references them by name)
+      (writeShellScriptBin "get_context" ''
+        echo "󱃾 $(${pkgs.yq-go}/bin/yq .current-context ~/.kube/config)"
+      '')
+      (writeShellScriptBin "get_cwd_from_grandparent" ''
+        cwd=$(pwd)
+        c=$(basename "$cwd")
+        p=$(basename "$(dirname "$cwd")")
+        g=$(basename "$(dirname "$(dirname "$cwd")")")
+        echo "$g/$p/$c"
+      '')
+
       # Codex CLI
       codex
 

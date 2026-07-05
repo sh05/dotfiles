@@ -14,6 +14,10 @@ split_horizontal = "prefix+minus"
 # prefix+ctrl+[ may collide with ESC in some terminals; prefix+p still works.
 next_tab = ["prefix+n", "prefix+ctrl+]"]
 previous_tab = ["prefix+p", "prefix+ctrl+["]
+# tmux-era `prefix v` enters copy mode (herdr default prefix+[ kept too).
+# Inside copy mode herdr is vim-style by default: v/Space select, y/Enter yank,
+# h/j/k/l + w/b/e movement. prefix+v is free because splits use | and -.
+copy_mode = ["prefix+[", "prefix+v"]
 
 [theme]
 # Base follows the host terminal's ANSI palette (Ghostty is themed by akari),

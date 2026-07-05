@@ -39,10 +39,10 @@ let
   # To update: bump version, re-run nix-prefetch-url, update hash.
   ccstatusline-pkg = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "ccstatusline";
-    version = "2.2.19";
+    version = "2.2.22";
     src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/ccstatusline/-/ccstatusline-${version}.tgz";
-      hash = "sha256-ZECyfJStzolhs1EQrrbq6svXCtvcpj6YJRPjFIazLSw=";
+      hash = "sha256-FKDBeocIjiP4xXxNycTAJFlr7s+I8zm+gNv9IchcsQA=";
     };
     nativeBuildInputs = [ pkgs.makeWrapper ];
     dontConfigure = true;

@@ -95,6 +95,14 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 - Prefix: `Ctrl-k` (not the default `Ctrl-b`)
 - Vim-style pane nav: prefix + `h/j/k/l` (herdr default); splits: prefix + `|` (side-by-side), prefix + `-` (stacked)
 - Tab cycle: prefix + `n`/`p` (herdr default) or prefix + `Ctrl-]`/`Ctrl-[` (tmux-era)
+- Copy mode: prefix + `v` (tmux-era) or prefix + `[` (herdr default). Inside it herdr is
+  vim-style out of the box — `v`/Space select, `y`/Enter yank (to system clipboard),
+  `h/j/k/l` + `w/b/e` movement. Copy-mode internals are not configurable; paste is Cmd+V
+  (there is no tmux-style `prefix p` paste buffer — that key cycles tabs).
+- Resize: prefix + `r` enters resize mode (replaces tmux's repeatable prefix + `H/J/K/L`);
+  zoom: prefix + `z`; swap panes: prefix + `Shift-h/j/k/l` (all herdr defaults)
+- Not carried over from tmux (no herdr equivalent): synchronize-panes, even-horizontal/vertical
+  layouts, pane-border title toggle
 - Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
 - Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
 
