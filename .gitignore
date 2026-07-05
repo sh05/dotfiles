@@ -24,3 +24,4 @@ config/karabiner/automatic_backups/
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/worktrees/
