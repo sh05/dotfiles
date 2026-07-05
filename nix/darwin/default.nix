@@ -340,11 +340,7 @@
       "visual-studio-code"
       "orbstack"
 
-      # Browsers
-      "google-chrome"
-
       # Communication
-      "slack"
       "discord"
 
       # Other
@@ -364,7 +360,6 @@
       "keycastr"
 
       # Utilities
-      "multipass"
       "fliqlo"
 
       # Additional fonts

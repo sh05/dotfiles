@@ -13,6 +13,13 @@
     "Xcode" = 497799835;
   };
 
+  # Personal-only casks (exclude these on work hosts)
+  homebrew.casks = [
+    "google-chrome"
+    "slack"
+    "multipass"
+  ];
+
   # 電源設定（常時稼働のMac mini向け。MacBookには適用しない）
   power = {
     sleep = {
