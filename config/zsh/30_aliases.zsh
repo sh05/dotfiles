@@ -45,5 +45,7 @@ fi
 
 alias -g vy="| vim '+set filetype=yaml buftype=nofile'"
 
+alias mancat='man -P cat'
+
 alias arm="exec arch -arch arm64 /bin/zsh --login"
 alias x64="exec arch -arch x86_64 /bin/zsh --login"

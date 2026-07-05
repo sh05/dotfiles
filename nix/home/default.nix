@@ -16,8 +16,16 @@ let
   # mkOutOfStoreSymlink never validates its target at build time, so this
   # also evaluates fine in CI where the checkout path doesn't exist.
   mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/config/${path}";
+
+  # Optional per-machine module. Put machine-private packages / overrides at
+  # ~/.config/nix-local/home.nix on the target host; the file is git-ignored
+  # and lives outside this repo. If absent, this hook is a no-op so the flake
+  # builds anywhere.
+  localHomeModule = "/Users/${username}/.config/nix-local/home.nix";
 in
 {
+  imports = lib.optional (builtins.pathExists localHomeModule) localHomeModule;
+
   home = {
     username = username;
     homeDirectory = "/Users/${username}";
@@ -109,12 +117,16 @@ in
 
       # Claude Code
       ccstatusline-pkg
+      claude-code
 
       # Codex CLI
       codex
 
       # Terminal multiplexer (tmux replacement)
       herdr
+
+      # Secret CLI
+      _1password-cli
     ];
 
     # Session variables
@@ -579,6 +591,7 @@ in
       package = null;
       settings = {
         macos-titlebar-style = "hidden";
+        desktop-notifications = true;
         font-family = [
           "Moralerspace Argon NF"
           "Hack Nerd Font Mono"
