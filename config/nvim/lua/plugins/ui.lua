@@ -1,41 +1,6 @@
 local tn_colors = require("tokyonight.colors")
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    branch = "master",
-    lazy = false,
-    build = ":TSUpdate",
-    dependencies = {
-      {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        "norcalli/nvim-colorizer.lua",
-        config = function()
-          require("colorizer").setup()
-        end,
-      },
-    },
-    main = "nvim-treesitter.configs",
-    opts = function(_, opts)
-      opts.ensure_installed = vim.list_extend(opts.ensure_installed, {
-        "cue",
-        "elm",
-        "go",
-        "gomod",
-        "hcl",
-        "julia",
-        "rego",
-        "rust",
-        "starlark",
-        "terraform",
-      })
-      return opts
-    end,
-  },
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    event = "CursorMoved",
-  },
-  {
     "folke/noice.nvim",
     enabled = true,
     opts = {

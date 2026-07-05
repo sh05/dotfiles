@@ -40,3 +40,6 @@ blue = "#7A8FA2"
 mauve = "#8E7BA0"
 teal = "#6F8F8A"
 peach = "#E26A3B"
+
+[ui.sound]
+enabled = true

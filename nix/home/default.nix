@@ -7,7 +7,6 @@
   gh-branch-pkg,
   gh-ghq-cd-pkg,
   ccstatusline-pkg,
-  herdr-pkg,
   ...
 }:
 let
@@ -111,8 +110,11 @@ in
       # Claude Code
       ccstatusline-pkg
 
+      # Codex CLI
+      codex
+
       # Terminal multiplexer (tmux replacement)
-      herdr-pkg
+      herdr
     ];
 
     # Session variables

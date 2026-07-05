@@ -33,9 +33,6 @@ let
   # gh-ghq-cd ships its own flake exposing a `gh-ghq-cd` package.
   gh-ghq-cd-pkg = inputs.gh-ghq-cd.packages.${system}.gh-ghq-cd;
 
-  # herdr ships its own flake exposing a `herdr` package (Rust source build).
-  herdr-pkg = inputs.herdr.packages.${system}.herdr;
-
   # ccstatusline — Claude Code status line formatter, fetched from npm registry.
   # The npm tarball ships a pre-built Bun bundle at dist/ccstatusline.js.
   # To update: bump version, re-run nix-prefetch-url, update hash.
@@ -83,7 +80,7 @@ nix-darwin.lib.darwinSystem {
         useUserPackages = true;
         backupFileExtension = "backup";
         extraSpecialArgs = specialArgs // {
-          inherit gh-branch-pkg gh-ghq-cd-pkg ccstatusline-pkg herdr-pkg;
+          inherit gh-branch-pkg gh-ghq-cd-pkg ccstatusline-pkg;
         };
         users.${user} = {
           imports = [

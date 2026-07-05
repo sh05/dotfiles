@@ -3,7 +3,6 @@ return {
     "nvimdev/lspsaga.nvim",
     dependencies = {
       { "nvim-tree/nvim-web-devicons" },
-      { "nvim-treesitter/nvim-treesitter" },
     },
     event = "BufReadPre",
     opts = {
@@ -20,6 +19,10 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    -- also load on VeryLazy so vim.diagnostic.config() (called once, in this
+    -- plugin's config()) runs at startup instead of racing neo-tree's first
+    -- file-open, which otherwise trips "Invalid buffer id" in vim.diagnostic
+    event = { "BufReadPre", "BufNewFile", "VeryLazy" },
     dependencies = {
       { "nvimdev/lspsaga.nvim" },
       { "j-hui/fidget.nvim", opts = {} },

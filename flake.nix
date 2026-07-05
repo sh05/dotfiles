@@ -11,13 +11,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # herdr — agent-aware terminal multiplexer (tmux replacement).
-    # Ships its own flake exposing packages.<system>.herdr.
-    herdr = {
-      url = "github:ogulcancelik/herdr";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # gh extensions (not in nixpkgs) — packaged via flake inputs.
     # gh-ghq-cd ships its own flake; gh-branch is a single shell script.
     gh-ghq-cd = {
