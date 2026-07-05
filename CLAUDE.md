@@ -40,10 +40,10 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 ### Module layout
 
 - `nix/darwin/default.nix` — macOS `system.defaults` (Dock/Finder/trackpad/Rectangle plist), Homebrew `casks`/`brews`/`masApps` shared across hosts, system fonts.
-- `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, tmux, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
+- `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
 - `nix/modules/shared.nix` — `nix` daemon settings, `nixpkgs.config.allowUnfree`, `system.stateVersion`.
 - `hosts/<name>/default.nix` — `networking.hostName`, `networking.computerName`, host-specific `homebrew.masApps`.
-- `lib/mkdarwin.nix` — assembles all of the above; also packages `gh-branch` (shell script from flake input) and `gh-ghq-cd` (flake input's own package) since they aren't in nixpkgs.
+- `lib/mkdarwin.nix` — assembles all of the above; also packages `gh-branch` (shell script from flake input), `gh-ghq-cd`, and `herdr` (flake inputs' own packages) since they aren't in nixpkgs.
 
 ### Package management split
 
@@ -52,7 +52,7 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 | `home.packages` (`nix/home`) | CLI tools, language toolchains, LSP servers |
 | `homebrew.casks` (`nix/darwin`) | GUI apps, fonts |
 | `homebrew.masApps` (`hosts/<name>`) | Personal Mac App Store apps — host-specific |
-| `programs.*` (`nix/home`) | Declarative config for zsh/git/tmux/starship/etc. |
+| `programs.*` (`nix/home`) | Declarative config for zsh/git/starship/etc. |
 | `xdg.configFile` (`nix/home`) | Symlinks from `config/<tool>/` to `~/.config/<tool>/` |
 
 ### Config symlink strategy
@@ -69,12 +69,15 @@ The helper must NOT gate on `builtins.pathExists` (or otherwise read the checkou
 
 `config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 
+`config/herdr/config.toml` is linked as a single file (not the whole `herdr/` directory) because herdr writes logs and session state into `~/.config/herdr/`. herdr rewrites the config in place (no atomic rename), so the out-of-store symlink survives writes from its onboarding flow / settings UI and those edits land in the repo file.
+
 ### Theme
 
-Akari Night is applied centrally via the [`cappyzawa/akari-theme`](https://github.com/cappyzawa/akari-theme) home-manager module. The flake input `akari-theme` is composed into the home configuration in `lib/mkdarwin.nix`, and `nix/home/default.nix` enables it with `akari = { enable = true; variant = "night"; };`. The module owns the theme for `bat`, `delta`, `fzf`, `gh-dash`, `ghostty`, `lazygit`, `starship`, `tmux`, and `zsh-syntax-highlighting`, so per-tool blocks in `nix/home/default.nix` must **not** redefine palettes or theme colours — doing so will collide with the module's settings.
+Akari Night is applied centrally via the [`cappyzawa/akari-theme`](https://github.com/cappyzawa/akari-theme) home-manager module. The flake input `akari-theme` is composed into the home configuration in `lib/mkdarwin.nix`, and `nix/home/default.nix` enables it with `akari = { enable = true; variant = "night"; };`. The module owns the theme for `bat`, `delta`, `fzf`, `gh-dash`, `ghostty`, `lazygit`, `starship`, and `zsh-syntax-highlighting`, so per-tool blocks in `nix/home/default.nix` must **not** redefine palettes or theme colours — doing so will collide with the module's settings.
 
 Out of scope for the module (managed differently or not managed):
 
+- **herdr** is not supported by the module. Its Akari Night palette is hand-written in `config/herdr/config.toml` (`[theme] name = "terminal"` follows Ghostty's akari ANSI palette; `[theme.custom]` overrides UI tokens with values taken from the upstream `dist/` generated themes). This block is the reference implementation for a future herdr template PR to `cappyzawa/akari-theme`.
 - **Neovim** uses the `cappyzawa/akari-nvim` plugin loaded by lazy.nvim in `config/nvim/lua/plugins/ui.lua`.
 - **Helix / Zellij / Alacritty** are unused in this setup.
 - **VSCode / macOS Terminal / Slack / Chrome** are intentionally not centralised — install/import their Akari themes manually from the upstream repo if desired.
@@ -86,12 +89,14 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 - `~/.gitconfig.local` — `[user] name = ... / email = ...`. Included by `programs.git.includes`; activation works without it but commits will be unattributed.
 - `~/.zshrc.local` — sourced at the end of zsh init for machine-specific overrides.
 
-## Tmux
+## Herdr (terminal multiplexer, replaced tmux)
 
+- Installed from the `herdr` flake input (`github:ogulcancelik/herdr`, Rust source build); config lives in `config/herdr/config.toml`
 - Prefix: `Ctrl-k` (not the default `Ctrl-b`)
-- Vim-style pane nav: `h/j/k/l`; splits: `|` (horizontal), `-` (vertical)
-- Window cycle: `Ctrl-]` / `Ctrl-[`
-- Auto-starts from zsh on terminal launch, except inside VS Code or an existing tmux session
+- Vim-style pane nav: prefix + `h/j/k/l` (herdr default); splits: prefix + `|` (side-by-side), prefix + `-` (stacked)
+- Tab cycle: prefix + `n`/`p` (herdr default) or prefix + `Ctrl-]`/`Ctrl-[` (tmux-era)
+- Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
+- Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
 
 ## CI
 

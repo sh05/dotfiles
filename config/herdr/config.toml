@@ -1,0 +1,42 @@
+onboarding = false
+
+[update]
+# herdr is Nix-managed; its own version checks are noise.
+version_check = false
+
+[keys]
+prefix = "ctrl+k"
+# Keep the tmux-era split keys: `|` for side-by-side, `-` for stacked
+# (herdr's split_vertical = left/right, split_horizontal = top/bottom).
+split_vertical = "prefix+|"
+split_horizontal = "prefix+minus"
+# tmux-era C-] / C-[ tab cycling alongside herdr's default n/p.
+# prefix+ctrl+[ may collide with ESC in some terminals; prefix+p still works.
+next_tab = ["prefix+n", "prefix+ctrl+]"]
+previous_tab = ["prefix+p", "prefix+ctrl+["]
+
+[theme]
+# Base follows the host terminal's ANSI palette (Ghostty is themed by akari),
+# with UI tokens overridden below to Akari Night.
+name = "terminal"
+
+# Akari Night — taken from cappyzawa/akari-theme generated themes
+# (dist/ghostty/akari-night, dist/fzf/akari-night.sh, dist/lazygit/akari-night.yml).
+# Reference implementation for a future herdr template PR to akari-theme.
+[theme.custom]
+accent = "#E26A3B"      # lantern mid (akari primary accent)
+panel_bg = "#1E1C19"    # ANSI black0
+surface_dim = "#1E1C19"
+surface0 = "#412E23"    # inactive selection bg
+surface1 = "#51422E"    # selection bg
+overlay0 = "#3F4346"    # border
+overlay1 = "#716A5F"    # bright black
+text = "#E6DED3"        # foreground
+subtext0 = "#9BABB9"    # header/info
+red = "#D25046"
+green = "#7FAF6A"
+yellow = "#D4A05A"
+blue = "#7A8FA2"
+mauve = "#8E7BA0"
+teal = "#6F8F8A"
+peach = "#E26A3B"
