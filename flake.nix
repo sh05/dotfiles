@@ -50,5 +50,9 @@
         # "sh05MacMini-test" = mkDarwin "sh05MacMini-test" { user = "test"; };
         "shogonakamotoubie-partnerscoms-MacBook-Pro" = mkDarwin "shogonakamotoubie-partnerscoms-MacBook-Pro" { user = "shogo.nakamoto"; };
       };
+
+      # Allow external flakes (e.g. a private wrapper) to build their own
+      # darwinConfigurations by calling mkDarwin with a custom hostModule.
+      lib.mkDarwin = mkDarwin;
     };
 }

@@ -11,6 +11,7 @@ name:
   system ? "aarch64-darwin",
   user ? name,
   dotfilesRoot ? "/Users/${user}/ghq/github.com/sh05/dotfiles",
+  hostModule ? ../hosts/${name},
 }:
 
 let
@@ -70,7 +71,7 @@ nix-darwin.lib.darwinSystem {
   inherit system specialArgs;
 
   modules = [
-    ../hosts/${name}
+    hostModule
     ../nix/darwin
     ../nix/modules/shared.nix
     home-manager.darwinModules.home-manager
