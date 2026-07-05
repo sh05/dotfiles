@@ -11,9 +11,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    tpm = {
-      url = "github:tmux-plugins/tpm";
-      flake = false;
+    # herdr — agent-aware terminal multiplexer (tmux replacement).
+    # Ships its own flake exposing packages.<system>.herdr.
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # gh extensions (not in nixpkgs) — packaged via flake inputs.
@@ -40,7 +42,6 @@
       nixpkgs,
       nix-darwin,
       home-manager,
-      tpm,
       ...
     }@inputs:
     let

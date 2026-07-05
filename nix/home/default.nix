@@ -3,11 +3,11 @@
   lib,
   config,
   username,
-  tpm,
   dotfilesRoot,
   gh-branch-pkg,
   gh-ghq-cd-pkg,
   ccstatusline-pkg,
+  herdr-pkg,
   ...
 }:
 let
@@ -110,6 +110,9 @@ in
 
       # Claude Code
       ccstatusline-pkg
+
+      # Terminal multiplexer (tmux replacement)
+      herdr-pkg
     ];
 
     # Session variables
@@ -142,7 +145,9 @@ in
 
   # Akari theme — centralised theme/palette management via the upstream
   # home-manager module (cappyzawa/akari-theme). Covers bat, delta, fzf,
-  # gh-dash, ghostty, lazygit, starship, tmux, and zsh-syntax-highlighting.
+  # gh-dash, ghostty, lazygit, starship, and zsh-syntax-highlighting.
+  # herdr is NOT covered by the module — its akari-night palette is
+  # hand-written in config/herdr/config.toml (candidate for an upstream PR).
   akari = {
     enable = true;
     variant = "night";
@@ -158,10 +163,11 @@ in
     "zsh/30_aliases.zsh".source = mutableConfigSource "zsh/30_aliases.zsh";
     "zsh/50_setopt.zsh".source = mutableConfigSource "zsh/50_setopt.zsh";
     "zsh/80_custom.zsh".source = mutableConfigSource "zsh/80_custom.zsh";
-    "tmux/plugins/tpm" = {
-      source = tpm;
-      recursive = true;
-    };
+    # herdr writes logs and session state into ~/.config/herdr/, so only the
+    # config file is linked — never the whole directory. herdr rewrites the
+    # file in place (no rename), so the out-of-store symlink survives writes
+    # from its onboarding flow / settings UI.
+    "herdr/config.toml".source = mutableConfigSource "herdr/config.toml";
   };
 
   # Programs configuration
@@ -240,9 +246,9 @@ in
             eval "$(mise activate zsh)"
           fi
 
-          # Auto start tmux
-          if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [[ $TERM_PROGRAM != "vscode" ]]; then
-            exec tmux
+          # Auto start herdr (HERDR_ENV=1 is set inside herdr panes)
+          if command -v herdr &> /dev/null && [ -z "$HERDR_ENV" ] && [[ $TERM_PROGRAM != "vscode" ]]; then
+            exec herdr
           fi
         '')
       ];
@@ -302,105 +308,6 @@ in
         navigate = true;
         side-by-side = true;
       };
-    };
-
-    # Tmux
-    tmux = {
-      enable = true;
-      prefix = "C-k";
-      shell = "${pkgs.zsh}/bin/zsh";
-      terminal = "screen-256color";
-      mouse = true;
-      baseIndex = 1;
-      escapeTime = 50;
-      keyMode = "vi";
-      historyLimit = 50000;
-
-      extraConfig = ''
-        # Default command for macOS
-        set-option -g default-command "exec arch -arch arm64 /bin/zsh --login"
-        set-option -g focus-events on
-        set-option -ga terminal-overrides ",xterm-256color:Tc"
-
-        # Split window from current path
-        bind-key | split-window -h -c '#{pane_current_path}'
-        unbind '"'
-        bind-key - split-window -v -c '#{pane_current_path}'
-        unbind '%'
-
-        # New Window
-        bind-key c new-window -c '#{pane_current_path}'
-
-        # Equal layouts
-        bind ^h select-layout even-horizontal
-        bind ^v select-layout even-vertical
-
-        # Move window in order
-        bind-key C-] select-window -t +1
-        bind-key C-[ select-window -t -1
-
-        # Custom mouse settings
-        unbind-key -T root MouseDown1Pane
-        unbind-key -T root MouseDown3Pane
-
-        # Pane Title
-        bind-key C-k run 'zsh -c "arr=( top off ) && tmux setw pane-border-status \''${arr[\$(( \''${arr[(I)#{pane-border-status}]} % 2 + 1 ))]}"'
-        bind-key : command-prompt -p "(rename-pane)" "select-pane -T %%"
-
-        # Resize pane
-        bind-key -r H resize-pane -L 5
-        bind-key -r J resize-pane -D 5
-        bind-key -r K resize-pane -U 5
-        bind-key -r L resize-pane -R 5
-
-        # Change active pane
-        bind-key h select-pane -L
-        bind-key j select-pane -D
-        bind-key k select-pane -U
-        bind-key l select-pane -R
-
-        # Reload config file
-        bind-key r source-file ~/.config/tmux/tmux.conf\; display-message "[tmux] tmux.conf reloaded!"
-
-        # sync
-        bind a setw synchronize-panes \; display "synchronize-panes #{?pane_synchronized,on,off}"
-
-        # Look up in a man-page
-        bind-key m command-prompt -p "Man:" "split-window 'man %%'"
-
-        # status bar
-        set-option -g status-position top
-        set -g status-keys vi
-
-        # Copy mode like vim
-        bind-key v copy-mode \; display "Copy mode!"
-        bind-key p paste-buffer
-        bind-key -T edit-mode-vi Up send-keys -X history-up
-        bind-key -T edit-mode-vi Down send-keys -X history-down
-        unbind-key -T copy-mode-vi Space
-        bind-key -T copy-mode-vi v send-keys -X begin-selection
-        bind-key -T copy-mode-vi V send-keys -X select-line
-        bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-        bind-key -T copy-mode-vi c send-keys -X clear-selection
-        bind-key -T copy-mode-vi H send-keys -X start-of-line
-        bind-key -T copy-mode-vi L send-keys -X end-of-line
-        bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel "pbcopy"
-        bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "pbcopy"
-        bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "pbcopy"
-
-        set-environment -g PATH "/opt/homebrew/bin:/usr/local/bin:/bin:/usr/bin:$PATH"
-        TMUX_FZF_SED="/usr/local/opt/gnu-sed/libexec/gnubin/sed"
-
-        # List of plugins
-        set -g @plugin 'tmux-plugins/tpm'
-        set -g @plugin 'tmux-plugins/tmux-open'
-        set -g @plugin 'sainnhe/tmux-fzf'
-        set -g @plugin 'tmux-plugins/tmux-resurrect'
-        set -g @plugin 'tmux-plugins/tmux-continuum'
-
-        # Initialize TMUX plugin manager
-        run -b '~/.config/tmux/plugins/tpm/tpm'
-      '';
     };
 
     # Starship prompt
