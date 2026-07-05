@@ -47,3 +47,6 @@ peach = "#E26A3B"
 
 [ui.sound]
 enabled = true
+
+[ui]
+agent_panel_sort = "spaces"
