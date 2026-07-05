@@ -65,7 +65,7 @@ To add a new tool's config: drop files into `config/<tool>/` and add an entry us
 xdg.configFile."<tool>".source = mutableConfigSource "<tool>";
 ```
 
-The helper falls back to the Nix store path when the repo checkout isn't present (e.g. in CI).
+The helper must NOT gate on `builtins.pathExists` (or otherwise read the checkout path at eval time): `darwin-rebuild switch --flake` evaluates in pure mode, where store-external absolute paths are unreadable, so such a check silently falls back for every tool and pins configs to a read-only store copy. `mkOutOfStoreSymlink` doesn't validate its target at build time, so evaluation also succeeds where the checkout is absent (e.g. CI) — the link is simply dangling there.
 
 `config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 

@@ -11,15 +11,12 @@
   ...
 }:
 let
-  mutableConfigSource =
-    path:
-    let
-      outOfStorePath = "${dotfilesRoot}/config/${path}";
-    in
-    if builtins.pathExists outOfStorePath then
-      config.lib.file.mkOutOfStoreSymlink outOfStorePath
-    else
-      "${../../config}/${path}";
+  # NOTE: no pathExists fallback — pure eval (darwin-rebuild switch --flake)
+  # cannot read paths outside the store, so the check always returned false
+  # and silently pinned every config to a read-only store copy.
+  # mkOutOfStoreSymlink never validates its target at build time, so this
+  # also evaluates fine in CI where the checkout path doesn't exist.
+  mutableConfigSource = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/config/${path}";
 in
 {
   home = {
@@ -691,6 +688,12 @@ in
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
+      # home-manager auto-generates an init.lua (provider toggles), which
+      # collides with the whole-directory config/nvim symlink. Sideload it
+      # via wrapper args so the repo's init.lua stays the only one.
+      sideloadInitLua = true;
+      withPython3 = false;
+      withRuby = false;
     };
   };
 }
