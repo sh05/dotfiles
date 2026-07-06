@@ -209,7 +209,6 @@ in
       XDG_DATA_HOME = "$HOME/.local/share";
       GOPATH = "$HOME/.go";
       KUBECTL_EXTERNAL_DIFF = "colordiff -u";
-      GOEXPERIMENT = "synctest";
       # npm global install を書き込み可能な prefix へ（Nix管理のnodeと共存）
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
     };

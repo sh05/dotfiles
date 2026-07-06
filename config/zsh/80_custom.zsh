@@ -22,4 +22,3 @@ if [[ -f "$HOME/.config/op/plugins.sh" ]]; then
 fi
 
 export KUBECTL_EXTERNAL_DIFF="colordiff -u"
-export GOEXPERIMENT=synctest
