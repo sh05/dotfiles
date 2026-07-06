@@ -39,8 +39,9 @@ alias egrep='egrep --color=auto'
 
 alias flushdns='sudo killall -HUP mDNSResponder'
 
-if is_osx; then
-    alias ctags="`brew --prefix`/bin/ctags"
+# `brew --prefix` のサブシェル起動は ~40ms かかるのでパスを直書きする
+if is_osx && [[ -x /opt/homebrew/bin/ctags ]]; then
+    alias ctags="/opt/homebrew/bin/ctags"
 fi
 
 alias -g vy="| vim '+set filetype=yaml buftype=nofile'"

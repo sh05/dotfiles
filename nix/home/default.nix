@@ -286,6 +286,21 @@ in
       syntaxHighlighting.enable = true;
       enableCompletion = true;
 
+      # compaudit（fpath 全ファイルのパーミッション監査、~250ms）は dump が
+      # 24時間より古いときだけ実行し、それ以外は -C でキャッシュをそのまま読む。
+      # glob 修飾子 .mh-24 = 「24時間以内に更新された plain ファイル」。
+      completionInit = ''
+        autoload -U compinit
+        if [[ -n ''${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
+          compinit -C
+        else
+          compinit
+          # compinit は fpath が変わらない限り dump を書き直さず mtime も
+          # 更新しないので、touch しないと24時間経過後は毎回フル実行になる
+          touch ''${ZDOTDIR:-$HOME}/.zcompdump
+        fi
+      '';
+
       plugins = [
         {
           name = "fzf-tab";

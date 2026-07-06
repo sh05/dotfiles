@@ -7,6 +7,13 @@
   # Primary user for user-specific settings (required by nix-darwin)
   system.primaryUser = username;
 
+  # compinit は home-manager 側 (~/.zshrc) が実行するので /etc/zshrc では走らせない。
+  # 二重に実行すると、両者の fpath 差分（home-manager は NIX_PROFILES の
+  # site-functions と fzf-tab を追加してから compinit する）で ~/.zcompdump が
+  # 毎回無効化され、起動のたびに全補完ファイルの再スキャン + compaudit +
+  # compdump 書き直しが2回走り、シェル起動が数秒遅くなる。
+  programs.zsh.enableGlobalCompInit = false;
+
   # macOS system defaults
   system.defaults = {
     # Dock settings
