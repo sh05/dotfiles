@@ -19,6 +19,15 @@ previous_tab = ["prefix+p", "prefix+ctrl+["]
 # h/j/k/l + w/b/e movement. prefix+v is free because splits use | and -.
 copy_mode = ["prefix+[", "prefix+v"]
 
+# On-demand status overlay (successor of the tmux status-line scripts:
+# battery / VPN / clock / kube context). herdr v1 has no status bar widgets,
+# so this opens a pane instead. status-glance is a Nix-provided script.
+[[keys.command]]
+key = "prefix+i"
+type = "pane"
+command = "status-glance"
+description = "show battery/vpn/time/kube"
+
 [theme]
 # Base follows the host terminal's ANSI palette (Ghostty is themed by akari),
 # with UI tokens overridden below to Akari Night.

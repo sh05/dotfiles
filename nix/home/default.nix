@@ -22,6 +22,68 @@ let
   # and lives outside this repo. If absent, this hook is a no-op so the flake
   # builds anywhere.
   localHomeModule = "/Users/${username}/.config/nix-local/home.nix";
+
+  # Status helper scripts (migrated from the pre-Nix ~/.mySetting).
+  # get_context / get_cwd_from_grandparent are referenced by name from
+  # config/ccstatusline/settings.json; status-glance is bound to prefix+i
+  # in config/herdr/config.toml (herdr v1 has no status bar widgets, so the
+  # old tmux status-line scripts live on as an on-demand overlay pane).
+  statusScripts = rec {
+    get-context = pkgs.writeShellScriptBin "get_context" ''
+      echo "󱃾 $(${pkgs.yq-go}/bin/yq .current-context ~/.kube/config)"
+    '';
+    get-cwd-from-grandparent = pkgs.writeShellScriptBin "get_cwd_from_grandparent" ''
+      cwd=$(pwd)
+      c=$(basename "$cwd")
+      p=$(basename "$(dirname "$cwd")")
+      g=$(basename "$(dirname "$(dirname "$cwd")")")
+      echo "$g/$p/$c"
+    '';
+    get-timestamp = pkgs.writeShellScriptBin "get_timestamp" ''
+      date "+%Y%m%d%H%M%S"
+    '';
+    get-battery-status = pkgs.writeShellScriptBin "get_battery_status" ''
+      battery_info=$(/usr/bin/pmset -g ps | awk 'NR==2 { print $3 " " $4 }' | tr -d ';%')
+      [ -n "$battery_info" ] || exit 0
+      quantity=''${battery_info%% *}
+      case "$battery_info" in
+        *discharging*) echo "$quantity%" ;;
+        *) echo "⚡$quantity%" ;;
+      esac
+    '';
+    get-vpn-status = pkgs.writeShellScriptBin "get_vpn_status" ''
+      # VPN_CMD_PATH / OFFICE_SSID are machine-local; export them from
+      # ~/.zshrc.local. Pick up just those two lines when running outside a
+      # login shell (e.g. a herdr pane).
+      if [ -z "''${VPN_CMD_PATH:-}" ] && [ -f "$HOME/.zshrc.local" ]; then
+        eval "$(grep -E '^export (VPN_CMD_PATH|OFFICE_SSID)=' "$HOME/.zshrc.local")" || true
+      fi
+      if [ -z "''${VPN_CMD_PATH:-}" ] || [ -z "''${OFFICE_SSID:-}" ]; then
+        echo "vpn: n/a"
+        exit 0
+      fi
+      device=$(networksetup -listallhardwareports | awk '/Wi-Fi/ {getline; print $2}')
+      ssid=$(networksetup -getairportnetwork "$device" | awk '{print $4}')
+      if echo "$ssid" | grep -q "$OFFICE_SSID"; then
+        echo "$ssid"
+        exit 0
+      fi
+      vpn_state=$("$VPN_CMD_PATH" status | grep "state: " | tail -n 1 | awk '{print $4}')
+      case "$vpn_state" in
+        *接続中*) echo "VPN CONNECTED" ;;
+        *切断*) echo "VPN DISCONNECTED" ;;
+        *) echo "vpn: unknown" ;;
+      esac
+    '';
+    status-glance = pkgs.writeShellScriptBin "status-glance" ''
+      echo "  $(date "+%Y-%m-%d %H:%M:%S")"
+      echo "  $(${get-battery-status}/bin/get_battery_status)"
+      echo "  $(${get-vpn-status}/bin/get_vpn_status)"
+      echo "  $(${get-context}/bin/get_context)"
+      printf "\n  [press any key to close]"
+      read -r -s -n 1
+    '';
+  };
 in
 {
   imports = lib.optional (builtins.pathExists localHomeModule) localHomeModule;
@@ -119,18 +181,13 @@ in
       ccstatusline-pkg
       claude-code
 
-      # Helper scripts for ccstatusline custom-command widgets
-      # (config/ccstatusline/settings.json references them by name)
-      (writeShellScriptBin "get_context" ''
-        echo "󱃾 $(${pkgs.yq-go}/bin/yq .current-context ~/.kube/config)"
-      '')
-      (writeShellScriptBin "get_cwd_from_grandparent" ''
-        cwd=$(pwd)
-        c=$(basename "$cwd")
-        p=$(basename "$(dirname "$cwd")")
-        g=$(basename "$(dirname "$(dirname "$cwd")")")
-        echo "$g/$p/$c"
-      '')
+      # Status helper scripts (defined in the let block above)
+      statusScripts.get-context
+      statusScripts.get-cwd-from-grandparent
+      statusScripts.get-timestamp
+      statusScripts.get-battery-status
+      statusScripts.get-vpn-status
+      statusScripts.status-glance
 
       # Codex CLI
       codex
@@ -168,6 +225,27 @@ in
       "$HOME/.rd/bin"
       "$HOME/.lmstudio/bin"
     ];
+
+    # Plain dotfiles in $HOME (tool configs that don't live under ~/.config)
+    file = {
+      ".markdownlint-cli2.yaml".text = ''
+        config:
+          MD025: false
+          MD033: false
+          MD045: false
+      '';
+      ".yamlfmt".text = ''
+        formatter:
+          type: basic
+          indentless_arrays: true
+          retain_line_breaks: true
+          max_line_length: 100
+          drop_merge_tag: true
+        doublestar: true
+        include:
+        - '**/*.{yaml,yml}'
+      '';
+    };
   };
 
   # Akari theme — centralised theme/palette management via the upstream
@@ -296,6 +374,7 @@ in
         ".go-version"
         ".node-version"
         ".DS_Store"
+        "**/.claude/settings.local.json"
       ];
 
       settings = {
