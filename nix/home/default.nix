@@ -367,6 +367,26 @@ in
 
           export ARCH=$(uname -m)
 
+          # User-managed completion files
+          mkdir -p "$HOME/.zsh/Completions"
+          fpath=("$HOME/.zsh/Completions" $fpath)
+
+          if command -v herdr &> /dev/null; then
+            herdr_completion="$HOME/.zsh/Completions/_herdr"
+            herdr_completion_tmp="$herdr_completion.tmp"
+            herdr_bin="$(command -v herdr)"
+
+            if [[ ! -s "$herdr_completion" || "$herdr_completion" -ot "$herdr_bin" ]]; then
+              if herdr completion zsh >| "$herdr_completion_tmp" 2> /dev/null; then
+                mv "$herdr_completion_tmp" "$herdr_completion"
+              else
+                rm -f "$herdr_completion_tmp"
+              fi
+            fi
+
+            unset herdr_bin herdr_completion herdr_completion_tmp
+          fi
+
           # Source custom zsh configs
           for config_file in $XDG_CONFIG_HOME/zsh/*.zsh(N); do
             source "$config_file"

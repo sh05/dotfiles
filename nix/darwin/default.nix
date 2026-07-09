@@ -13,6 +13,14 @@
   # 毎回無効化され、起動のたびに全補完ファイルの再スキャン + compaudit +
   # compdump 書き直しが2回走り、シェル起動が数秒遅くなる。
   programs.zsh.enableGlobalCompInit = false;
+  # nixpkgs-unstable の nixos-render-docs が --toc-depth を削除したのに対し、
+  # nix-darwin (〜2026-06 時点) はまだ渡すため HTML マニュアル生成が壊れる。
+  # man ページは残るので HTML マニュアルだけ無効化する。上流修正後に外してよい。
+  documentation.doc.enable = false;
+  # darwin-uninstaller は内部でデフォルト設定の nix-darwin システムを評価する
+  # ため、上と同じマニュアル生成の破損を踏む。撤去時は
+  # `nix run nix-darwin#darwin-uninstaller` で都度実行できるので外しておく。
+  system.tools.darwin-uninstaller.enable = false;
 
   # macOS system defaults
   system.defaults = {
