@@ -14,7 +14,7 @@
     # gh extensions (not in nixpkgs) — packaged via flake inputs.
     # gh-ghq-cd ships its own flake; gh-branch is a single shell script.
     gh-ghq-cd = {
-      url = "github:cappyzawa/gh-ghq-cd";
+      url = "github:sh05/gh-ghq-cd";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gh-branch = {

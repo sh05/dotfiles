@@ -125,10 +125,9 @@ return {
   },
   {
     "sh05/drawio-preview.nvim",
-    main = "drawio", -- lua module name (differs from the repo name)
+    main = "drawio",
     ft = "drawio",
-    cmd = { "DrawioPreview", "DrawioExport", "DrawioStop" },
-    opts = {},
+    cmd = { "DrawioPreview", "DrawioExport", "DrawioStop", "DrawioLayout" },
   },
   {
     "akinsho/git-conflict.nvim",
