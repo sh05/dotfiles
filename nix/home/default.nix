@@ -223,6 +223,13 @@ in
       "$HOME/.cargo/bin"
       "$HOME/.rd/bin"
       "$HOME/.lmstudio/bin"
+      # homebrew: nix 移行で ~/.zprofile の `brew shellenv` が home-manager
+      # 管理に置き換わって消え、brew と brew 製 CLI が PATH から落ちていた。
+      # sessionPath は $PATH の前に挿入されるため並びは brew shellenv 時代と
+      # 同じ (brew が nix profile より先)。同名ツールを brew で入れると
+      # nix 側が隠れる点だけ注意
+      "/opt/homebrew/bin"
+      "/opt/homebrew/sbin"
     ];
 
     # Plain dotfiles in $HOME (tool configs that don't live under ~/.config)
