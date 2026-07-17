@@ -296,6 +296,13 @@ in
       # 24時間より古いときだけ実行し、それ以外は -C でキャッシュをそのまま読む。
       # glob 修飾子 .mh-24 = 「24時間以内に更新された plain ファイル」。
       completionInit = ''
+        # nix 移行で ~/.zprofile の `brew shellenv` が消えた際、PATH は sessionPath で
+        # 引き継いだ (#62) が FPATH が漏れており、brew 製 CLI の補完が効いていなかった。
+        # あわせて、どのパッケージにも属さない手動配置の補完の受け皿として
+        # ~/.config/zsh/completions (git 管理外) も fpath に載せる。
+        [[ -d /opt/homebrew/share/zsh/site-functions ]] && fpath+=(/opt/homebrew/share/zsh/site-functions)
+        [[ -d ''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/completions ]] && fpath+=(''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/completions)
+
         autoload -U compinit
         if [[ -n ''${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
           compinit -C
