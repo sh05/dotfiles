@@ -304,7 +304,11 @@ in
         [[ -d ''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/completions ]] && fpath+=(''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/completions)
 
         autoload -U compinit
-        if [[ -n ''${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]]; then
+        # (#q...) glob 修飾子は EXTENDED_GLOB が無いと [[ ]] 内で展開されず、
+        # 非空リテラルとして常に真 → 永久に -C でフル compinit が走らなかった。
+        # グローバルに setopt すると対話時の glob 挙動 (^ や # 等) が変わるため、
+        # 無名関数 + localoptions でこの判定にだけ効かせる。
+        if () { setopt localoptions extendedglob; [[ -n ''${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh-24) ]] }; then
           compinit -C
         else
           compinit
