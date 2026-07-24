@@ -163,6 +163,14 @@ make rollback  # Rollback to previous generation
 
 > Note: Home Manager still manages `~/.zshrc`, so installers that append directly to `~/.zshrc` can fail. Put machine-local script output in `~/.zshrc.local` (already sourced from this config).
 
+### Global npm tools
+
+Nix does not manage npm-installed CLI tools; `NPM_CONFIG_PREFIX` and `sessionPath` (`nix/home/default.nix`) route `npm install -g` into `~/.npm-global`, which is on `PATH`. Install tools like [playwright-cli](https://github.com/microsoft/playwright-cli) this way instead of packaging them in Nix:
+
+```bash
+npm install -g @playwright/cli@latest
+```
+
 ## Testing
 
 Verify configuration without applying to the system:

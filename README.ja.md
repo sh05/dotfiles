@@ -163,6 +163,14 @@ make rollback  # 前の世代にロールバック
 
 > 注意: `~/.zshrc` は引き続き Home Manager 管理です。`~/.zshrc` へ直接追記するインストーラは失敗することがあります。マシン固有の追記先は `~/.zshrc.local`（この設定から source 済み）を使ってください。
 
+### npm グローバルツール
+
+npm でインストールする CLI ツールは Nix では管理しません。`nix/home/default.nix` の `NPM_CONFIG_PREFIX` と `sessionPath` の設定により、`npm install -g` は `~/.npm-global` に入り、そのまま `PATH` に通ります。[playwright-cli](https://github.com/microsoft/playwright-cli) のようなツールは Nix でパッケージ化せず、この方式でインストールしてください。
+
+```bash
+npm install -g @playwright/cli@latest
+```
+
 ## テスト
 
 システムに適用せずに設定を検証:
