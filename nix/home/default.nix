@@ -119,6 +119,7 @@ in
       kubebuilder
       mise
       lefthook
+      headlamp
 
       # Utils
       fzf
