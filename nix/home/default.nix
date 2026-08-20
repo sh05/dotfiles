@@ -614,10 +614,11 @@ in
     # gh (GitHub CLI)
     gh = {
       enable = true;
-      # gh-dash は nixpkgs、gh-branch / gh-ghq-cd は flake input から
+      # gh-dash / gh-stack は nixpkgs、gh-branch / gh-ghq-cd は flake input から
       # パッケージ化したものを lib/mkdarwin.nix 経由で受け取る。
       extensions = [
         pkgs.gh-dash
+        pkgs.gh-stack
         gh-branch-pkg
         gh-ghq-cd-pkg
       ];
