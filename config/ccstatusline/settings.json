@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "lines": [
     [
       {
@@ -19,8 +19,8 @@
         "type": "git-branch",
         "color": "blue",
         "metadata": {
-          "hideNoGit": "true",
-          "linkToRepo": "true"
+          "linkToRepo": "true",
+          "hide": "no-git"
         }
       },
       {
@@ -28,7 +28,7 @@
         "type": "git-worktree",
         "color": "blue",
         "metadata": {
-          "hideNoGit": "true"
+          "hide": "no-git"
         }
       },
       {
@@ -36,7 +36,7 @@
         "type": "git-changes",
         "color": "yellow",
         "metadata": {
-          "hideNoGit": "true"
+          "hide": "no-git"
         }
       },
       {
@@ -44,9 +44,7 @@
         "type": "git-review",
         "color": "brightRed",
         "metadata": {
-          "hideStatus": "false",
-          "hideNoGit": "true",
-          "hideTitle": "false"
+          "hide": "no-git,no-data"
         }
       }
     ],
@@ -114,15 +112,14 @@
         "type": "block-timer",
         "color": "brightRed",
         "metadata": {
-          "display": "time"
+          "display": "slider"
         }
       },
       {
-        "id": "ff77bfa4-54dd-445e-b2b3-6c4efa029e97",
-        "type": "reset-timer",
-        "color": "brightRed",
+        "id": "08e3e485-dab1-4b3f-af17-9fd167b8cae2",
+        "type": "block-timer",
         "metadata": {
-          "display": "slider"
+          "display": "time"
         }
       },
       {
@@ -134,39 +131,20 @@
         }
       },
       {
-        "id": "4596daee-cf15-4cda-9242-5bbc912cf31d",
-        "type": "session-usage",
-        "color": "brightMagenta",
-        "metadata": {
-          "display": "slider",
-          "cursor": "true"
-        }
-      },
-      {
-        "id": "bbf3cb18-2f14-404a-8fc9-6f2efa9f1577",
-        "type": "weekly-opus-usage",
-        "color": "brightMagenta",
-        "metadata": {
-          "display": "slider",
-          "cursor": "true"
-        }
-      },
-      {
-        "id": "531c4b1b-1e97-4be2-93af-7b88323bde46",
-        "type": "weekly-sonnet-usage",
-        "color": "brightMagenta",
-        "metadata": {
-          "display": "slider",
-          "invert": "false",
-          "cursor": "true"
-        }
-      },
-      {
         "id": "f6f8ce75-3faa-4ba7-9231-1e2caa138d71",
         "type": "weekly-usage",
         "color": "brightYellow",
         "metadata": {
           "display": "slider",
+          "cursor": "true"
+        }
+      },
+      {
+        "id": "d05c8b2c-8c2b-4a0a-ab5f-4673e5523642",
+        "type": "fable-weekly-usage",
+        "metadata": {
+          "display": "slider",
+          "invert": "false",
           "cursor": "true"
         }
       }
@@ -177,8 +155,8 @@
         "type": "skills",
         "color": "brightMagenta",
         "metadata": {
-          "hideWhenEmpty": "true",
-          "mode": "list"
+          "mode": "list",
+          "hide": "empty"
         }
       }
     ]
@@ -188,6 +166,7 @@
   "colorLevel": 1,
   "defaultSeparator": "|",
   "defaultPadding": "",
+  "defaultPaddingSide": "both",
   "inheritSeparatorColors": false,
   "globalBold": false,
   "gitCacheTtlSeconds": 5,
