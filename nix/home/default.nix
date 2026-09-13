@@ -7,6 +7,7 @@
   gh-branch-pkg,
   gh-ghq-cd-pkg,
   ccstatusline-pkg,
+  goose-pkg,
   ...
 }:
 let
@@ -193,6 +194,12 @@ in
       # Codex CLI
       codex
 
+      # goose (AI agent CLI). The GUI is the `block-goose` cask in nix/darwin;
+      # that cask ships Goose.app only, so this is the sole source of `goose`
+      # on PATH. Pinned in lib/mkdarwin.nix — `make goose-check` compares it
+      # against the cask's version.
+      goose-pkg
+
       # Terminal multiplexer (tmux replacement)
       herdr
 
@@ -280,7 +287,41 @@ in
     # file in place (no rename), so the out-of-store symlink survives writes
     # from its onboarding flow / settings UI.
     "herdr/config.toml".source = mutableConfigSource "herdr/config.toml";
+    # goose's config.yaml is NOT here — see home.activation.gooseConfig below.
   };
+
+  # goose config: linked by hand rather than through xdg.configFile.
+  #
+  # mkOutOfStoreSymlink always produces two hops (~/.config/<x> -> a
+  # /nix/store/hm_* link -> the repo file), but goose refuses to write through
+  # more than one: config_write_target_path caps itself at MAX_SYMLINK_HOPS = 1
+  # and otherwise fails with "Too many symlink levels". Going through
+  # xdg.configFile therefore makes `goose configure` — and every model switch
+  # or extension toggle — fail to save. A single direct symlink keeps goose's
+  # writes landing in the repo file.
+  #
+  # Only config.yaml is linked, never the directory: goose also keeps
+  # per-provider OAuth tokens (GitHub Copilot / Codex / Gemini / xAI / Kimi) and
+  # a plaintext secrets.yaml fallback under ~/.config/goose/. API keys never
+  # reach config.yaml — goose stores them in the macOS Keychain and ignores any
+  # key written to the config file.
+  home.activation.gooseConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    goose_dir="${config.xdg.configHome}/goose"
+    goose_cfg="$goose_dir/config.yaml"
+    goose_src="${dotfilesRoot}/config/goose/config.yaml"
+
+    $DRY_RUN_CMD mkdir -p "$goose_dir"
+    if [ ! -e "$goose_src" ]; then
+      warnEcho "goose: $goose_src is missing; leaving $goose_cfg alone"
+    elif [ -L "$goose_cfg" ] && [ "$(readlink "$goose_cfg")" = "$goose_src" ]; then
+      : # already correct
+    elif [ -e "$goose_cfg" ] && [ ! -L "$goose_cfg" ]; then
+      warnEcho "goose: $goose_cfg is a real file, not a symlink — not replacing it."
+      warnEcho "  Move it aside and re-run 'make switch' to link the repo copy."
+    else
+      $DRY_RUN_CMD ln -sfn "$goose_src" "$goose_cfg"
+    fi
+  '';
 
   # Programs configuration
   programs = {

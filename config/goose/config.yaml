@@ -1,0 +1,17 @@
+# goose configuration — symlinked to ~/.config/goose/config.yaml.
+#
+# API keys do NOT belong here. goose stores them in the macOS Keychain
+# (`security find-generic-password -s goose -a secrets`) and ignores any key
+# placed in this file, which surfaces as an authentication failure rather than
+# as anything obvious. Run `goose configure` to set a provider up.
+#
+# goose rewrites this file itself — `goose configure`, switching models with
+# /model, toggling extensions, and a schema migration on read all write here.
+# The symlink is out-of-store, so those writes land directly in this repo: a
+# `git status` diff after using goose is expected, not a bug. Commit it when
+# the change is one you want on your other machines.
+#
+# Only this file is symlinked. Everything else goose keeps under
+# ~/.config/goose/ (OAuth tokens per provider, secrets.yaml, tool permissions)
+# stays out of the repo deliberately.
+{}

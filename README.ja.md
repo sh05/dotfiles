@@ -179,6 +179,92 @@ darwin-rebuild --list-generations  # 世代一覧
 make rollback                      # 前の世代に戻す
 ```
 
+## ツールの追加
+
+新しいツールをどこに宣言するかで、バージョンをどこまで固定できるかが決まります。
+
+| 宣言場所 | 例 | バージョン固定 | ロールバック |
+|----------|-----|----------------|--------------|
+| `home.packages`（nixpkgs から） | `kubectl` | ✅ `flake.lock` | ✅ |
+| `home.packages`（`lib/mkdarwin.nix` の derivation から） | `ccstatusline`, `goose` | ✅ URL + hash | ✅ |
+| `nix/darwin` の `homebrew.casks` | `ghostty`, `block-goose` | ❌ 常に最新 | ❌ |
+
+3つとも宣言的で、`make switch` は flake の記述に収束します。違うのは Homebrew だけが
+`flake.lock` に何も記録しない点です。cask は switch のたびに更新され、`make rollback`
+では戻りません。まず nixpkgs を検討し、`.app` を自前でパッケージ化するのが割に合わない
+場合に Homebrew を使ってください。
+
+判断フローの全体 — flake registry ではなく**このリポジトリの** nixpkgs でバージョンを
+確認する方法を含む — は CLAUDE.md の "Choosing where a new tool goes" にあります。
+
+### 固定したビルド済みバイナリの更新
+
+`ccstatusline` と `goose` は nixpkgs の追従が遅すぎるため、URL と hash で固定しています。
+Renovate はこれを追跡しないので、更新は手動です。
+
+```bash
+v=1.51.0
+nix store prefetch-file --json \
+  "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
+  | jq -r .hash
+```
+
+新しい `version` と `hash` を `lib/mkdarwin.nix` に書き、適用前に検証します。
+
+```bash
+nix build .#darwinConfigurations.sh05MacminiM2.system
+make switch
+```
+
+必ずバージョン付きのタグを固定してください。upstream は `stable` タグも公開していますが、
+これはリリースのたびにアセットが上書きされるため、hash を固定しても後から壊れます。
+しかも原因となるコミットが残りません。
+
+### goose（実例）
+
+goose は意図的に2つに分けてインストールしています。
+
+- **CLI** — upstream のリリースバイナリを `lib/mkdarwin.nix` で固定し、`home.packages`
+  に追加。nixpkgs にも `goose-cli` はありますが現在 1.28.0 で、upstream の 1.50.0 に対し
+  週1リリースのペースに追従できず数ヶ月遅れています。
+- **GUI** — `nix/darwin/default.nix` の `block-goose` cask。この cask は `Goose.app` だけを
+  配布するので、`goose` コマンドは PATH に入りません。
+
+cask は自動更新され CLI は固定なので、両者はいずれズレます。2つは同じ
+`~/.config/goose/config.yaml` を読み、新しい方が読み込み時にこのファイルを移行するため、
+古い方が読めなくなります。ズレの検出:
+
+```bash
+make goose-check
+```
+
+設定は `config/goose/config.yaml` にあります。`goose configure` の実行、モデルの切り替え、
+拡張機能の on/off のたびに goose 自身が書き換えるため、**goose を使った後に `git status` へ
+差分が出るのは正常です**。他のマシンにも反映したい変更ならコミットしてください。API キーは
+ここには現れません。goose は macOS の Keychain に保存し、config ファイルに書かれたキーは
+無視します。`~/.config/goose/` 配下の他のファイルはリンクしていないので、provider ごとの
+OAuth トークンはリポジトリに入りません。
+
+他の設定と違い、これだけは `xdg.configFile` ではなく `home.activation` でリンクしています。
+`mkOutOfStoreSymlink` は symlink を2段作りますが、goose は1段しか辿らず
+`"Too many symlink levels"` で諦めるため、そのままでは設定の保存が毎回失敗します。
+このエラーを見かけたら、リンクがリポジトリのファイルを直接指しているか確認してください。
+
+```bash
+readlink ~/.config/goose/config.yaml   # config/goose/ 配下のパスが出れば正常
+```
+
+注意すべき罠が2つあります。
+
+- **`brew install goose` を実行しないこと。** この formula は [pressly/goose](https://github.com/pressly/goose)
+  というデータベースマイグレーションツールです。`/opt/homebrew/bin` は PATH 上で nix profile
+  より先に来るため、本物を黙って隠してしまい、エラーの意味が分からなくなります。
+- **curl インストーラも使わないこと。** `~/.local/bin` にバイナリを置きますが、これも
+  PATH で勝ちます。
+
+`make rollback` は CLI を戻しますが cask は戻しません。GUI を削除するには
+`brew uninstall --cask block-goose` を実行してください。
+
 ## 別マシン・別ユーザーでの利用
 
 `darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。別マシンでは macOS アカウント名が `nakamotoshougo` 以外になることがほとんどなので、その場合は自分専用のエントリが必要です。

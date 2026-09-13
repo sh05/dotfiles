@@ -179,6 +179,96 @@ darwin-rebuild --list-generations  # List generations
 make rollback                      # Rollback to previous
 ```
 
+## Adding a tool
+
+Where a new tool is declared decides how well it can be pinned:
+
+| Where | Example | Version-pinned | Rollback |
+|-------|---------|----------------|----------|
+| `home.packages`, from nixpkgs | `kubectl` | ✅ via `flake.lock` | ✅ |
+| `home.packages`, from a derivation in `lib/mkdarwin.nix` | `ccstatusline`, `goose` | ✅ via URL + hash | ✅ |
+| `homebrew.casks` in `nix/darwin` | `ghostty`, `block-goose` | ❌ always latest | ❌ |
+
+All three are declarative, and `make switch` converges to whatever the flake
+says. Homebrew is the one that records nothing in `flake.lock`: casks upgrade on
+every switch and `make rollback` will not bring one back. Prefer nixpkgs, and
+reach for Homebrew when packaging a `.app` yourself isn't worth it.
+
+The full decision flow — including how to check a package's version in *this*
+repo's nixpkgs rather than the flake registry — is in CLAUDE.md under
+"Choosing where a new tool goes".
+
+### Updating a pinned prebuilt binary
+
+`ccstatusline` and `goose` are pinned by URL and hash because nixpkgs lags too
+far behind them. Renovate does not track these, so bumps are manual:
+
+```bash
+v=1.51.0
+nix store prefetch-file --json \
+  "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
+  | jq -r .hash
+```
+
+Put the new `version` and `hash` in `lib/mkdarwin.nix`, then verify before
+applying:
+
+```bash
+nix build .#darwinConfigurations.sh05MacminiM2.system
+make switch
+```
+
+Always pin a versioned tag. Upstream also publishes a `stable` tag whose assets
+are overwritten in place on each release — pinning a hash against that breaks
+later, with no commit to blame.
+
+### goose (worked example)
+
+goose is installed in two halves, on purpose:
+
+- **CLI** — the upstream release binary, pinned in `lib/mkdarwin.nix` and added
+  to `home.packages`. nixpkgs carries `goose-cli` but currently at 1.28.0 against
+  upstream's 1.50.0; goose releases weekly, so it stays months behind.
+- **GUI** — the `block-goose` cask in `nix/darwin/default.nix`. The cask ships
+  `Goose.app` and nothing else, so it puts no `goose` on your `PATH`.
+
+The cask auto-upgrades while the CLI is pinned, so the two drift apart. Both read
+the same `~/.config/goose/config.yaml`, and the newer one migrates that file in
+place on read — which the older one then cannot parse. Check for drift with:
+
+```bash
+make goose-check
+```
+
+Configuration lives at `config/goose/config.yaml`. goose rewrites it whenever you
+run `goose configure`, switch models, or toggle an extension, so **a `git status`
+diff after using goose is expected** — commit it when the change is one you want
+on your other machines. API keys do not appear there: goose keeps them in the
+macOS Keychain and ignores any key written to the config file. Nothing else under
+`~/.config/goose/` is linked, which keeps the per-provider OAuth tokens out of
+the repo.
+
+Unlike every other config here, this one is linked by a `home.activation` entry
+rather than `xdg.configFile`. `mkOutOfStoreSymlink` produces two symlink hops and
+goose follows only one before giving up with `"Too many symlink levels"`, which
+would make every settings change fail to save. If you ever see that error, check
+that `~/.config/goose/config.yaml` points straight at the repo file:
+
+```bash
+readlink ~/.config/goose/config.yaml   # should be the path under config/goose/
+```
+
+Two traps worth knowing:
+
+- **Do not `brew install goose`.** That formula is [pressly/goose](https://github.com/pressly/goose),
+  a database migration tool. Since `/opt/homebrew/bin` precedes the nix profile
+  on `PATH`, it silently shadows the real binary and the errors make no sense.
+- **Do not use the curl installer.** It drops a binary in `~/.local/bin`, which
+  also wins on `PATH`.
+
+`make rollback` restores the CLI but not the cask; remove the GUI with
+`brew uninstall --cask block-goose`.
+
 ## Using on Different Machines
 
 Each `darwinConfigurations` entry is a `(machine, user)` pair. On a different machine your macOS account name is almost always something other than `nakamotoshougo`, so you need your own entry.
