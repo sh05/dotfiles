@@ -354,6 +354,11 @@
       # Development tools
       "visual-studio-code"
       "orbstack"
+      # goose GUI. Ships Goose.app only — no `goose` binary on PATH, so the
+      # CLI is installed separately via home.packages. Casks always track
+      # latest (onActivation.upgrade), so this will drift ahead of the pinned
+      # CLI; `make goose-check` reports the gap.
+      "block-goose"
 
       # Communication
       "discord"

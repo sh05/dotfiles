@@ -9,7 +9,7 @@ NIXNAME ?= $(shell cat $(HOST_FILE) 2>/dev/null)
 
 .DEFAULT_GOAL := help
 
-.PHONY: bootstrap switch update rollback check gc clean help
+.PHONY: bootstrap switch update rollback check goose-check gc clean help
 
 bootstrap: ## Initial Nix-darwin setup (requires NIXNAME)
 	@if [ -z "$(NIXNAME)" ]; then \
@@ -47,6 +47,25 @@ rollback: ## Rollback to previous generation
 check: ## Check flake without applying
 	@echo "==> Checking flake..."
 	nix flake check
+
+goose-check: ## Compare the pinned goose CLI against the block-goose cask
+	@cli=$$(goose --version 2>/dev/null | tr -d '[:space:]'); \
+	gui=$$(brew info --cask block-goose --json=v2 2>/dev/null | jq -r '.casks[0].version'); \
+	if [ -z "$$cli" ] || [ -z "$$gui" ] || [ "$$gui" = "null" ]; then \
+		echo "Error: could not read both versions (CLI='$$cli' GUI='$$gui')"; \
+		echo "  Both goose and the block-goose cask must be installed first."; \
+		exit 1; \
+	fi; \
+	if [ "$$cli" = "$$gui" ]; then \
+		echo "==> goose CLI and GUI are both $$cli"; \
+	else \
+		echo "==> goose version drift: CLI $$cli / GUI (cask) $$gui"; \
+		echo "    The cask auto-upgrades; the CLI is pinned. To catch up, get the hash:"; \
+		echo "      nix store prefetch-file --json \\"; \
+		echo "        \"https://github.com/block/goose/releases/download/v$$gui/goose-aarch64-apple-darwin.tar.gz\" \\"; \
+		echo "        | jq -r .hash"; \
+		echo "    then set version = \"$$gui\" and that hash in lib/mkdarwin.nix."; \
+	fi
 
 gc: ## Garbage collect old generations
 	@echo "==> Running garbage collection..."

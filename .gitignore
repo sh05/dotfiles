@@ -17,6 +17,12 @@ config/nvim/sessions/
 # Karabiner
 config/karabiner/automatic_backups/
 
+# goose — only config.yaml is tracked. secrets.yaml appears solely when the
+# Keychain is unavailable, in which case goose writes API keys there in
+# plaintext after a warning. Belt and braces: the symlink is per-file, so
+# nothing else under ~/.config/goose/ can reach the repo anyway.
+config/goose/secrets.yaml
+
 # Legacy paths (can be removed after full migration)
 .config/
 .tmux/

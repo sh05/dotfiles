@@ -43,17 +43,68 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 - `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
 - `nix/modules/shared.nix` — `nix` daemon settings, `nixpkgs.config.allowUnfree`, `system.stateVersion`.
 - `hosts/<name>/default.nix` — `networking.hostName`, `networking.computerName`, host-specific `homebrew.masApps`.
-- `lib/mkdarwin.nix` — assembles all of the above; also packages `gh-branch` (shell script from flake input), `gh-ghq-cd`, and `herdr` (flake inputs' own packages) since they aren't in nixpkgs.
+- `lib/mkdarwin.nix` — assembles all of the above; also packages the tools nixpkgs doesn't carry (or carries too far behind): `gh-branch` (a shell script, from a `flake = false` input), `gh-ghq-cd` (from the upstream flake's own package), `ccstatusline` (npm tarball, hash pinned) and `goose` (upstream release binary, hash pinned).
 
 ### Package management split
 
-| Where | Manages |
-|-------|---------|
-| `home.packages` (`nix/home`) | CLI tools, language toolchains, LSP servers |
-| `homebrew.casks` (`nix/darwin`) | GUI apps, fonts |
-| `homebrew.masApps` (`hosts/<name>`) | Personal Mac App Store apps — host-specific |
-| `programs.*` (`nix/home`) | Declarative config for zsh/git/starship/etc. |
-| `xdg.configFile` (`nix/home`) | Symlinks from `config/<tool>/` to `~/.config/<tool>/` |
+| Where | Manages | Version-pinned | Rollback |
+|-------|---------|----------------|----------|
+| `home.packages` (`nix/home`), from nixpkgs | CLI tools, language toolchains, LSP servers | ✅ via `flake.lock` | ✅ |
+| `home.packages`, from a derivation in `lib/mkdarwin.nix` | Tools nixpkgs lacks or lags badly on | ✅ via URL + hash | ✅ |
+| `homebrew.casks` (`nix/darwin`) | GUI apps, fonts | ❌ always latest | ❌ |
+| `homebrew.masApps` (`hosts/<name>`) | Personal Mac App Store apps — host-specific | ❌ always latest | ❌ |
+| `programs.*` (`nix/home`) | Declarative config for zsh/git/starship/etc. | — | ✅ |
+| `xdg.configFile` (`nix/home`) | Symlinks from `config/<tool>/` to `~/.config/<tool>/` | — | ✅ |
+
+Every row is declarative — the flake is the source of truth and `make switch`
+converges to it. The last two columns are what actually separates them: Homebrew
+records nothing in `flake.lock`, `onActivation.upgrade` bumps casks on every
+switch, and `make rollback` does not bring a cask back. Two machines built from
+the same `flake.lock` can therefore end up with different versions of a cask.
+That is the reason GUI apps live in Homebrew rather than the reverse: it is a
+trade of pinning for not having to package `.app` bundles by hand.
+
+#### Choosing where a new tool goes
+
+Work down the list; the first "yes" decides it.
+
+1. **Is it a GUI `.app`, a font, or a Mac App Store purchase?** → `homebrew.casks`
+   in `nix/darwin` (or `masApps` in `hosts/<name>` when it is tied to a personal
+   Apple ID). Accept that it will not be version-pinned and will not roll back.
+
+2. **Must it be absent from the work host?** → `hosts/<name>/default.nix`.
+   `onActivation.cleanup = "zap"` actively *uninstalls* anything not declared
+   for the host being switched, so "personal-only" means "removed on work
+   machines", not "merely not installed there". There is no middle option.
+
+3. **Is it in nixpkgs at a version you can live with?** → add it to
+   `home.packages`, one line, done. Check the version against *our* nixpkgs:
+
+   ```bash
+   nix eval --raw .#darwinConfigurations.sh05MacminiM2.pkgs.<name>.version
+   ```
+
+   Do **not** use `nix eval nixpkgs#<name>.version` — that reads the flake
+   registry, not this repo's locked nixpkgs, and the two drift apart by months.
+   (`goose-cli` reads 1.28.0 here while upstream ships 1.50.0.)
+
+4. **Does upstream ship its own flake?** → add a flake input and pass its
+   package through `extraSpecialArgs` (pattern: `gh-ghq-cd`). Reject this if the
+   flake pulls in a second nixpkgs it cannot `follows` (this repo keeps a single
+   nixpkgs throughout), runs tests that cannot pass in the Nix sandbox, or has
+   no binary cache behind an expensive build — CI builds every darwin config on
+   every push, so an uncached Rust workspace lands squarely on the critical path.
+
+5. **Does upstream publish a prebuilt aarch64-darwin artifact?** → `pkgs.fetchurl`
+   plus `stdenvNoCC.mkDerivation` in `lib/mkdarwin.nix` (patterns: `gh-branch`,
+   `ccstatusline`, `goose`). Pin a **versioned, immutable URL** — never a rolling
+   tag like `stable` or `latest`, whose assets are overwritten in place, so a
+   pinned hash breaks with no warning and no commit to blame. Renovate does not
+   track these (the repo enables neither the `nix` manager nor
+   `lockFileMaintenance`), so leave the update recipe in a comment.
+
+6. Otherwise build from source with `buildRustPackage` / `buildGoModule`, or
+   reconsider whether the tool earns its keep.
 
 ### Config symlink strategy
 
@@ -70,6 +121,12 @@ The helper must NOT gate on `builtins.pathExists` (or otherwise read the checkou
 `config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 
 `config/herdr/config.toml` is linked as a single file (not the whole `herdr/` directory) because herdr writes logs and session state into `~/.config/herdr/`. herdr rewrites the config in place (no atomic rename), so the out-of-store symlink survives writes from its onboarding flow / settings UI and those edits land in the repo file.
+
+Two rules generalise from that, and they decide how any new tool's config gets linked:
+
+- **Link a single file, not the directory, whenever the tool writes anything else next to its config** — logs, sockets, session state, caches. `herdr` and `goose` are both linked per-file for this reason; `nvim` and `ccstatusline` get whole directories because nothing else lands there.
+- **Never link a file the tool writes secrets into.** The symlink is out-of-store, so anything the tool writes goes straight into this git worktree — and this repo is public. `goose/config.yaml` is safe to link only because goose keeps API keys in the macOS Keychain and ignores keys placed in the config file; its sibling `secrets.yaml` and `<provider>/tokens.json` hold credentials in plaintext and are deliberately left unlinked. Check where a tool actually puts its credentials before linking anything.
+- **Watch out for tools that limit how far they follow symlinks.** `mkOutOfStoreSymlink` always yields *two* hops: `~/.config/<tool>` → a `/nix/store/hm_*` link → the repo file. A tool that resolves only one hop before writing will fail against that. goose is exactly this case (`MAX_SYMLINK_HOPS = 1`, then `"Too many symlink levels"`), so its config is linked by a `home.activation` entry in `nix/home/default.nix` that creates a single direct symlink instead of going through `xdg.configFile`. If a tool reports symlink errors when saving its settings, this is the first thing to check.
 
 ### Theme
 
@@ -91,7 +148,7 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 
 ## Herdr (terminal multiplexer, replaced tmux)
 
-- Installed from the `herdr` flake input (`github:ogulcancelik/herdr`, Rust source build); config lives in `config/herdr/config.toml`
+- Installed from nixpkgs (`home.packages`); config lives in `config/herdr/config.toml`
 - Prefix: `Ctrl-k` (not the default `Ctrl-b`)
 - Vim-style pane nav: prefix + `h/j/k/l` (herdr default); splits: prefix + `|` (side-by-side), prefix + `-` (stacked)
 - Tab cycle: prefix + `n`/`p` (herdr default) or prefix + `Ctrl-]`/`Ctrl-[` (tmux-era)
