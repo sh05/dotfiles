@@ -85,6 +85,14 @@ let
       read -r -s -n 1
     '';
   };
+
+  # kubectl plugins managed through krew. Adding a name here installs it on
+  # the next `make switch`; see home.activation.krewPlugins below for why
+  # removing a name does NOT uninstall it.
+  krewPlugins = [
+    "oidc-login"
+    "realname-diff"
+  ];
 in
 {
   imports = lib.optional (builtins.pathExists localHomeModule) localHomeModule;
@@ -104,6 +112,10 @@ in
       stern
       kyverno
       kubectx
+      # kubectl plugin manager. nixpkgs ships only $out/bin/krew (no
+      # kubectl-krew), so `kubectl krew` does not work — invoke `krew`
+      # directly. Plugins themselves are declared in krewPlugins below.
+      krew
 
       # Languages
       go
@@ -320,6 +332,56 @@ in
       warnEcho "  Move it aside and re-run 'make switch' to link the repo copy."
     else
       $DRY_RUN_CMD ln -sfn "$goose_src" "$goose_cfg"
+    fi
+  '';
+
+  # kubectl plugins via krew.
+  #
+  # krew is referenced by store path, never by name: the home-manager
+  # activation PATH is a minimal store set (coreutils/findutils/gnugrep/...)
+  # that contains neither the nix profile nor ~/.krew/bin, so a bare `krew`
+  # would not resolve at all. The store path also guarantees we never pick up
+  # a stale hand-installed krew. git is not needed on PATH either — the
+  # nixpkgs wrapper prepends its own gitMinimal before exec'ing the binary.
+  #
+  # Only missing plugins are installed. `krew install` on an existing plugin
+  # is a no-op that still performs a full index git-fetch, so installing
+  # unconditionally would make every `make switch` hit the network for no
+  # benefit (it does not upgrade — that is `krew upgrade`) and would fail
+  # noisily offline.
+  #
+  # `krew list` reads ~/.krew/receipts and needs no network, but it does
+  # require an initialised ~/.krew/index: without one it exits non-zero with
+  # "krew local plugin index is not initialized" and prints nothing. The
+  # `|| true` turns that into an empty list, i.e. "everything is missing",
+  # which is the right answer on a fresh machine — no index means no plugins
+  # either, and the install below clones the index as a side effect. On a
+  # machine that already has an index the steady-state path is fully offline.
+  #
+  # Nothing is ever uninstalled: removing a name from krewPlugins leaves the
+  # plugin on disk. Auto-uninstall would delete plugins installed ad hoc
+  # outside this list, which is the common case for a one-off debugging
+  # plugin. Remove by hand with `krew uninstall <name>`.
+  home.activation.krewPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    krew_bin="${pkgs.krew}/bin/krew"
+    export KREW_ROOT="''${KREW_ROOT:-$HOME/.krew}"
+
+    installed=$("$krew_bin" list 2>/dev/null || true)
+    missing=""
+    for plugin in ${lib.escapeShellArgs krewPlugins}; do
+      if ! echo "$installed" | grep -qxF "$plugin"; then
+        missing="$missing $plugin"
+      fi
+    done
+
+    if [ -n "$missing" ]; then
+      # Not fatal: a failure here (no network, typo'd plugin name, index
+      # unreachable) must not abort the rest of the activation.
+      if ! $DRY_RUN_CMD "$krew_bin" install $missing; then
+        warnEcho "krew: failed to install:$missing"
+        warnEcho "  Check network access and plugin names, then re-run 'make switch',"
+        warnEcho "  or install by hand with 'krew install <name>'."
+      fi
     fi
   '';
 
