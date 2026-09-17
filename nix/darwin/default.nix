@@ -333,7 +333,11 @@
       upgrade = true;
       extraFlags = [ "--force" ];
     };
-    taps = [ ];
+    taps = [
+      # Official tap for openscreen — not in homebrew/cask. Maintained by
+      # upstream's release CI (update-homebrew-cask.yml), bumped on every release.
+      "getopenscreen/openscreen"
+    ];
     brews = [
       "mas" # Mac App Store CLI
     ];
@@ -378,6 +382,9 @@
       "obs"
       "elgato-stream-deck"
       "keycastr"
+      # Screen recorder / video editor (Electron). Only in upstream's own tap;
+      # nixpkgs carries 1.4.0 vs upstream 1.11.0, so use the cask.
+      "getopenscreen/openscreen/openscreen"
 
       # Utilities
       "fliqlo"
