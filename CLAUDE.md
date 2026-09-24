@@ -88,6 +88,10 @@ Work down the list; the first "yes" decides it.
    registry, not this repo's locked nixpkgs, and the two drift apart by months.
    (`goose-cli` reads 1.28.0 here while upstream ships 1.50.0.)
 
+   Also check *which* binaries the package installs — nixpkgs sometimes builds a
+   subset. `krew` ships `krew` but not `kubectl-krew`, so `kubectl krew` is lost;
+   that was accepted rather than papered over with a shim.
+
 4. **Does upstream ship its own flake?** → add a flake input and pass its
    package through `extraSpecialArgs` (pattern: `gh-ghq-cd`). Reject this if the
    flake pulls in a second nixpkgs it cannot `follows` (this repo keeps a single
@@ -162,6 +166,31 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
   layouts, pane-border title toggle
 - Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
 - Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
+
+## krew (kubectl plugin manager)
+
+- Installed from nixpkgs (`home.packages`). nixpkgs ships **only `$out/bin/krew`**
+  — there is no `kubectl-krew`, so `kubectl krew ...` does **not** work.
+  Invoke it directly: `krew install <plugin>`, `krew list`, `krew upgrade`.
+- Plugins are declared in the `krewPlugins` list in the `let` block of
+  `nix/home/default.nix` and reconciled by `home.activation.krewPlugins`.
+  Adding a name installs it on the next `make switch`.
+- **Removal is not automatic.** Deleting a name from `krewPlugins` leaves the
+  plugin installed; run `krew uninstall <name>` by hand. This is deliberate —
+  auto-uninstall would wipe plugins installed ad hoc for one-off debugging.
+- Only *missing* plugins are installed, so a steady-state `make switch` never
+  touches the network. `krew install` does not upgrade anyway; use `krew upgrade`.
+  (The check is `krew list`, which is offline *provided* `~/.krew/index` exists —
+  on a fresh machine it fails, everything reads as missing, and the one install
+  clones the index. That is the intended bootstrap path.)
+- Missing plugins are installed as a single batch, so **one invalid name in
+  `krewPlugins` leaves every other missing plugin uninstalled** — krew resolves
+  all names against the index before installing anything. `make switch` stays
+  green and only warns, so on a fresh machine this can silently yield zero
+  plugins. Verify a new name with `krew search <name>` before adding it.
+- krew itself is the Nix package, not a krew-managed plugin — `krew list` should
+  not show `krew`. Plugin *data* (`~/.krew/{bin,index,receipts,store}`) stays
+  outside Nix; only the krew binary and the plugin list are declarative.
 
 ## CI
 

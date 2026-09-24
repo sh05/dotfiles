@@ -1,8 +1,3 @@
-export KREW_ROOT=${KREW_ROOT:-$HOME/.krew}
-if [[ -d $KREW_ROOT ]]; then
-    export PATH="${KREW_ROOT}/bin:$PATH"
-fi
-
 if has "julia"; then
     export LD_LIBRARY_PATH=$HOME/.julia/conda/3/lib
     if is_osx; then
