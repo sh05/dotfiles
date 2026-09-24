@@ -375,12 +375,20 @@ in
     done
 
     if [ -n "$missing" ]; then
-      # Not fatal: a failure here (no network, typo'd plugin name, index
-      # unreachable) must not abort the rest of the activation.
+      # Installed as one batch, which means an invalid name takes the whole
+      # batch down with it: krew resolves every name against the index before
+      # installing anything (install.go returns on the first "does not exist"),
+      # so one typo in krewPlugins leaves *all* missing plugins uninstalled.
+      # A download failure behaves differently — that happens after resolution,
+      # and krew skips just the broken one.
+      #
+      # Not fatal to the activation either way: the warn below keeps `make
+      # switch` green so a missing plugin never blocks the rest of the config.
       if ! $DRY_RUN_CMD "$krew_bin" install $missing; then
         warnEcho "krew: failed to install:$missing"
-        warnEcho "  Check network access and plugin names, then re-run 'make switch',"
-        warnEcho "  or install by hand with 'krew install <name>'."
+        warnEcho "  If one of these names is invalid, none of them were installed —"
+        warnEcho "  krew validates the whole batch first. Check the names against"
+        warnEcho "  'krew search', and check network access, then re-run 'make switch'."
       fi
     fi
   '';

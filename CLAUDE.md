@@ -183,6 +183,11 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
   (The check is `krew list`, which is offline *provided* `~/.krew/index` exists —
   on a fresh machine it fails, everything reads as missing, and the one install
   clones the index. That is the intended bootstrap path.)
+- Missing plugins are installed as a single batch, so **one invalid name in
+  `krewPlugins` leaves every other missing plugin uninstalled** — krew resolves
+  all names against the index before installing anything. `make switch` stays
+  green and only warns, so on a fresh machine this can silently yield zero
+  plugins. Verify a new name with `krew search <name>` before adding it.
 - krew itself is the Nix package, not a krew-managed plugin — `krew list` should
   not show `krew`. Plugin *data* (`~/.krew/{bin,index,receipts,store}`) stays
   outside Nix; only the krew binary and the plugin list are declarative.
