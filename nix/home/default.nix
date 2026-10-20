@@ -397,8 +397,8 @@ in
         fgrep = "fgrep --color=auto";
         egrep = "egrep --color=auto";
         flushdns = "sudo killall -HUP mDNSResponder";
-        arm = "exec arch -arch arm64 /bin/zsh --login";
-        x64 = "exec arch -arch x86_64 /bin/zsh --login";
+        arm = "exec /usr/bin/arch -arch arm64 /bin/zsh --login";
+        x64 = "exec /usr/bin/arch -arch x86_64 /bin/zsh --login";
       };
 
       initContent = lib.mkMerge [
