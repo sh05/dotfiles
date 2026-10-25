@@ -86,7 +86,7 @@ Work down the list; the first "yes" decides it.
 
    Do **not** use `nix eval nixpkgs#<name>.version` — that reads the flake
    registry, not this repo's locked nixpkgs, and the two drift apart by months.
-   (`goose-cli` reads 1.28.0 here while upstream ships 1.50.0.)
+   (`goose-cli` reads 1.28.0 here while upstream ships 1.55.0.)
 
 4. **Does upstream ship its own flake?** → add a flake input and pass its
    package through `extraSpecialArgs` (pattern: `gh-ghq-cd`). Reject this if the

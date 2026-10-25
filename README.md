@@ -204,7 +204,7 @@ repo's nixpkgs rather than the flake registry — is in CLAUDE.md under
 far behind them. Renovate does not track these, so bumps are manual:
 
 ```bash
-v=1.51.0
+v=1.55.0
 nix store prefetch-file --json \
   "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   | jq -r .hash
@@ -227,8 +227,8 @@ later, with no commit to blame.
 goose is installed in two halves, on purpose:
 
 - **CLI** — the upstream release binary, pinned in `lib/mkdarwin.nix` and added
-  to `home.packages`. nixpkgs carries `goose-cli` but currently at 1.28.0 against
-  upstream's 1.50.0; goose releases weekly, so it stays months behind.
+  to `home.packages`. nixpkgs carries `goose-cli` but currently at 1.28.0, so
+  this pin tracks the GUI cask's current 1.55.0 release.
 - **GUI** — the `block-goose` cask in `nix/darwin/default.nix`. The cask ships
   `Goose.app` and nothing else, so it puts no `goose` on your `PATH`.
 
