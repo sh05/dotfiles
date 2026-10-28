@@ -81,16 +81,16 @@ let
   # against it breaks without warning.
   #
   # To update (keep in sync with the block-goose cask — see `make goose-check`):
-  #   v=1.55.0
+  #   v=1.56.0
   #   nix store prefetch-file --json \
   #     "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   #     | jq -r .hash
   goose-pkg = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "goose";
-    version = "1.55.0";
+    version = "1.56.0";
     src = pkgs.fetchurl {
       url = "https://github.com/block/goose/releases/download/v${version}/goose-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-FTQl1tw6Sa/OhecACe/4f2Ag4+0Cm7VvrhtSP38tgQc=";
+      hash = "sha256-UvP41i49FExd5wxcRx3jnYuSwk1B1bNDbri6sRukvCQ=";
     };
     dontConfigure = true;
     dontBuild = true;
