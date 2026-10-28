@@ -203,7 +203,7 @@ make rollback                      # 前の世代に戻す
 Renovate はこれを追跡しないので、更新は手動です。
 
 ```bash
-v=1.55.0
+v=1.56.0
 nix store prefetch-file --json \
   "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   | jq -r .hash
@@ -225,7 +225,7 @@ make switch
 goose は意図的に2つに分けてインストールしています。
 
 - **CLI** — upstream のリリースバイナリを `lib/mkdarwin.nix` で固定し、`home.packages`
-  に追加。nixpkgs にも `goose-cli` はありますが現在 1.28.0 で、upstream の 1.55.0 に対し
+  に追加。nixpkgs にも `goose-cli` はありますが現在 1.28.0 で、upstream の 1.56.0 に対し
   週1リリースのペースに追従できず数ヶ月遅れています。
 - **GUI** — `nix/darwin/default.nix` の `block-goose` cask。この cask は `Goose.app` だけを
   配布するので、`goose` コマンドは PATH に入りません。
