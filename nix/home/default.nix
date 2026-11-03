@@ -8,6 +8,7 @@
   gh-ghq-cd-pkg,
   ccstatusline-pkg,
   goose-pkg,
+  herdr-pkg,
   ...
 }:
 let
@@ -194,14 +195,19 @@ in
       # Codex CLI
       codex
 
+      # Antigravity CLI (`agy`). The Antigravity cask (nix/darwin) ships the
+      # GUI only — no agy binary in the bundle.
+      antigravity-cli
+
       # goose (AI agent CLI). The GUI is the `block-goose` cask in nix/darwin;
       # that cask ships Goose.app only, so this is the sole source of `goose`
       # on PATH. Pinned in lib/mkdarwin.nix — `make goose-check` compares it
       # against the cask's version.
       goose-pkg
 
-      # Terminal multiplexer (tmux replacement)
-      herdr
+      # Terminal multiplexer (tmux replacement). Pinned in lib/mkdarwin.nix
+      # (nixpkgs lags; the sh05.goose plugin needs >= 0.9.2).
+      herdr-pkg
 
       # Secret CLI
       _1password-cli
@@ -281,6 +287,7 @@ in
     "zsh/20_keybinds.zsh".source = mutableConfigSource "zsh/20_keybinds.zsh";
     "zsh/30_aliases.zsh".source = mutableConfigSource "zsh/30_aliases.zsh";
     "zsh/50_setopt.zsh".source = mutableConfigSource "zsh/50_setopt.zsh";
+    "zsh/60_agents.zsh".source = mutableConfigSource "zsh/60_agents.zsh";
     "zsh/80_custom.zsh".source = mutableConfigSource "zsh/80_custom.zsh";
     # herdr writes logs and session state into ~/.config/herdr/, so only the
     # config file is linked — never the whole directory. herdr rewrites the
@@ -289,6 +296,29 @@ in
     "herdr/config.toml".source = mutableConfigSource "herdr/config.toml";
     # goose's config.yaml is NOT here — see home.activation.gooseConfig below.
   };
+
+  # sh05.goose doubles as a goose plugin: goose discovers hooks from
+  # ~/.agents/plugins/<name>/hooks/hooks.json. goose only reads this
+  # directory, so the two-hop out-of-store symlink is fine here.
+  home.file.".agents/plugins/sh05-goose".source = mutableConfigSource "herdr/plugins/sh05.goose";
+
+  # Register the same directory as a herdr plugin. `herdr plugin link`
+  # records the path (no copy), so edits in the repo apply immediately.
+  # The repo path is linked directly rather than via ~/.config/herdr/plugins/,
+  # which is herdr's own managed area. Never fails the switch.
+  home.activation.herdrGoosePlugin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    herdr_bin="${herdr-pkg}/bin/herdr"
+    plugin_dir="${dotfilesRoot}/config/herdr/plugins/sh05.goose"
+    if [ -x "$herdr_bin" ] && [ -d "$plugin_dir" ]; then
+      # Re-link when missing or registered at a different path (repo moved).
+      linked=$("$herdr_bin" plugin list --plugin sh05.goose --json 2>/dev/null \
+        | ${pkgs.jq}/bin/jq -r '.result.plugins[0].plugin_root // empty' 2>/dev/null || true)
+      if [ "$linked" != "$plugin_dir" ]; then
+        $DRY_RUN_CMD "$herdr_bin" plugin link "$plugin_dir" \
+          || warnEcho "herdr: failed to link $plugin_dir (run 'herdr plugin link' by hand)"
+      fi
+    fi
+  '';
 
   # goose config: linked by hand rather than through xdg.configFile.
   #
@@ -415,11 +445,14 @@ in
           if command -v herdr &> /dev/null; then
             herdr_completion="$HOME/.zsh/Completions/_herdr"
             herdr_completion_tmp="$herdr_completion.tmp"
-            herdr_bin="$(command -v herdr)"
+            # Key the cache on the resolved store path, not mtime: every
+            # /nix/store file has mtime 1, so `-ot` never saw a herdr bump.
+            herdr_bin="''${$(command -v herdr):A}"
 
-            if [[ ! -s "$herdr_completion" || "$herdr_completion" -ot "$herdr_bin" ]]; then
+            if [[ ! -s "$herdr_completion" || ! -r "$herdr_completion.src" || "$(< "$herdr_completion.src")" != "$herdr_bin" ]]; then
               if herdr completion zsh >| "$herdr_completion_tmp" 2> /dev/null; then
                 mv "$herdr_completion_tmp" "$herdr_completion"
+                print -r -- "$herdr_bin" >| "$herdr_completion.src"
               else
                 rm -f "$herdr_completion_tmp"
               fi
@@ -788,6 +821,9 @@ in
         font-family-italic = "Moralerspace Argon NF";
         font-family-bold-italic = "Moralerspace Argon NF";
         keybind = [ "command+k=text:\\x0c" ];
+        # Left Option sends Alt/Meta so herdr / zsh / nvim alt+ bindings work;
+        # right Option keeps composing special characters.
+        macos-option-as-alt = "left";
       };
     };
 

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "${PLUGIN_ROOT}/bin/herdr-goose-state.sh idle" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "${PLUGIN_ROOT}/bin/herdr-goose-state.sh working" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "${PLUGIN_ROOT}/bin/herdr-goose-state.sh idle" }] }
+    ],
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "${PLUGIN_ROOT}/bin/herdr-goose-state.sh release" }] }
+    ]
+  }
+}

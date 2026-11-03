@@ -1,17 +1,96 @@
-# goose configuration — symlinked to ~/.config/goose/config.yaml.
-#
-# API keys do NOT belong here. goose stores them in the macOS Keychain
-# (`security find-generic-password -s goose -a secrets`) and ignores any key
-# placed in this file, which surfaces as an authentication failure rather than
-# as anything obvious. Run `goose configure` to set a provider up.
-#
-# goose rewrites this file itself — `goose configure`, switching models with
-# /model, toggling extensions, and a schema migration on read all write here.
-# The symlink is out-of-store, so those writes land directly in this repo: a
-# `git status` diff after using goose is expected, not a bug. Commit it when
-# the change is one you want on your other machines.
-#
-# Only this file is symlinked. Everything else goose keeps under
-# ~/.config/goose/ (OAuth tokens per provider, secrets.yaml, tool permissions)
-# stays out of the repo deliberately.
-{}
+extensions:
+  skills:
+    enabled: true
+    type: platform
+    name: skills
+    description: Discover and provide skill instructions from filesystem and builtins
+    display_name: Skills
+    bundled: true
+  summarize:
+    enabled: false
+    type: platform
+    name: summarize
+    description: Load files/directories and get an LLM summary in a single call
+    display_name: Summarize
+    bundled: true
+  todo:
+    enabled: false
+    type: platform
+    name: todo
+    description: Enable a todo list for goose so it can keep track of what it is doing
+    display_name: Todo
+    bundled: true
+  tom:
+    enabled: true
+    type: platform
+    name: tom
+    description: Inject custom context into every turn via GOOSE_MOIM_MESSAGE_TEXT and GOOSE_MOIM_MESSAGE_FILE environment variables
+    display_name: Top Of Mind
+    bundled: true
+  summon:
+    enabled: true
+    type: platform
+    name: summon
+    description: Load knowledge and delegate tasks to subagents
+    display_name: Summon
+    bundled: true
+  apps:
+    enabled: true
+    type: platform
+    name: apps
+    description: Create and manage custom Goose apps through chat. Apps are HTML/CSS/JavaScript and run in sandboxed windows.
+    display_name: Apps
+    bundled: true
+  analyze:
+    enabled: true
+    type: platform
+    name: analyze
+    description: 'Analyze code structure with tree-sitter: directory overviews, file details, symbol call graphs'
+    display_name: Analyze
+    bundled: true
+  extensionmanager:
+    enabled: true
+    type: platform
+    name: Extension Manager
+    description: Enable extension management tools for discovering, enabling, and disabling extensions
+    display_name: Extension Manager
+    bundled: true
+  scheduler:
+    enabled: true
+    type: platform
+    name: scheduler
+    description: Create and manage scheduled recipe execution
+    display_name: Scheduler
+    bundled: true
+  code_execution:
+    enabled: false
+    type: platform
+    name: code_execution
+    description: Goose will make extension calls through code execution, saving tokens
+    display_name: Code Mode
+    bundled: true
+  developer:
+    enabled: true
+    type: platform
+    name: developer
+    description: Write and edit files, and execute shell commands
+    display_name: Developer
+    bundled: true
+  chatrecall:
+    enabled: false
+    type: platform
+    name: chatrecall
+    description: Search past conversations and load session summaries for contextual memory
+    display_name: Chat Recall
+    bundled: true
+GOOSE_THINKING_EFFORT: max
+active_provider: chatgpt_codex
+providers:
+  chatgpt_codex:
+    enabled: true
+    model: gpt-6-luna
+    configured: true
+GOOSE_TELEMETRY_ENABLED: false
+plugins:
+  /Users/sh05/.agents/plugins/sh05-goose:
+    enabled: true

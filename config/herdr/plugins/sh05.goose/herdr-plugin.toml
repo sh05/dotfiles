@@ -1,0 +1,14 @@
+# sh05.goose — herdr plugin + goose plugin (hooks/hooks.json). See CLAUDE.md.
+id = "sh05.goose"
+name = "Goose Agent Integration"
+version = "0.1.0"
+# report-agent's trailing resume command needs >= 0.9.2.
+min_herdr_version = "0.9.2"
+description = "Goose lifecycle tracking and tab spawning for Herdr"
+platforms = ["macos", "linux"]
+
+[[actions]]
+id = "new-goose-tab"
+title = "New Tab with Goose"
+contexts = ["workspace", "pane"]
+command = ["bash", "bin/new-goose-tab.sh"]

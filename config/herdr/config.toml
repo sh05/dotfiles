@@ -28,6 +28,15 @@ type = "pane"
 command = "status-glance"
 description = "show battery/vpn/time/kube"
 
+# Open a new "goose" tab in the current cwd and start goose (sh05.goose plugin, linked from
+# config/herdr/plugins/sh05.goose by `make switch`). prefix+g is herdr's
+# default `goto`, so `a` (agent) is used instead.
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "sh05.goose.new-goose-tab"
+description = "new tab with goose"
+
 [theme]
 # Base follows the host terminal's ANSI palette (Ghostty is themed by akari),
 # with UI tokens overridden below to Akari Night.
@@ -59,3 +68,5 @@ enabled = true
 
 [ui]
 agent_panel_sort = "spaces"
+# Distinct glyphs per agent state (working / blocked / done / idle), not just colour.
+status_indicators = "symbols"
