@@ -72,9 +72,23 @@ Then run `goose session` in each returned root pane. For independent parallel co
 - Before integration, inspect each worktree's `git status`, branch, and diff; run the relevant tests. Report branch and worktree path for each task and any unfinished work or conflicts.
 - Do not merge, rebase, commit, push, or remove worktrees unless the user asks. Integrate completed branches only with explicit user direction. Never close or remove workspaces/worktrees you did not create.
 
-## Cleanup
+## Cleanup after integration
 
-Worktrees preserve uncommitted work and may contain valuable agent output. Do not automatically clean them up. If the user asks for cleanup, inspect status and confirm the exact worktree/workspace before removing it; explain that removing a worktree may make uncommitted files inaccessible. Follow the installed `herdr worktree remove` syntax.
+After the user confirms a PR/branch has been merged (or explicitly asks to discard a completed task), clean up the task's Herdr resources rather than leaving a stale worktree workspace, tab, and checkout behind. A merge alone is not sufficient evidence if the user has not asked for cleanup; when the user says the task is finished and requests cleanup behavior, proceed for the identified task.
+
+Before removing anything:
+
+1. Identify the exact task branch, worktree path, workspace ID, tab IDs, and pane IDs from live Herdr/Git output. Do not infer IDs from old output.
+2. Verify the PR is merged or the user explicitly authorized discarding the task. Check `git status --short` in the worktree and inspect uncommitted/untracked changes. If anything remains, preserve it and ask the user what to do; never use `--force` to bypass this.
+3. Ensure the branch's work has been integrated (or the user explicitly chose to discard it). Do not delete the Git branch unless separately requested.
+4. Check the installed CLI help for `herdr worktree remove` and use the worktree-aware removal command for the exact workspace:
+   ```bash
+   herdr worktree remove --workspace <workspace-id>
+   ```
+   This should remove the linked checkout and its associated Herdr workspace/tab. Read the result, then verify with `herdr worktree list --cwd <source-checkout>` and `herdr workspace list` that the task worktree and workspace are gone.
+5. If a task created additional tabs that are not removed with the worktree workspace, list them and close only those tabs after confirming their panes contain no needed work. Do not close unrelated tabs/workspaces. If the CLI reports that a separate close is required, use the current IDs from fresh list output.
+
+Do not remove the source checkout, unrelated worktrees, branches, sessions, or user-created tabs. If cleanup is not requested or the state is ambiguous, report the exact resources and ask before destructive cleanup.
 
 ## Report back
 
