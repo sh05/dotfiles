@@ -43,7 +43,7 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 - `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
 - `nix/modules/shared.nix` — `nix` daemon settings, `nixpkgs.config.allowUnfree`, `system.stateVersion`.
 - `hosts/<name>/default.nix` — `networking.hostName`, `networking.computerName`, host-specific `homebrew.masApps`.
-- `lib/mkdarwin.nix` — assembles all of the above; also packages the tools nixpkgs doesn't carry (or carries too far behind): `gh-branch` (a shell script, from a `flake = false` input), `gh-ghq-cd` (from the upstream flake's own package), `ccstatusline` (npm tarball, hash pinned) and `goose` (upstream release binary, hash pinned).
+- `lib/mkdarwin.nix` — assembles all of the above; also packages the tools nixpkgs doesn't carry (or carries too far behind): `gh-branch` (a shell script, from a `flake = false` input), `gh-ghq-cd` (from the upstream flake's own package), `ccstatusline` (npm tarball, hash pinned), `goose` and `herdr` (upstream release binaries, hash pinned — herdr because nixpkgs' 0.9.0 lacks the `report-agent -- <resume argv>` that `sh05.goose` needs, which arrived in 0.9.2).
 
 ### Package management split
 
@@ -148,7 +148,7 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 
 ## Herdr (terminal multiplexer, replaced tmux)
 
-- Installed from nixpkgs (`home.packages`); config lives in `config/herdr/config.toml`
+- Installed as `herdr-pkg` from `lib/mkdarwin.nix` (prebuilt release, pinned); config lives in `config/herdr/config.toml`
 - Prefix: `Ctrl-k` (not the default `Ctrl-b`)
 - Vim-style pane nav: prefix + `h/j/k/l` (herdr default); splits: prefix + `|` (side-by-side), prefix + `-` (stacked)
 - Tab cycle: prefix + `n`/`p` (herdr default) or prefix + `Ctrl-]`/`Ctrl-[` (tmux-era)
@@ -161,6 +161,19 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 - Not carried over from tmux (no herdr equivalent): synchronize-panes, even-horizontal/vertical
   layouts, pane-border title toggle
 - Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
+- goose integration: `config/herdr/plugins/sh05.goose/` is both a herdr plugin (registered
+  by `home.activation.herdrGoosePlugin` via `herdr plugin link <repo path>` — not symlinked into
+  `~/.config/herdr/`, which herdr manages) and a goose plugin (`~/.agents/plugins/sh05-goose` →
+  `hooks/hooks.json`). goose's hooks call `bin/herdr-goose-state.sh` to `report-agent` /
+  `release-agent`; it is a no-op outside a herdr pane. prefix + `a` opens a new `goose` tab (current cwd) running goose
+  (prefix + `g` is herdr's default `goto`). goose has no approval-wait hook, so `blocked` is never reported.
+- Agent shell helpers live in `config/zsh/60_agents.zsh`: `g-claude` / `g-openai`
+  (goose on `claude-code` / `chatgpt_codex`; model via `G_<NAME>_MODEL`). `claude-code` is absent from
+  `goose configure` and needs no setup, but has no stored model, so `g-claude` defaults to `claude-opus-5-5`.
+  Also `ask-pane <pane> <prompt>`. There is no `g-gemini`: Gemini CLI no longer serves Google AI Pro,
+  and its successor `agy` has no ACP mode / goose provider — use `agy` directly.
+- After bumping herdr, the running server keeps the old binary until restarted (`herdr status`
+  shows `server_binary_stale: yes`).
 - Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
 
 ## CI

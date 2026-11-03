@@ -114,6 +114,45 @@ let
     };
   };
 
+  # herdr — terminal multiplexer for AI agents (github.com/herdrdev/herdr).
+  # Upstream publishes a single prebuilt binary per platform (no archive).
+  #
+  # Why not pkgs.herdr: our locked nixpkgs has 0.9.0, but the sh05.goose
+  # plugin (config/herdr/plugins/sh05.goose) reports a resume command after
+  # `report-agent ... --`, which needs herdr >= 0.9.2. Drop this derivation
+  # and go back to pkgs.herdr once nixpkgs catches up.
+  #
+  # NOTE: pin the versioned tag, never `latest`.
+  #
+  # To update:
+  #   v=0.9.5
+  #   nix store prefetch-file --json \
+  #     "https://github.com/herdrdev/herdr/releases/download/v$v/herdr-macos-aarch64" \
+  #     | jq -r .hash
+  herdr-pkg = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "herdr";
+    version = "0.9.5";
+    src = pkgs.fetchurl {
+      url = "https://github.com/herdrdev/herdr/releases/download/v${version}/herdr-macos-aarch64";
+      hash = "sha256-+3fCIyoFqANUITgsiUOS9BdOTjihjkivPdApAVfDp+I=";
+    };
+    dontUnpack = true;
+    dontConfigure = true;
+    dontBuild = true;
+    dontStrip = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 $src $out/bin/herdr
+      runHook postInstall
+    '';
+    meta = {
+      description = "Terminal workspace manager for AI coding agents (prebuilt upstream release)";
+      homepage = "https://herdr.dev";
+      mainProgram = "herdr";
+      platforms = [ "aarch64-darwin" ];
+    };
+  };
+
   specialArgs = {
     inherit inputs;
     configName = name;
@@ -141,6 +180,7 @@ nix-darwin.lib.darwinSystem {
             gh-ghq-cd-pkg
             ccstatusline-pkg
             goose-pkg
+            herdr-pkg
             ;
         };
         users.${user} = {
