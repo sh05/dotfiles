@@ -1,24 +1,10 @@
 # AI agent helpers: goose provider switching and herdr pane orchestration.
 
-# --- goose provider wrappers -------------------------------------------------
-# Each subscription is reached through goose's subscription-backed provider:
-#   g-claude  -> claude-code    drives the `claude` CLI with its own login
-#                               (Claude Pro). Not listed in `goose configure`
-#                               and needs no setup there, but goose has no
-#                               stored model for it, so one must be passed:
-#                               defaults to Opus 5.5 (full ID, so it does
-#                               not drift like the `opus` alias).
-#   g-openai  -> chatgpt_codex  ChatGPT OAuth (ChatGPT Plus); uses the model
-#                               stored for it by `goose configure`.
-# Override either model with G_CLAUDE_MODEL / G_OPENAI_MODEL, e.g.
-# `export G_CLAUDE_MODEL=sonnet` in ~/.zshrc.local.
-#
-# There is no g-gemini: Gemini CLI stopped serving Google AI Pro accounts on
-# 2026-06-18, goose's gemini_oauth is deprecated, and its successor `agy`
-# (Antigravity CLI) has no ACP mode and no goose provider. Use `agy` directly.
-#
-# GOOSE_PROVIDER/GOOSE_MODEL are also read by the sh05.goose hook, which
-# hands them to herdr so a restored session resumes on the same provider.
+# --- goose provider wrappers (see CLAUDE.md "Herdr") -------------------------
+#   g-claude -> claude-code   (model: G_CLAUDE_MODEL, default claude-opus-5-5)
+#   g-openai -> chatgpt_codex (model: G_OPENAI_MODEL, default: goose's stored one)
+# The sh05.goose hook forwards GOOSE_PROVIDER/GOOSE_MODEL into herdr's resume
+# command, so a restored session comes back on the same provider.
 _goose_with() {
   local provider="$1" model="$2"
   shift 2
@@ -35,18 +21,20 @@ if has 'goose'; then
 fi
 
 # --- herdr pane orchestration ------------------------------------------------
-# ask-pane <pane-or-agent> <prompt...>
-# Send a prompt to the agent (claude / codex / agy / goose) in another pane,
-# wait until it is idle/done/blocked, then print its recent output.
+# ask-pane <pane-id-or-agent-name> <prompt...>
+# Send a prompt to the agent in another pane (see `herdr agent list`), wait
+# until it is idle/done/blocked, then print its recent output. Gives up after
+# ASK_PANE_TIMEOUT_MS (default 10 min) instead of waiting forever.
 if has 'herdr'; then
   ask-pane() {
     if (( $# < 2 )); then
-      print -u2 "usage: ask-pane <pane-or-agent> <prompt...>"
+      print -u2 "usage: ask-pane <pane-id-or-agent-name> <prompt...>"
       return 2
     fi
     local target_pane="$1"
     shift
-    herdr agent prompt "$target_pane" "$*" --wait || return
+    herdr agent prompt "$target_pane" "$*" --wait \
+      --timeout "${ASK_PANE_TIMEOUT_MS:-600000}" || return
     herdr agent read "$target_pane"
   }
 fi

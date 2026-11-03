@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
-# herdr action: open a new tab named "goose" in the current workspace, in the
+# herdr action: open a new "goose" tab in the current workspace, in the
 # invoking pane's cwd, and start `goose session` there.
 set -euo pipefail
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=SCRIPTDIR/lib.sh
-. "$HERE/lib.sh"
-
 HERDR="${HERDR_BIN_PATH:-herdr}"
-CWD="$(resolve_cwd)"
 
-ws=()
-[ -n "${HERDR_WORKSPACE_ID:-}" ] && ws=(--workspace "$HERDR_WORKSPACE_ID")
+# Actions run with the plugin directory as cwd, so look up the invoking
+# pane's cwd. Fall back to $HOME — never $PWD, which would start goose inside
+# this dotfiles checkout.
+CWD=""
+if [ -n "${HERDR_PANE_ID:-}" ]; then
+  CWD=$("$HERDR" pane get "$HERDR_PANE_ID" 2>/dev/null \
+    | jq -r '.result.pane.foreground_cwd // .result.pane.cwd // empty' 2>/dev/null) || true
+fi
+[ -d "$CWD" ] || CWD="$HOME"
 
-new_pane=$("$HERDR" tab create "${ws[@]}" --cwd "$CWD" --label goose --focus \
-  | jq -r '.. | objects | .pane_id? // empty' | head -n 1)
+new_pane=$("$HERDR" tab create --workspace "${HERDR_WORKSPACE_ID:?}" \
+  --cwd "$CWD" --label goose --focus \
+  | jq -r '.result.root_pane.pane_id // empty')
 
 if [ -z "$new_pane" ]; then
   echo "sh05.goose: could not determine the new tab's pane id" >&2

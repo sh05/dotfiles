@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # goose hook -> herdr agent state bridge.
 #
-#   herdr-goose-state.sh <idle|working|blocked|unknown|release> [message]
+#   herdr-goose-state.sh <idle|working|release>
 #
 # Reads the hook's JSON payload on stdin. Must never fail or block goose:
 # every herdr call is guarded, and outside a herdr pane this is a no-op.
 set -u
 
 STATE="${1:-}"
-MSG="${2:-}"
 
 # Always drain stdin so goose never blocks writing the payload.
 PAYLOAD="$(cat 2>/dev/null || true)"
@@ -21,8 +20,9 @@ fi
 SOURCE="sh05-goose"
 AGENT="goose"
 
-# Milliseconds since the epoch: monotonic across processes and restarts,
-# which herdr requires (reports with a non-increasing seq are dropped).
+# herdr drops reports whose seq does not increase. Wall-clock milliseconds
+# order hooks across processes and goose restarts (hooks are a full LLM turn
+# apart, so same-millisecond collisions are not a practical concern).
 SEQ="$(perl -MTime::HiRes=time -e 'printf "%.0f\n", time * 1000' 2>/dev/null || date +%s000)"
 
 SESSION_ID=""
@@ -38,7 +38,6 @@ fi
 
 args=(pane report-agent "$HERDR_PANE_ID"
   --source "$SOURCE" --agent "$AGENT" --state "$STATE" --seq "$SEQ")
-[ -n "$MSG" ] && args+=(--message "$MSG")
 
 if [ -n "$SESSION_ID" ]; then
   args+=(--agent-session-id "$SESSION_ID")

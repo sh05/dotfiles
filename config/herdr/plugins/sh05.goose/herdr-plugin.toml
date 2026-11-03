@@ -1,12 +1,4 @@
-# sh05.goose — makes herdr recognise goose panes.
-#
-# This directory is both a herdr plugin (this manifest + bin/) and a goose
-# plugin (hooks/hooks.json, discovered via ~/.agents/plugins/sh05-goose).
-# goose's lifecycle hooks call bin/herdr-goose-state.sh, which reports
-# state through `herdr pane report-agent` / `release-agent`.
-#
-# Commands are argv arrays (no shell) and run with this directory as cwd,
-# hence bin/lib.sh's resolve_cwd for the originating pane's cwd.
+# sh05.goose — herdr plugin + goose plugin (hooks/hooks.json). See CLAUDE.md.
 id = "sh05.goose"
 name = "Goose Agent Integration"
 version = "0.1.0"

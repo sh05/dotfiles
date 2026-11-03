@@ -90,7 +90,7 @@ providers:
     enabled: true
     model: gpt-6-luna
     configured: true
-GOOSE_TELEMETRY_ENABLED: true
+GOOSE_TELEMETRY_ENABLED: false
 plugins:
   /Users/sh05/.agents/plugins/sh05-goose:
     enabled: true

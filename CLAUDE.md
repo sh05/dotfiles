@@ -96,7 +96,7 @@ Work down the list; the first "yes" decides it.
    every push, so an uncached Rust workspace lands squarely on the critical path.
 
 5. **Does upstream publish a prebuilt aarch64-darwin artifact?** → `pkgs.fetchurl`
-   plus `stdenvNoCC.mkDerivation` in `lib/mkdarwin.nix` (patterns: `gh-branch`,
+   plus `stdenvNoCC.mkDerivation` in `lib/mkdarwin.nix` (patterns: `gh-branch`, `herdr`,
    `ccstatusline`, `goose`). Pin a **versioned, immutable URL** — never a rolling
    tag like `stable` or `latest`, whose assets are overwritten in place, so a
    pinned hash breaks with no warning and no commit to blame. Renovate does not
@@ -164,16 +164,21 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 - goose integration: `config/herdr/plugins/sh05.goose/` is both a herdr plugin (registered
   by `home.activation.herdrGoosePlugin` via `herdr plugin link <repo path>` — not symlinked into
   `~/.config/herdr/`, which herdr manages) and a goose plugin (`~/.agents/plugins/sh05-goose` →
-  `hooks/hooks.json`). goose's hooks call `bin/herdr-goose-state.sh` to `report-agent` /
-  `release-agent`; it is a no-op outside a herdr pane. prefix + `a` opens a new `goose` tab (current cwd) running goose
-  (prefix + `g` is herdr's default `goto`). goose has no approval-wait hook, so `blocked` is never reported.
+  `hooks/hooks.json`). Hooks: SessionStart/Stop → idle, UserPromptSubmit → working, SessionEnd → release,
+  via `bin/herdr-goose-state.sh` (a no-op outside a herdr pane). Pre/PostToolUse are deliberately not hooked —
+  they would only re-send `working`. goose has no approval-wait hook, so `blocked` is never reported.
+  prefix + `a` opens a new `goose` tab in the current cwd (prefix + `g` is herdr's default `goto`).
+  goose writes the plugin's absolute path into `config/goose/config.yaml` (`plugins:`); expect churn on a
+  host with a different username.
 - Agent shell helpers live in `config/zsh/60_agents.zsh`: `g-claude` / `g-openai`
   (goose on `claude-code` / `chatgpt_codex`; model via `G_<NAME>_MODEL`). `claude-code` is absent from
   `goose configure` and needs no setup, but has no stored model, so `g-claude` defaults to `claude-opus-5-5`.
-  Also `ask-pane <pane> <prompt>`. There is no `g-gemini`: Gemini CLI no longer serves Google AI Pro,
-  and its successor `agy` has no ACP mode / goose provider — use `agy` directly.
+  Also `ask-pane <pane-id-or-agent-name> <prompt>` (timeout: `ASK_PANE_TIMEOUT_MS`, default 10 min).
+  There is no `g-gemini`: Gemini CLI no longer serves Google AI Pro accounts and its successor `agy`
+  has no ACP mode / goose provider — use `agy` directly.
 - After bumping herdr, the running server keeps the old binary until restarted (`herdr status`
-  shows `server_binary_stale: yes`).
+  shows `server_binary_stale: yes`). If the plugin's `min_herdr_version` is newer than that old
+  server, the activation's `herdr plugin link` fails — restart the server and re-run `make switch`.
 - Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
 
 ## CI

@@ -310,7 +310,10 @@ in
     herdr_bin="${herdr-pkg}/bin/herdr"
     plugin_dir="${dotfilesRoot}/config/herdr/plugins/sh05.goose"
     if [ -x "$herdr_bin" ] && [ -d "$plugin_dir" ]; then
-      if ! "$herdr_bin" plugin list 2>/dev/null | grep -q 'sh05\.goose'; then
+      # Re-link when missing or registered at a different path (repo moved).
+      linked=$("$herdr_bin" plugin list --plugin sh05.goose --json 2>/dev/null \
+        | ${pkgs.jq}/bin/jq -r '.result.plugins[0].plugin_root // empty' 2>/dev/null || true)
+      if [ "$linked" != "$plugin_dir" ]; then
         $DRY_RUN_CMD "$herdr_bin" plugin link "$plugin_dir" \
           || warnEcho "herdr: failed to link $plugin_dir (run 'herdr plugin link' by hand)"
       fi
@@ -442,11 +445,14 @@ in
           if command -v herdr &> /dev/null; then
             herdr_completion="$HOME/.zsh/Completions/_herdr"
             herdr_completion_tmp="$herdr_completion.tmp"
-            herdr_bin="$(command -v herdr)"
+            # Key the cache on the resolved store path, not mtime: every
+            # /nix/store file has mtime 1, so `-ot` never saw a herdr bump.
+            herdr_bin="''${$(command -v herdr):A}"
 
-            if [[ ! -s "$herdr_completion" || "$herdr_completion" -ot "$herdr_bin" ]]; then
+            if [[ ! -s "$herdr_completion" || ! -r "$herdr_completion.src" || "$(< "$herdr_completion.src")" != "$herdr_bin" ]]; then
               if herdr completion zsh >| "$herdr_completion_tmp" 2> /dev/null; then
                 mv "$herdr_completion_tmp" "$herdr_completion"
+                print -r -- "$herdr_bin" >| "$herdr_completion.src"
               else
                 rm -f "$herdr_completion_tmp"
               fi
