@@ -297,6 +297,12 @@ in
     # goose's config.yaml is NOT here — see home.activation.gooseConfig below.
   };
 
+  # Goose discovers user skills under ~/.agents/skills/<name>/SKILL.md.
+  # Link the repo-managed workflow as a global user skill so it is available
+  # from every project/worktree, not only this dotfiles checkout.
+  home.file.".agents/skills/parallel-worktree-goose".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/.agents/skills/parallel-worktree-goose";
+
   # sh05.goose doubles as a goose plugin: goose discovers hooks from
   # ~/.agents/plugins/<name>/hooks/hooks.json. goose only reads this
   # directory, so the two-hop out-of-store symlink is fine here.
