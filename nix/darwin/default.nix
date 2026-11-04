@@ -1,8 +1,13 @@
 {
   pkgs,
   username,
+  config,
+  lib,
   ...
 }:
+let
+  antigravityCask = lib.optionals config.dotfiles.ai.antigravity.enable [ "antigravity" ];
+in
 {
   # Primary user for user-specific settings (required by nix-darwin)
   system.primaryUser = username;
@@ -341,7 +346,7 @@
     brews = [
       "mas" # Mac App Store CLI
     ];
-    casks = [
+    casks = antigravityCask ++ [
       # Terminal emulators
       "ghostty"
 
@@ -363,10 +368,6 @@
       # latest (onActivation.upgrade), so this will drift ahead of the pinned
       # CLI; `make goose-check` reports the gap.
       "block-goose"
-      # Google Antigravity GUI. The `agy` CLI is NOT in this bundle; it comes
-      # from nixpkgs' antigravity-cli in nix/home.
-      "antigravity"
-
       # Communication
       "discord"
 

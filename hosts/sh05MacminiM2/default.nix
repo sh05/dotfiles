@@ -1,5 +1,10 @@
 { ... }:
 {
+  # Public personal host opts back into tools whose shared defaults are off.
+  dotfiles.ai.claudeCode.enable = true;
+  dotfiles.ai.antigravity.enable = true;
+  dotfiles.goose.providerHelpers = [ "claude-code" "chatgpt_codex" ];
+
   # Host-specific configuration for sh05MacminiM2
   networking = {
     hostName = "sh05MacminiM2";

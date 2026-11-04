@@ -57,7 +57,7 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-`xdg.configFile` is linked with out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Keep the clone path above (or set `dotfilesRoot` in your `mkDarwin` host entry if you use a different location).
+Many `xdg.configFile` entries use out-of-store symlinks so tools like Neovim can update files under `~/.config` directly. Not every config follows that rule: Goose and Herdr runtime configs are user-owned and are not linked from this repo; Herdr has no automatic seed mode. Keep the clone path above (or set `dotfilesRoot` in your `mkDarwin` host entry if you use a different location).
 
 Each `darwinConfigurations` entry is a `(machine, user)` pair. The default `sh05MacMini` entry targets the author's account `nakamotoshougo`.
 
@@ -155,8 +155,8 @@ make rollback  # Rollback to previous generation
 ```
 
 - Edit files under `config/` and `nix/` in this repository, then run `make switch` to apply them.
-- `~/.config/<tool>` entries managed by home-manager are out-of-store symlinks that point directly to `config/<tool>/` in this repo. Editing them is the same as editing the repo file — no copy-back needed.
-- `make switch` re-creates the symlinks to the same location; it does not overwrite file contents, so uncommitted edits in the repo survive a re-run. Commit them to avoid losing them on a `git checkout` or `git reset`.
+- Most `~/.config/<tool>` entries managed through `xdg.configFile` are out-of-store symlinks into this repo, so editing through those links edits the repo file directly. Goose and Herdr runtime configs are intentionally not linked or synchronized.
+- `make switch` re-creates declared links; it does not overwrite the contents of their repo sources, so uncommitted edits there survive a re-run. Commit them to avoid losing them on a `git checkout` or `git reset`.
 - `make switch` rebuilds and applies the current host configuration using the current `flake.lock` (it does not update dependency versions).
 - `make update` runs `nix flake update` first, then applies the configuration (it includes dependency version updates in `flake.lock`).
 - `make rollback` moves the current host back to the **previous darwin generation**. It rolls back declarative settings managed by nix-darwin / home-manager, but not manually created user data (app data, arbitrary files, etc.).
@@ -222,6 +222,39 @@ Always pin a versioned tag. Upstream also publishes a `stable` tag whose assets
 are overwritten in place on each release — pinning a hash against that breaks
 later, with no commit to blame.
 
+### Host-level AI tool policy
+
+Claude Code and Antigravity are typed per-host opt-ins: `dotfiles.ai.claudeCode.enable`
+and `dotfiles.ai.antigravity.enable` both default to `false`. The public personal
+host explicitly enables both; other hosts remain opted out unless their host
+module opts in. Claude Code adds its CLI/status-line integration, while
+Antigravity adds its CLI and GUI cask.
+
+`dotfiles.goose.configMode` is `"unmanaged"` by default and accepts `"unmanaged"`
+or `"seed"`. `dotfiles.goose.providerHelpers` is a Nix-only selection list,
+defaulting to `[]`; it generates only the selected provider-specific shell
+wrappers. Selecting `"claude-code"` requires Claude Code to be enabled (a Nix
+assertion). This is host distribution policy, not a Goose YAML setting.
+
+These opt-ins do not promise to remove apps installed by other means, editor
+extensions, or authentication. The Goose CLI and `block-goose` cask, Herdr, and
+Codex remain common declarations regardless of these flags. Plugin registration
+does not automatically restart an already-running Herdr server.
+
+> **Homebrew cleanup can remove data.** The shared Darwin configuration sets
+> `homebrew.onActivation.cleanup = "zap"`. When a cask becomes undeclared—for
+> example, when Antigravity is turned off—Homebrew cleanup can uninstall it and
+> remove its data. Until cask/data removal has separate approval, set cleanup to
+> `none` in the applying host and review the effective casks and cleanup policy
+> before applying:
+>
+> ```nix
+> { lib, ... }:
+> {
+>   homebrew.onActivation.cleanup = lib.mkForce "none";
+> }
+> ```
+
 ### goose (worked example)
 
 goose is installed in two halves, on purpose:
@@ -240,25 +273,66 @@ place on read — which the older one then cannot parse. Check for drift with:
 make goose-check
 ```
 
-Configuration lives at `config/goose/config.yaml`. goose rewrites it whenever you
-run `goose configure`, switch models, or toggle an extension, so **a `git status`
-diff after using goose is expected** — commit it when the change is one you want
-on your other machines. API keys do not appear there: goose keeps them in the
-macOS Keychain and ignores any key written to the config file. Nothing else under
-`~/.config/goose/` is linked, which keeps the per-provider OAuth tokens out of
-the repo.
+Goose's mutable runtime config is `~/.config/goose/config.yaml` (see the upstream
+[configuration-files guide](https://goose-docs.ai/docs/guides/config-files)). It
+is user-owned, not linked from this repository or the Nix store. In particular,
+the checked-in `config/goose/config.yaml` is a historical personal config and
+must not be used as a seed template. Goose credentials/secrets, sessions, and
+other runtime state are not linked into the public checkout or read-only store.
+Home Manager exports `GOOSE_AUTO_COMPACT_THRESHOLD=0.0` to its shell sessions,
+which disables proactive auto-compaction in Goose processes inheriting that
+variable. Environment variables take precedence over the runtime config, which
+is not modified. This shared value can be overridden in a host module. Existing
+processes need a new environment; independently launched GUI apps and
+long-running servers that do not inherit Home Manager session variables are not
+covered. `goose info -v` displays the stored configuration rather than this
+process environment override. Goose may still use a context-limit strategy
+when the model's limit is reached; see the upstream
+[context-management guide](https://goose-docs.ai/docs/guides/sessions/smart-context-management).
 
-Unlike every other config here, this one is linked by a `home.activation` entry
-rather than `xdg.configFile`. `mkOutOfStoreSymlink` produces two symlink hops and
-goose follows only one before giving up with `"Too many symlink levels"`, which
-would make every settings change fail to save. If you ever see that error, check
-that `~/.config/goose/config.yaml` points straight at the repo file:
+The typed Nix policy for Goose config is:
 
-```bash
-readlink ~/.config/goose/config.yaml   # should be the path under config/goose/
-```
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `dotfiles.goose.configMode` | `"unmanaged"` | `"unmanaged"` or `"seed"` |
+| `dotfiles.goose.providerHelpers` | `[]` | Selected provider-specific shell helpers; generate only selected helpers |
+| `dotfiles.goose.seedSource` | `null` | A reviewed, non-secret template path; required for `"seed"` |
 
-Two traps worth knowing:
+`unmanaged` does not modify the runtime config. `seed` copies `seedSource` only
+when the target has no filesystem entry; it creates a writable regular file and
+uses no-clobber creation, so an existing file, symlink, or directory is preserved.
+It is a one-time seed, not ongoing synchronization. In dry-run mode no directory
+or file is created. `seedSource` must be explicitly reviewed and non-secret: Nix can copy a path-typed source into its world-readable store.
+
+A read-only preflight checks both `~/.config/goose/config.yaml` and
+`~/.config/herdr/config.toml`. It fails closed on old Home Manager generation
+links or legacy links into a checkout (including relocated checkouts), so
+Home Manager cleanup cannot silently remove them. Stop and arrange a separately
+approved one-time ownership migration; activation never removes or migrates
+these links automatically. The conservative checkout-path check can also
+reject similarly named links outside this checkout. In unmanaged mode it still
+runs but does not modify any target.
+
+The check runs before Homebrew and Home Manager activation, then again at the
+Home Manager write boundary. Direct `darwin-rebuild switch` can nevertheless
+update the system profile before activation starts; a failed check is not a
+promise that no system profile changed. Review before any apply.
+
+Static Goose integration sources are pinned to this flake revision: the
+`sh05-goose` plugin and `parallel-worktree-goose` skill (see the upstream
+[plugin guide](https://goose-docs.ai/docs/guides/context-engineering/plugins)
+and [skills guide](https://goose-docs.ai/docs/guides/context-engineering/using-skills)).
+The provider-neutral `ask-pane` helper is source-controlled in
+`config/zsh/60_agents.zsh`; provider-specific wrappers are generated only when
+selected in `dotfiles.goose.providerHelpers`. The `"claude-code"` wrapper requires
+`dotfiles.ai.claudeCode.enable`; an assertion rejects the inconsistent policy.
+Herdr's `~/.config/herdr/config.toml` is also user-owned: it is not linked,
+seeded, or synchronized by Nix. The tracked `config/herdr/config.toml` is an
+optional manual template, not a live runtime file. Herdr logs, state, and
+credentials remain outside Git and the store. Registering the pinned static
+plugin does not automatically restart an already-running Herdr server.
+
+Two installation traps are worth knowing:
 
 - **Do not `brew install goose`.** That formula is [pressly/goose](https://github.com/pressly/goose),
   a database migration tool. Since `/opt/homebrew/bin` precedes the nix profile
@@ -266,8 +340,8 @@ Two traps worth knowing:
 - **Do not use the curl installer.** It drops a binary in `~/.local/bin`, which
   also wins on `PATH`.
 
-`make rollback` restores the CLI but not the cask; remove the GUI with
-`brew uninstall --cask block-goose`.
+`make rollback` restores the pinned CLI but not the Homebrew cask. Cask removal
+is a separately reviewed Homebrew change.
 
 ## Using on Different Machines
 

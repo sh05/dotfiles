@@ -72,10 +72,7 @@ Work down the list; the first "yes" decides it.
    in `nix/darwin` (or `masApps` in `hosts/<name>` when it is tied to a personal
    Apple ID). Accept that it will not be version-pinned and will not roll back.
 
-2. **Must it be absent from the work host?** → `hosts/<name>/default.nix`.
-   `onActivation.cleanup = "zap"` actively *uninstalls* anything not declared
-   for the host being switched, so "personal-only" means "removed on work
-   machines", not "merely not installed there". There is no middle option.
+2. **Must it be absent from the work host?** → `hosts/<name>/default.nix`, but do not treat an opt-out as an uninstall plan. The shared `nix/darwin/default.nix` currently sets `homebrew.onActivation.cleanup = "zap"`; this can uninstall undeclared casks and remove their data, including when a host turns an opt-in cask off. Until cask/data removal is separately approved, the applying host must override cleanup to `none` (against the shared definition, use `lib.mkForce "none"`) and review the effective cask/cleanup changes before applying. Feature flags do not guarantee removal of manually installed apps, editor extensions, or authentication.
 
 3. **Is it in nixpkgs at a version you can live with?** → add it to
    `home.packages`, one line, done. Check the version against *our* nixpkgs:
@@ -106,27 +103,35 @@ Work down the list; the first "yes" decides it.
 6. Otherwise build from source with `buildRustPackage` / `buildGoModule`, or
    reconsider whether the tool earns its keep.
 
-### Config symlink strategy
+### Config ownership and symlink strategy
 
-Files in `config/` are version-controlled and symlinked into `~/.config/` by `xdg.configFile` in `nix/home/default.nix`. The symlinks are **out-of-store** (via `config.lib.file.mkOutOfStoreSymlink`), so `~/.config/<tool>` points directly to the repo's `config/<tool>/` — editing through the symlink IS editing the repo file, no copy-back step needed. `make switch` re-creates the symlink but does not overwrite file contents, so uncommitted repo edits survive a re-run.
+Most `xdg.configFile` entries in `nix/home/default.nix` are out-of-store symlinks, so editing through those links edits the repository source. Do not infer that every tool config is linked. Goose and Herdr runtime configuration is user-owned and is not linked or synchronized by Nix. `make switch` recreates declared links but does not overwrite their repository sources.
 
-To add a new tool's config: drop files into `config/<tool>/` and add an entry using the `mutableConfigSource` helper (defined at the top of `nix/home/default.nix`):
+To add a mutable source-controlled config, first verify that the target contains no secrets, session state, or other user-owned runtime data. For ordinary configs, add an entry using `mutableConfigSource`:
 
 ```nix
 xdg.configFile."<tool>".source = mutableConfigSource "<tool>";
 ```
 
-The helper must NOT gate on `builtins.pathExists` (or otherwise read the checkout path at eval time): `darwin-rebuild switch --flake` evaluates in pure mode, where store-external absolute paths are unreadable, so such a check silently falls back for every tool and pins configs to a read-only store copy. `mkOutOfStoreSymlink` doesn't validate its target at build time, so evaluation also succeeds where the checkout is absent (e.g. CI) — the link is simply dangling there.
+The helper must NOT gate on `builtins.pathExists` (or otherwise read the checkout path at eval time): `darwin-rebuild switch --flake` evaluates in pure mode, where store-external absolute paths are unreadable, so such a check silently falls back for every tool and pins configs to a read-only store copy. `mkOutOfStoreSymlink` does not validate its target at build time, so evaluation also succeeds where the checkout is absent (e.g. CI) — the link is simply dangling there.
 
-`config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash used to live in `config/` as raw files but are now configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
+`config/nvim/` is a full LazyVim setup managed by lazy.nvim — Nix only installs the `neovim` binary and LSP servers; plugins are managed inside Neovim. Ghostty and gh-dash are configured declaratively via `programs.ghostty.settings` / `programs.gh-dash.settings` so the akari module can layer its theme settings on top.
 
-`config/herdr/config.toml` is linked as a single file (not the whole `herdr/` directory) because herdr writes logs and session state into `~/.config/herdr/`. herdr rewrites the config in place (no atomic rename), so the out-of-store symlink survives writes from its onboarding flow / settings UI and those edits land in the repo file.
+### AI tools and Goose ownership
 
-Two rules generalise from that, and they decide how any new tool's config gets linked:
+`dotfiles.ai.claudeCode.enable` and `dotfiles.ai.antigravity.enable` are typed per-host Boolean opt-ins, both defaulting to `false`. The public personal host opts into both. Claude Code's CLI/status-line integration and Antigravity's CLI/GUI cask are gated by their respective options; the common Goose CLI/cask, Herdr, and Codex remain installed independently. These flags do not remove manually installed applications, editor extensions, or authentication state. A provider-specific Goose helper is generated only when selected via `dotfiles.goose.providerHelpers` (default `[]`); selecting `"claude-code"` while Claude Code is disabled is an asserted configuration error.
 
-- **Link a single file, not the directory, whenever the tool writes anything else next to its config** — logs, sockets, session state, caches. `herdr` and `goose` are both linked per-file for this reason; `nvim` and `ccstatusline` get whole directories because nothing else lands there.
-- **Never link a file the tool writes secrets into.** The symlink is out-of-store, so anything the tool writes goes straight into this git worktree — and this repo is public. `goose/config.yaml` is safe to link only because goose keeps API keys in the macOS Keychain and ignores keys placed in the config file; its sibling `secrets.yaml` and `<provider>/tokens.json` hold credentials in plaintext and are deliberately left unlinked. Check where a tool actually puts its credentials before linking anything.
-- **Watch out for tools that limit how far they follow symlinks.** `mkOutOfStoreSymlink` always yields *two* hops: `~/.config/<tool>` → a `/nix/store/hm_*` link → the repo file. A tool that resolves only one hop before writing will fail against that. goose is exactly this case (`MAX_SYMLINK_HOPS = 1`, then `"Too many symlink levels"`), so its config is linked by a `home.activation` entry in `nix/home/default.nix` that creates a single direct symlink instead of going through `xdg.configFile`. If a tool reports symlink errors when saving its settings, this is the first thing to check.
+Goose uses `~/.config/goose/config.yaml` as mutable runtime configuration. Never symlink Goose runtime config, credentials/secrets, sessions, or other mutable state into this public checkout or the read-only Nix store. The existing public `config/goose/config.yaml` is a personal config, not a template. Typed policy:
+
+- `dotfiles.goose.configMode`: `"unmanaged"` (default) or `"seed"`. `unmanaged` leaves the runtime target untouched. `seed` copies only on absence, creates a writable regular file with no-clobber semantics, and never synchronizes later edits. Dry-run is a no-op: it creates no directories or file.
+- `dotfiles.goose.seedSource`: `null` by default; required for `"seed"`. It must name a reviewed, non-secret template; Nix may copy the path into the world-readable store.
+- `dotfiles.goose.providerHelpers`: list defaulting to `[]`; only listed provider wrappers are generated.
+
+A read-only preflight checks both Goose and Herdr configs and fails closed on Home Manager generation symlinks or legacy links into a checkout, including relocated checkouts. The conservative path check can reject similarly named user links too. This protects data from Home Manager generation cleanup; stop for a separately approved one-shot ownership migration, never auto-remove or rewrite links. The check runs before Homebrew and Home Manager activation and again before HM writes, but direct `darwin-rebuild switch` can update the system profile before activation starts. Static Goose plugin/skill sources are pinned to the flake revision, and provider-neutral `ask-pane` remains in `config/zsh/60_agents.zsh`. Herdr's runtime config, logs, and state remain user-owned; the tracked Herdr TOML is an optional manual template. Plugin registration does not restart a running server.
+
+Homebrew's shared `onActivation.cleanup = "zap"` may uninstall undeclared casks and remove their data when an opt-in is turned off. Until cask/data removal is separately approved, set cleanup to `none` on the host being applied (use `lib.mkForce "none"` against the shared setting) and review the effective cask/cleanup plan before applying. The feature flags do not guarantee removal of apps installed by other means, editor extensions, or authentication.
+
+Only link a single config file rather than its parent directory when a tool writes unrelated logs, sockets, or sessions beside it. Never link runtime data or anything a tool writes credentials into. Check the application's actual write behavior before adding any link.
 
 ### Theme
 
@@ -148,7 +153,7 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 
 ## Herdr (terminal multiplexer, replaced tmux)
 
-- Installed as `herdr-pkg` from `lib/mkdarwin.nix` (prebuilt release, pinned); config lives in `config/herdr/config.toml`
+- Installed as `herdr-pkg` from `lib/mkdarwin.nix` (prebuilt release, pinned); runtime config is user-owned at `~/.config/herdr/config.toml` and `config/herdr/config.toml` is an optional manual template.
 - Prefix: `Ctrl-k` (not the default `Ctrl-b`)
 - Vim-style pane nav: prefix + `h/j/k/l` (herdr default); splits: prefix + `|` (side-by-side), prefix + `-` (stacked)
 - Tab cycle: prefix + `n`/`p` (herdr default) or prefix + `Ctrl-]`/`Ctrl-[` (tmux-era)
@@ -161,24 +166,11 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
 - Not carried over from tmux (no herdr equivalent): synchronize-panes, even-horizontal/vertical
   layouts, pane-border title toggle
 - Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
-- goose integration: `config/herdr/plugins/sh05.goose/` is both a herdr plugin (registered
-  by `home.activation.herdrGoosePlugin` via `herdr plugin link <repo path>` — not symlinked into
-  `~/.config/herdr/`, which herdr manages) and a goose plugin (`~/.agents/plugins/sh05-goose` →
-  `hooks/hooks.json`). Hooks: SessionStart/Stop → idle, UserPromptSubmit → working, SessionEnd → release,
-  via `bin/herdr-goose-state.sh` (a no-op outside a herdr pane). Pre/PostToolUse are deliberately not hooked —
-  they would only re-send `working`. goose has no approval-wait hook, so `blocked` is never reported.
-  prefix + `a` opens a new `goose` tab in the current cwd (prefix + `g` is herdr's default `goto`).
-  goose writes the plugin's absolute path into `config/goose/config.yaml` (`plugins:`); expect churn on a
-  host with a different username.
-- Agent shell helpers live in `config/zsh/60_agents.zsh`: `g-claude` / `g-openai`
-  (goose on `claude-code` / `chatgpt_codex`; model via `G_<NAME>_MODEL`). `claude-code` is absent from
-  `goose configure` and needs no setup, but has no stored model, so `g-claude` defaults to `claude-opus-5-5`.
-  Also `ask-pane <pane-id-or-agent-name> <prompt>` (timeout: `ASK_PANE_TIMEOUT_MS`, default 10 min).
-  There is no `g-gemini`: Gemini CLI no longer serves Google AI Pro accounts and its successor `agy`
-  has no ACP mode / goose provider — use `agy` directly.
+- Goose integration: `config/herdr/plugins/sh05.goose/` is pinned from the flake source and registered with Herdr via `home.activation.herdrGoosePlugin`. Goose discovers the static plugin under `~/.agents/plugins/sh05-goose`; no runtime config is linked into the checkout. Its hooks report session state to Herdr when available. A too-old running Herdr server may reject registration; it is not restarted automatically.
+- `ask-pane` is provider-neutral and pinned from `config/zsh/60_agents.zsh`. Only provider wrappers listed in `dotfiles.goose.providerHelpers` are generated (`g-claude` or `g-openai`); the Claude wrapper requires the Claude opt-in.
 - After bumping herdr, the running server keeps the old binary until restarted (`herdr status`
   shows `server_binary_stale: yes`). If the plugin's `min_herdr_version` is newer than that old
-  server, the activation's `herdr plugin link` fails — restart the server and re-run `make switch`.
+  server, plugin registration can fail; review a separate restart before re-running activation.
 - Sessions persist via herdr's background server (replaces tmux-resurrect/continuum); detach with prefix + `q`
 
 ## CI

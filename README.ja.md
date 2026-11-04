@@ -57,7 +57,7 @@ git clone https://github.com/sh05/dotfiles.git ~/ghq/github.com/sh05/dotfiles
 cd ~/ghq/github.com/sh05/dotfiles
 ```
 
-`xdg.configFile` は out-of-store symlink で `~/.config` にリンクされるため、NeoVim などのツールが直接更新できます。別の場所へ clone する場合は、`mkDarwin` のホストエントリで `dotfilesRoot` を指定してください。
+多くの `xdg.configFile` は out-of-store symlink で `~/.config` にリンクされるため、NeoVim などのツールが直接更新できます。ただし、すべての設定がこの方式ではありません。Goose と Herdr の runtime config はユーザー所有としてこのリポジトリからリンクせず、Herdr には自動 seed はありません。別の場所へ clone する場合は、`mkDarwin` のホストエントリで `dotfilesRoot` を指定してください。
 
 `darwinConfigurations` の各エントリは `(マシン, ユーザー)` の組です。既定の `sh05MacMini` エントリは作者アカウント `nakamotoshougo` 向けです。
 
@@ -155,8 +155,8 @@ make rollback  # 前の世代にロールバック
 ```
 
 - 基本はリポジトリ配下の `config/` や `nix/` を編集して、`make switch` で反映します。
-- home-manager が管理する `~/.config/<tool>` エントリは、リポジトリ内の `config/<tool>/` へ直接向いた out-of-store symlink です。直接編集することはリポジトリファイルの編集と同じなので、コピーバックは不要です。
-- `make switch` は symlink を同じ場所へ張り直すだけで、ファイルの内容を上書きしません。未コミット変更は再適用後も保持されます。ただし `git checkout` や `git reset` で失われるため、忘れずにコミットしてください。
+- `xdg.configFile` で管理する `~/.config/<tool>` の多くは、リポジトリへ向いた out-of-store symlink です。リンク先を編集するとリポジトリのファイルが変わります。Goose と Herdr の runtime config はリンク・自動同期しません。
+- `make switch` は宣言されたリンクを張り直しますが、リポジトリ側の元ファイルの内容は上書きしません。未コミット変更は再適用後も残りますが、`git checkout` や `git reset` で失われるため、忘れずにコミットしてください。
 - `make switch` は「今の `flake.lock` を使って」現在ホストの設定を再ビルドして適用します（依存バージョンは更新しません）。
 - `make update` は `nix flake update` で `flake.lock` を更新したうえで適用します（依存バージョン更新を含みます）。
 - `make rollback` は現在ホストの **1つ前の darwin generation** に戻します。戻るのは nix-darwin / home-manager が管理する宣言的設定で、手動で作成したユーザーデータ（アプリ内データや任意ファイルなど）は戻りません。
@@ -220,6 +220,35 @@ make switch
 これはリリースのたびにアセットが上書きされるため、hash を固定しても後から壊れます。
 しかも原因となるコミットが残りません。
 
+### ホストごとの AI ツール方針
+
+Claude Code と Antigravity はホスト単位の typed opt-in です。
+`dotfiles.ai.claudeCode.enable` と `dotfiles.ai.antigravity.enable` はどちらも既定値が
+`false` で、公開個人ホストは明示的に両方を有効化しています。他のホストはホストモジュールで
+opt-in しない限り無効です。Claude Code は CLI/status-line integration を、Antigravity は
+CLI と GUI cask を追加します。
+
+`dotfiles.goose.configMode` は既定で `"unmanaged"` で、`"unmanaged"` または `"seed"` を取ります。
+`dotfiles.goose.providerHelpers` は Goose YAML の設定ではなく Nix 側の選択リストで、既定値は
+`[]` です。選択された provider-specific shell wrapper だけを生成します。`"claude-code"` を
+選択するには Claude Code も有効である必要があり、Nix assertion で検査します。
+
+これらの opt-in は、別手段でインストールしたアプリ、エディタ拡張、認証情報の撤去を保証しません。
+Goose CLI と `block-goose` cask、Herdr、Codex はこれらの flag と独立した共通宣言として維持されます。
+plugin の登録時に稼働中の Herdr server を自動再起動することもありません。
+
+> **Homebrew cleanup はデータを削除する可能性があります。** 共通 Darwin 設定は
+> `homebrew.onActivation.cleanup = "zap"` です。Antigravity を無効にするなど cask が未宣言になると、
+> cleanup が cask を削除し、そのデータも消す可能性があります。cask/data 撤去を別途承認するまでは、
+> 適用ホストで cleanup を `none` にし、適用前に有効な cask と cleanup 方針を確認してください。
+>
+> ```nix
+> { lib, ... }:
+> {
+>   homebrew.onActivation.cleanup = lib.mkForce "none";
+> }
+> ```
+
 ### goose（実例）
 
 goose は意図的に2つに分けてインストールしています。
@@ -238,21 +267,52 @@ cask は自動更新され CLI は固定なので、両者はいずれズレま�
 make goose-check
 ```
 
-設定は `config/goose/config.yaml` にあります。`goose configure` の実行、モデルの切り替え、
-拡張機能の on/off のたびに goose 自身が書き換えるため、**goose を使った後に `git status` へ
-差分が出るのは正常です**。他のマシンにも反映したい変更ならコミットしてください。API キーは
-ここには現れません。goose は macOS の Keychain に保存し、config ファイルに書かれたキーは
-無視します。`~/.config/goose/` 配下の他のファイルはリンクしていないので、provider ごとの
-OAuth トークンはリポジトリに入りません。
+Goose の mutable runtime config は `~/.config/goose/config.yaml` です（公式の
+[configuration-files guide](https://goose-docs.ai/docs/guides/config-files)）。これはユーザー所有で、
+このリポジトリや Nix store からはリンクしません。公開リポジトリにある `config/goose/config.yaml` は
+個人用の履歴ファイルであり、seed template として使わないでください。Goose の認証情報・secret・
+session などの runtime state も公開 checkout や read-only store にリンクしません。
+Home Manager のシェルセッションには `GOOSE_AUTO_COMPACT_THRESHOLD=0.0` を設定し、その環境を
+引き継いだ Goose の事前の自動圧縮を無効にします。環境変数は runtime config より優先されますが、
+runtime config 自体は変更しません。共有の値は host module から上書きできます。既存プロセスには
+新しい環境が必要です。Home Manager の環境変数を引き継がない環境（独立して起動した GUI アプリや
+常駐サーバーなど）は対象外です。`goose info -v` は保存された設定を表示するため、このプロセス環境による
+上書きは表示されません。モデルのコンテキスト上限に達した場合の処理は別に残ります。公式の
+[context-management guide](https://goose-docs.ai/docs/guides/sessions/smart-context-management)も参照してください。
 
-他の設定と違い、これだけは `xdg.configFile` ではなく `home.activation` でリンクしています。
-`mkOutOfStoreSymlink` は symlink を2段作りますが、goose は1段しか辿らず
-`"Too many symlink levels"` で諦めるため、そのままでは設定の保存が毎回失敗します。
-このエラーを見かけたら、リンクがリポジトリのファイルを直接指しているか確認してください。
+Goose config の typed Nix policy:
 
-```bash
-readlink ~/.config/goose/config.yaml   # config/goose/ 配下のパスが出れば正常
-```
+| Option | 既定値 | 意味 |
+|--------|--------|------|
+| `dotfiles.goose.configMode` | `"unmanaged"` | `"unmanaged"` または `"seed"` |
+| `dotfiles.goose.providerHelpers` | `[]` | 選択した provider-specific shell helper だけを生成 |
+| `dotfiles.goose.seedSource` | `null` | レビュー済み・非secretの template path。`"seed"` では必須 |
+
+`unmanaged` は runtime config を変更しません。`seed` は target に filesystem entry がない場合だけ
+`seedSource` をコピーし、writable な regular file を no-clobber で作成します。既存 file、symlink、
+directory は保持されます。一度だけの seed で、以降の同期・上書きはしません。dry-run では directory
+も file も作成しません。`seedSource` は明示的にレビューした非secret template に限ります。path 型の source は Nix が
+world-readable な store へコピーする可能性があります。
+
+read-only ownership preflight は Goose と Herdr の runtime config の両方について、古い
+Home Manager generation link や checkout（移動済みを含む）への旧 link を検出すると停止し、
+Home Manager cleanup による誤削除を防ぎます。checkout 以外でも同じパス末尾の link を安全側に
+拒否する場合があります。自動削除・移行はせず、所有権の移行は別途承認が必要です。
+`unmanaged` でも preflight は実行しますが対象ファイルを変更しません。
+
+検査は Homebrew / Home Manager activation の前と HM write boundary の直前に実行します。
+ただし `darwin-rebuild switch` を直接使うと activation 前に system profile が更新される場合があり、
+検査失敗時にシステム状態が完全に不変とは限りません。適用前に確認してください。
+
+静的 Goose integration source は flake revision に pin されます。`sh05-goose` plugin と
+`parallel-worktree-goose` skill（公式の[plugin guide](https://goose-docs.ai/docs/guides/context-engineering/plugins)、
+[skills guide](https://goose-docs.ai/docs/guides/context-engineering/using-skills)を参照）、provider-neutral な
+`ask-pane` helper は `config/zsh/60_agents.zsh` で管理します。provider-specific wrapper は
+`dotfiles.goose.providerHelpers` で選択されたものだけ生成します。`"claude-code"` wrapper を使うには
+`dotfiles.ai.claudeCode.enable` も有効でなければならず、assertion が矛盾を拒否します。
+Herdr の `~/.config/herdr/config.toml` もユーザー所有で、Nix はリンク・seed・同期しません。
+公開 `config/herdr/config.toml` は必要な場合の手動 template です。logs/state/認証情報も Git や
+store の外に置きます。pin された plugin の登録時に稼働中の Herdr server は自動再起動しません。
 
 注意すべき罠が2つあります。
 
@@ -262,8 +322,8 @@ readlink ~/.config/goose/config.yaml   # config/goose/ 配下のパスが出れ�
 - **curl インストーラも使わないこと。** `~/.local/bin` にバイナリを置きますが、これも
   PATH で勝ちます。
 
-`make rollback` は CLI を戻しますが cask は戻しません。GUI を削除するには
-`brew uninstall --cask block-goose` を実行してください。
+`make rollback` は固定 CLI を戻しますが Homebrew cask は戻しません。cask の撤去は別途レビューした
+Homebrew の変更として扱ってください。
 
 ## 別マシン・別ユーザーでの利用
 
