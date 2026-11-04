@@ -166,30 +166,51 @@ nix-darwin.lib.darwinSystem {
 
   modules = [
     hostModule
+    ../nix/modules/ai-tools.nix
     ../nix/darwin
     ../nix/modules/shared.nix
     home-manager.darwinModules.home-manager
-    {
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        backupFileExtension = "backup";
-        extraSpecialArgs = specialArgs // {
-          inherit
-            gh-branch-pkg
-            gh-ghq-cd-pkg
-            ccstatusline-pkg
-            goose-pkg
-            herdr-pkg
-            ;
+    (
+      { config, ... }:
+      {
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          backupFileExtension = "backup";
+          extraSpecialArgs = specialArgs // {
+            inherit
+              gh-branch-pkg
+              gh-ghq-cd-pkg
+              ccstatusline-pkg
+              goose-pkg
+              herdr-pkg
+              ;
+
+            # Bridge only the public typed AI/Goose policy into Home Manager.
+            # Keep the public mkDarwin call contract and unrelated Darwin
+            # configuration out of HM's special arguments.
+            dotfilesPolicy = {
+              ai = {
+                claudeCode = {
+                  inherit (config.dotfiles.ai.claudeCode) enable;
+                };
+                antigravity = {
+                  inherit (config.dotfiles.ai.antigravity) enable;
+                };
+              };
+              goose = {
+                inherit (config.dotfiles.goose) configMode providerHelpers seedSource;
+              };
+            };
+          };
+          users.${user} = {
+            imports = [
+              ../nix/home
+              inputs.akari-theme.homeModules.akari
+            ];
+          };
         };
-        users.${user} = {
-          imports = [
-            ../nix/home
-            inputs.akari-theme.homeModules.akari
-          ];
-        };
-      };
-    }
+      }
+    )
   ];
 }

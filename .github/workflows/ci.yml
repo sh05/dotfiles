@@ -21,6 +21,14 @@ jobs:
       - name: Check flake
         run: nix flake check
 
+      - name: Check AI policy and config ownership
+        run: |
+          bash tests/policy-eval.sh
+          python=$(nix eval --raw --impure --expr 'let f = builtins.getFlake (toString ./.); in f.inputs.nixpkgs.legacyPackages.aarch64-darwin.python3.interpreter')
+          nix build --no-link --impure --expr '(builtins.getFlake (toString ./.)).inputs.nixpkgs.legacyPackages.aarch64-darwin.python3'
+          GOOSE_TEST_PYTHON="$python" "$python" tests/goose_config_activation_test.py
+          bash tests/hm-goose-transition.sh
+
       - name: Build all darwin configurations
         run: |
           for config in $(nix eval --json '.#darwinConfigurations' --apply 'builtins.attrNames' | jq -r '.[]'); do
