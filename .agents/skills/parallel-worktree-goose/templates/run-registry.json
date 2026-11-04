@@ -1,0 +1,84 @@
+{
+  "_note": "Example coordinator-owned state, not a Goose or Herdr configuration. This file does not provide an automatic lock or live status. Record returned IDs and verify actual state before acting.",
+  "schema_version": 2,
+  "run_id": "REPLACE_WITH_UNIQUE_RUN_ID",
+  "repository_url": "https://github.com/OWNER/REPO",
+  "primary_checkout": "/absolute/path/to/primary-checkout",
+  "task_root": "/absolute/path/outside/all/checkouts/task-root",
+  "base_ref": "main",
+  "base_commit": "REPLACE_WITH_FULL_COMMIT_SHA",
+  "max_workers": 2,
+  "permissions": {
+    "create_layout_and_worktrees": false,
+    "commit": false,
+    "push": false,
+    "create_draft_pr": false,
+    "merge": false,
+    "delete_worktrees": false,
+    "delete_branches": false,
+    "close_created_layout": false,
+    "delete_logs": false
+  },
+  "coordinator": {
+    "workspace_id": null,
+    "tab_id": null,
+    "pane_id": null
+  },
+  "workers": [
+    {
+      "task_url": "https://github.com/OWNER/REPO/issues/123",
+      "state": "planned",
+      "branch": "issue-123",
+      "worktree": "/absolute/path/to/repo-issue-123",
+      "initial_head": null,
+      "owned_scope": [
+        "REPLACE_WITH_COMPONENT_OR_FILES"
+      ],
+      "dependencies": [],
+      "resources": {
+        "port": null,
+        "database": null,
+        "docker_project": null
+      },
+      "herdr": {
+        "workspace_id": null,
+        "tab_id": null,
+        "pane_id": null,
+        "agent_name": null
+      },
+      "created_by_this_run": {
+        "worktree": false,
+        "branch": false,
+        "workspace": false,
+        "tab": false,
+        "pane": false
+      },
+      "attempts": [
+        {
+          "id": "issue-123-a1",
+          "session_name": "issue-123-a1",
+          "session_id": null,
+          "instructions": "/absolute/path/to/task-root/issue-123.md",
+          "submission_method": null,
+          "state": "planned",
+          "last_observed_agent_state": null,
+          "foreground_pid": null,
+          "evidence_notes": []
+        }
+      ],
+      "verification": {
+        "head": null,
+        "commits": [],
+        "tests": [],
+        "acceptance_criteria_checked": false,
+        "dirty": null,
+        "blockers": []
+      },
+      "pr_url": null,
+      "cleanup": {
+        "state": "retained",
+        "reason": "Not authorized"
+      }
+    }
+  ]
+}

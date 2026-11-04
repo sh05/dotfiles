@@ -167,6 +167,7 @@ To bump to a newer Akari release: `nix flake update akari-theme` then `make swit
   layouts, pane-border title toggle
 - Auto-starts from zsh on terminal launch, except inside VS Code or an existing herdr pane (guarded by `HERDR_ENV`)
 - Goose integration: `config/herdr/plugins/sh05.goose/` is pinned from the flake source and registered with Herdr via `home.activation.herdrGoosePlugin`. Goose discovers the static plugin under `~/.agents/plugins/sh05-goose`; no runtime config is linked into the checkout. Its hooks report session state to Herdr when available. A too-old running Herdr server may reject registration; it is not restarted automatically.
+- The `parallel-worktree-goose` skill is maintained in `.agents/skills/parallel-worktree-goose/`; its references, worker templates and evals are part of the same pinned Home Manager source. It defaults to workspaces/tabs without split panes and is separate from the `sh05-goose` hook plugin.
 - `ask-pane` is provider-neutral and pinned from `config/zsh/60_agents.zsh`. Only provider wrappers listed in `dotfiles.goose.providerHelpers` are generated (`g-claude` or `g-openai`); the Claude wrapper requires the Claude opt-in.
 - After bumping herdr, the running server keeps the old binary until restarted (`herdr status`
   shows `server_binary_stale: yes`). If the plugin's `min_herdr_version` is newer than that old

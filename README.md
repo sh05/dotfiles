@@ -322,6 +322,11 @@ Static Goose integration sources are pinned to this flake revision: the
 `sh05-goose` plugin and `parallel-worktree-goose` skill (see the upstream
 [plugin guide](https://goose-docs.ai/docs/guides/context-engineering/plugins)
 and [skills guide](https://goose-docs.ai/docs/guides/context-engineering/using-skills)).
+The skill coordinates separate Herdr worktrees and Goose sessions, including
+safe prompt submission, recovery, and cleanup. It defaults to workspaces/tabs
+without split panes. Guidance and eval scenarios are in
+[`.agents/skills/parallel-worktree-goose/`](.agents/skills/parallel-worktree-goose/).
+The plugin's lifecycle hooks remain separate from the skill.
 The provider-neutral `ask-pane` helper is source-controlled in
 `config/zsh/60_agents.zsh`; provider-specific wrappers are generated only when
 selected in `dotfiles.goose.providerHelpers`. The `"claude-code"` wrapper requires
