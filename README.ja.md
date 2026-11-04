@@ -306,7 +306,11 @@ Home Manager cleanup による誤削除を防ぎます。checkout 以外でも�
 
 静的 Goose integration source は flake revision に pin されます。`sh05-goose` plugin と
 `parallel-worktree-goose` skill（公式の[plugin guide](https://goose-docs.ai/docs/guides/context-engineering/plugins)、
-[skills guide](https://goose-docs.ai/docs/guides/context-engineering/using-skills)を参照）、provider-neutral な
+[skills guide](https://goose-docs.ai/docs/guides/context-engineering/using-skills)を参照）を配布します。
+この Skill は Herdr の worktree と Goose session による並行作業、指示送信、復旧、cleanup を扱います。
+原則は workspace / tab を使い、pane は分割しません。手順と評価ケースは
+[`.agents/skills/parallel-worktree-goose/`](.agents/skills/parallel-worktree-goose/) にあります。
+plugin の lifecycle hooks は Skill とは別に維持します。provider-neutral な
 `ask-pane` helper は `config/zsh/60_agents.zsh` で管理します。provider-specific wrapper は
 `dotfiles.goose.providerHelpers` で選択されたものだけ生成します。`"claude-code"` wrapper を使うには
 `dotfiles.ai.claudeCode.enable` も有効でなければならず、assertion が矛盾を拒否します。
