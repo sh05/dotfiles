@@ -292,7 +292,7 @@ The typed Nix policy for Goose config is:
 when the target has no filesystem entry; it creates a writable regular file and
 uses no-clobber creation, so an existing file, symlink, or directory is preserved.
 It is a one-time seed, not ongoing synchronization. In dry-run mode no directory
-or file is created. `seedSource` must be explicitly reviewed and non-secret.
+or file is created. `seedSource` must be explicitly reviewed and non-secret: Nix can copy a path-typed source into its world-readable store.
 
 A read-only preflight checks both `~/.config/goose/config.yaml` and
 `~/.config/herdr/config.toml`. It fails closed on old Home Manager generation

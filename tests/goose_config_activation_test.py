@@ -414,6 +414,13 @@ class GooseConfigActivationTests(unittest.TestCase):
         self.assertIn("symlink", result.stderr)
         self.assertFalse((real_home / ".config").exists())
 
+    def test_historical_checkout_config_is_not_a_seed_template(self):
+        result = self.invoke("seed", source=self.legacy_source)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("not a seed template", result.stderr)
+        self.assertFalse(os.path.lexists(self.target))
+        self.assertEqual(self.legacy_source.read_bytes(), b"historical public checkout config\n")
+
     def test_seed_missing_source_fails_before_creating_parent(self):
         missing = self.root / "missing-seed.yaml"
 

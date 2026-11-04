@@ -284,7 +284,8 @@ Goose config の typed Nix policy:
 `unmanaged` は runtime config を変更しません。`seed` は target に filesystem entry がない場合だけ
 `seedSource` をコピーし、writable な regular file を no-clobber で作成します。既存 file、symlink、
 directory は保持されます。一度だけの seed で、以降の同期・上書きはしません。dry-run では directory
-も file も作成しません。`seedSource` は明示的にレビューした非secret template に限ります。
+も file も作成しません。`seedSource` は明示的にレビューした非secret template に限ります。path 型の source は Nix が
+world-readable な store へコピーする可能性があります。
 
 read-only ownership preflight は Goose と Herdr の runtime config の両方について、古い
 Home Manager generation link や checkout（移動済みを含む）への旧 link を検出すると停止し、

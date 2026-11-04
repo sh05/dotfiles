@@ -242,6 +242,11 @@ def preflight(args: argparse.Namespace) -> int:
 
 def _open_seed_source(source: str) -> int:
     source = _absolute_without_parent_refs(source, "seed source")
+    # This tracked file is a historical personal runtime config, never a
+    # portable template. Reject both a checkout path and the Nix store copy
+    # that result from explicitly supplying it as a path-typed seedSource.
+    if source.endswith("/config/goose/config.yaml"):
+        raise UnsafeState("the historical config/goose/config.yaml is not a seed template")
     try:
         fd = os.open(source, os.O_RDONLY | NOFOLLOW | CLOEXEC)
     except OSError as exc:

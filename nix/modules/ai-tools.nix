@@ -67,7 +67,8 @@ in
         default = null;
         description = ''
           Reviewed, non-secret template copied by configMode = "seed" when the
-          runtime config path has no directory entry. Never use runtime state.
+          runtime config path has no directory entry. Nix may copy this path
+          to the store; never use runtime state, credentials, or secrets.
         '';
       };
     };
