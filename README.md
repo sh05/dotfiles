@@ -279,6 +279,16 @@ is user-owned, not linked from this repository or the Nix store. In particular,
 the checked-in `config/goose/config.yaml` is a historical personal config and
 must not be used as a seed template. Goose credentials/secrets, sessions, and
 other runtime state are not linked into the public checkout or read-only store.
+Home Manager exports `GOOSE_AUTO_COMPACT_THRESHOLD=0.0` to its shell sessions,
+which disables proactive auto-compaction in Goose processes inheriting that
+variable. Environment variables take precedence over the runtime config, which
+is not modified. This shared value can be overridden in a host module. Existing
+processes need a new environment; independently launched GUI apps and
+long-running servers that do not inherit Home Manager session variables are not
+covered. `goose info -v` displays the stored configuration rather than this
+process environment override. Goose may still use a context-limit strategy
+when the model's limit is reached; see the upstream
+[context-management guide](https://goose-docs.ai/docs/guides/sessions/smart-context-management).
 
 The typed Nix policy for Goose config is:
 

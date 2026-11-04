@@ -46,10 +46,17 @@ let
       dotfiles.goose.providerHelpers = [ "unknown" ];
     };
   };
+  overriddenThreshold = mkDarwin "policy-eval-threshold-override" {
+    user = testUser;
+    hostModule = { lib, ... }: {
+      home-manager.users.${testUser}.home.sessionVariables.GOOSE_AUTO_COMPACT_THRESHOLD = lib.mkForce "0.8";
+    };
+  };
 
   externalHome = external.config.home-manager.users.${testUser};
   personalHome = personal.config.home-manager.users.${testUser};
   seededHome = seeded.config.home-manager.users.${testUser};
+  overriddenHome = overriddenThreshold.config.home-manager.users.${testUser};
 
   packageNames = home: map (package: package.name) home.home.packages;
   hasPackage = home: prefix:
@@ -114,6 +121,15 @@ let
     coreAiIntegrationsRemain =
       coreToolsRemain externalHome external.config.homebrew.casks
       && coreToolsRemain personalHome personal.config.homebrew.casks;
+
+    gooseAutoCompactionDisabled =
+      externalHome.home.sessionVariables.GOOSE_AUTO_COMPACT_THRESHOLD == "0.0"
+      && personalHome.home.sessionVariables.GOOSE_AUTO_COMPACT_THRESHOLD == "0.0"
+      && !(hasConfig externalHome gooseConfigName)
+      && !(hasConfig personalHome gooseConfigName);
+
+    gooseCompactionThresholdHostOverride =
+      overriddenHome.home.sessionVariables.GOOSE_AUTO_COMPACT_THRESHOLD == "0.8";
 
     seedModePropagates =
       seeded.config.dotfiles.goose.configMode == "seed"
