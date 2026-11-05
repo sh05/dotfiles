@@ -8,6 +8,22 @@
   "base_ref": "main",
   "base_commit": "REPLACE_WITH_FULL_COMMIT_SHA",
   "max_workers": 2,
+  "overall_plan": {
+    "goal": "REPLACE_WITH_RUN_GOAL",
+    "state": "planned",
+    "next_action": "REPLACE_WITH_NEXT_ACTION",
+    "items": [
+      {
+        "id": "step-1",
+        "description": "REPLACE_WITH_PLAN_STEP",
+        "state": "planned",
+        "worker_attempt": null,
+        "dependencies": [],
+        "blockers": []
+      }
+    ],
+    "last_checked_at": null
+  },
   "permissions": {
     "create_layout_and_worktrees": false,
     "commit": false,

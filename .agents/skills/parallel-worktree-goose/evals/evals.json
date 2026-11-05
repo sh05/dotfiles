@@ -6,6 +6,8 @@
       "prompt": "Herdr 内で親 Goose を実行しています。独立した Issue #123 と #456 を、それぞれ固有の branch / worktree / workspace で並列実装してください。共通の base を固定し、親だけが更新する台帳と、worktree 外の指示ファイルを用意してください。Herdr の `worktree create` は worktree と workspace を同時に作成します。Goose は通常の `goose session --name` で起動してください。Issue の受け入れ条件は各指示ファイルにあります。commit は許可しますが、push / PR / merge はしないでください。",
       "expected_output": "HERDR_ENV を確認してからインストール済み Herdr / Goose の help と対象 repo の状態を調べ、共通の base SHA と親専用台帳を確定する。Issue ごとに `herdr worktree create` で別の worktree と workspace を用意し、安全な一意の branch、明示 cwd の専用 pane、`goose session --name` を `herdr pane run` で割り当てる。`--no-focus` が help にあれば維持する。子の foreground process、cwd、session 名と通常の入力待ち画面を確認する。既知の Herdr 0.9.5 では Goose の `agent get` が idle でも `agent prompt` が active named agent でないとして失敗し得るため、get の表示だけを送信能力の証拠にしない。実際のバージョンで named-agent prompt がサポートされる根拠を確認できればその API を使えるが、prompt error の場合は画面と実際の状態を照合して二重送信しない。この 0.9.5 環境では、実際の pane 入力が使えると確認した専用 pane に限り、指示ファイルを読んで従う固定文面と安全な絶対パスから成る一行の prompt を `herdr pane run` で一度送る。Issue 本文を prompt や shell command に連結せず、両 worker への投入を済ませてから監視する。Goose を別 kind として偽装せず、子には他の worker の worktree を触らせず、許可されていない push / PR / merge を行わない。",
       "assertions": [
+        "親は全体の作業計画を台帳に記録し、子の管理・進捗把握に専念して、原則として具体的な実装変更をしない",
+        "ユーザーの進捗質問には最新の台帳と状態確認にもとづき、進捗・依存・ブロッカー・次の作業を回答できる",
         "HERDR_ENV を確認し、Herdr / Goose の実際の help と repo 状態を見てから実行計画を立てる",
         "共通の固定 base SHA と親だけが管理する台帳に、Issue ごとの branch・worktree・workspace・pane・session / 判明した session ID・attempt・状態の対応を記録する",
         "Issue ごとに `herdr worktree create` で worktree と workspace を用意し、画面を pane 分割せず、返却された root pane の cwd を確認する",
