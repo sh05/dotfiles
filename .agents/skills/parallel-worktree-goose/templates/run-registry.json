@@ -12,6 +12,13 @@
     "goal": "REPLACE_WITH_RUN_GOAL",
     "state": "planned",
     "next_action": "REPLACE_WITH_NEXT_ACTION",
+    "pr_strategy": {
+      "kind": "parallel | stacked | sequential",
+      "integration_order": [],
+      "base_branches": [],
+      "reviewed_by_coordinator": false,
+      "post_integration_tests": []
+    },
     "items": [
       {
         "id": "step-1",
