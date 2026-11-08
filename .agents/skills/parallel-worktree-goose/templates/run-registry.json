@@ -1,6 +1,6 @@
 {
   "_note": "Example coordinator-owned state, not a Goose or Herdr configuration. This file does not provide an automatic lock or live status. Record returned IDs and verify actual state before acting.",
-  "schema_version": 2,
+  "schema_version": 3,
   "run_id": "REPLACE_WITH_UNIQUE_RUN_ID",
   "repository_url": "https://github.com/OWNER/REPO",
   "primary_checkout": "/absolute/path/to/primary-checkout",
@@ -29,7 +29,31 @@
         "blockers": []
       }
     ],
-    "last_checked_at": null
+    "last_checked_at": null,
+    "queue": [
+      {
+        "id": "step-2",
+        "description": "REPLACE_WITH_NEXT_BOUNDED_DELIVERABLE",
+        "state": "queued",
+        "dependencies": [
+          "step-1"
+        ],
+        "acceptance_criteria": [
+          "REPLACE_WITH_REVIEWABLE_OUTCOME"
+        ],
+        "stop_condition": "Stop after this deliverable and report; do not start another queued item.",
+        "worker_attempt": null,
+        "blockers": []
+      }
+    ],
+    "dispatch_policy": {
+      "one_bounded_task_per_worker_at_a_time": true,
+      "max_active_workers": "Use max_workers above; leave excess tasks unassigned in queue.",
+      "wait_timeout_seconds_default": 15,
+      "wait_timeout_seconds_max": 30,
+      "post_timeout_action": "Observe agent/pane/process/cwd/diff, update this registry, then perform a management action before waiting again.",
+      "long_or_indefinite_wait_requires_explicit_user_request": true
+    }
   },
   "permissions": {
     "create_layout_and_worktrees": false,
@@ -86,7 +110,9 @@
           "state": "planned",
           "last_observed_agent_state": null,
           "foreground_pid": null,
-          "evidence_notes": []
+          "evidence_notes": [
+            "Assigned exactly one bounded task; do not continue to queued items without coordinator review and a new assignment."
+          ]
         }
       ],
       "verification": {
@@ -101,6 +127,14 @@
       "cleanup": {
         "state": "retained",
         "reason": "Not authorized"
+      },
+      "current_task": {
+        "id": "step-1",
+        "description": "REPLACE_WITH_ONE_BOUNDED_DELIVERABLE",
+        "acceptance_criteria": [
+          "REPLACE_WITH_REVIEWABLE_OUTCOME"
+        ],
+        "stop_condition": "Stop after this deliverable; report results and wait for coordinator review and a new assignment."
       }
     }
   ]
