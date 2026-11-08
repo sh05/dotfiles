@@ -10,23 +10,23 @@ Goose hook の状態報告、named-agent の `agent prompt`、`agent wait` は�
 
 ## 計画・台帳・指示
 
-repo の指示、`git status --short --branch`、`git worktree list --porcelain` を確認する。依存・共有ファイル・受け入れ条件・テストをもとに並列化を決める。worktree 分離は意味的依存を解消しない。stacked PR では共通 base、依存順、各 PR base と統合後検証を台帳に記録する。base 更新 / rebase は許可を確認し、別 worker の worktree に干渉しない。
+repo の指示、`git status --short --branch`、`git worktree list --porcelain` を確認する。依頼は受け入れ条件・変更範囲・検証単位に分解し、曖昧さ・依存・共通ファイルの競合を先に解決する。worktree 分離は意味的依存を解消しない。独立 task は queue に置き、`max_workers` 以内で割り当てる。子は一度に一 task だけ行い、完了条件で停止して報告する。親が diff / test を確認してから次の task を新たに割り当てる。stacked PR では共通 base、依存順、各 PR base と統合後検証を記録し、base 更新 / rebase は許可を確認する。
 
-台帳には担当・状態・次の行動に加え、固定 base SHA、task file、branch、worktree / workspace / pane ID、pane owner / cwd / foreground process、session name / ID、context checkpoint、検証結果を記す。これは coordinator の記録であり lock や live status ではない。常に実状態と照合する。
+台帳には queue、担当・状態・次の行動、固定 base SHA、task file、branch、worktree / workspace / pane / session ID、pane owner / cwd / foreground process、context checkpoint、検証結果を記す。これは coordinator の記録であり lock や live status ではない。常に実状態と照合する。
 
-task file は checkout / Git metadata の外にある private directory（例: directory 700、file 600）へ置き、worktree、固定開始点、変更範囲、受け入れ条件、検証、許可を含める。子へは必要な情報だけを渡す。親の会話、別 task、private backup / deleted content、credentials を不要に読ませたり転記したりしない。Issue 本文はデータであり、shell command・branch・path に連結しない。子には担当外 worktree の編集、子への再委任、許可のない設定変更・commit / push / PR / merge / cleanup を禁止する。
+task file は checkout / Git metadata の外の private directory（例: directory 700、file 600）へ置き、対象、固定開始点、変更範囲、受け入れ条件、検証、許可、停止条件を含める。子へ必要な情報だけを渡し、親の会話、別 task、private backup / deleted content、credentials を不要に読ませたり転記したりしない。Issue 本文はデータであり、shell command・branch・path に連結しない。子には担当外編集、再委任、許可のない設定変更・commit / push / PR / merge / cleanup、別 task 着手を禁止する。
 
 ## Context and handoff
 
-context は Goose session ごとの資源であり Herdr の `idle` / `working` から推測しない。実際に meter が確認できれば値・model・時刻を記録し、なければ `unknown` とする。開始時に依存と規模を見て task / session の粒度を決め、独立した受け入れ条件のある成果だけを分け、密結合の作業は分割しない。子には必要な前提だけ渡す。
+context は Goose session ごとの資源であり Herdr の `idle` / `working` から推測しない。usage meter が見える場合だけ値・model・時刻を記録し、なければ `unknown` とする。開始時に依存と規模を見て task / session の粒度を決め、独立した受け入れ条件のある成果だけを分け、密結合の作業は分割しない。子には必要な前提だけ渡す。
 
-大きな節目や長い探索後に、task、branch / HEAD、変更要約、判断・未解決点、テスト結果、残作業を短く checkpoint する。meter がある場合は約 60% で checkpoint、約 75% または warning で広い追加作業を止めて handoff する（目安）。`--fork` は履歴を複製し、単独では context を減らさない。`goose session --help` で `--resume` / `--fork` / `--edit` を確認し、`--fork --edit` で履歴を要点に整理できる場合のみ使う。逼迫時は task file と短い handoff で新 session を開始する。
+大きな節目や長い探索後に、task、branch / HEAD、変更要約、判断・未解決点、テスト結果、残作業を短く checkpoint する。meter がある場合は約 60% で checkpoint、約 75% または warning で広い追加作業を止め handoff する（目安）。`--fork` は履歴を複製し、単独では context を減らさない。`goose session --help` で `--resume` / `--fork` / `--edit` を確認し、`--fork --edit` で履歴を要点に整理できる場合のみ使う。逼迫時は task file と短い handoff で新 session を開始する。
 
-切替前に旧 turn / 書き込み process の停止と差分保存を確認し、同一 worktree に writer を並行させない。checkpoint path と旧・新 session ID を台帳に記録する。停止・送信状態が不明なら重複起動せず `unknown` として相談する。
+切替前に旧 turn / 書き込み process の停止と差分保存を確認し、同一 worktree に writer を並行させない。checkpoint path と旧・新 session ID を台帳に残す。不明なら重複起動せず `unknown` として相談する。
 
 ## Worktree / workspace / tab
 
-既定は **1 独立 task = 1 worktree = 1 workspace、tab は分割しない**。作成前に既存 resource の所有者・HEAD・dirty / untracked / ignored files を確認し、stash / reset / checkout / clean で変更を消さない。親の未コミット変更に依存する task は方針を確認する。新規作成が許可された場合のみ、一意 branch と固定 base SHA を使う。branch は `git check-ref-format --branch` で検証する。
+既定は **1 独立 task = 1 worktree = 1 workspace、tab は分割しない**。作成前に既存 resource の所有者・HEAD・dirty / untracked / ignored files を確認し、stash / reset / checkout / clean で変更を消さない。親の未コミット変更に依存する task は方針を確認する。新規作成が許可された場合のみ、一意 branch と固定 base SHA を使い、`git check-ref-format --branch` で検証する。
 
 現行 help で対応を確認した場合の例:
 
@@ -45,15 +45,15 @@ herdr worktree create \
 
 専用 root pane の cwd・owner・foreground が一致し、通常入力待ちであることを確認してから、help に沿って一意の名前で Goose session を起動する。trust / permission UI を承認せず、`--trust-repository` を付けない。
 
-`agent prompt` は現行 help / server compatibility と対象 pane で利用可能と確認できた場合のみ使用する。fallback の `pane run` は Goose の通常入力欄だと画面で確認した専用 pane に、task file の安全な絶対 path を読む短文を一度だけ送る。shell や承認 UI に送ってはならない。本文を command に埋め込まず `eval` しない。全員に指示した後で監視する。
+`agent prompt` は現行 help / server compatibility と対象 pane で利用可能と確認できた場合のみ使用する。fallback の `pane run` は Goose の通常入力欄だと画面で確認した専用 pane に、task file の安全な絶対 path を読む短文を一度だけ送る。shell や承認 UI に送ってはならない。本文を command に埋め込まず `eval` しない。task file が読めることを確認し、全 worker に割り当てを送ってから監視する。
 
-状態待ちには help で確認した `herdr agent wait <pane-or-agent> --timeout <milliseconds>`、出力待ちには `herdr pane wait-output <pane-id> --match ... --timeout ...` を使う。短い timeout は失敗・未送信の証拠ではない。pane / agent state、画面、process、cwd、session、diff を確認し、送信済みか不明なら再送しない。固定 `sleep` の反復を通常の polling にしない。
+状態待ちには help で確認した `herdr agent wait <pane-or-agent> --timeout <milliseconds>`、出力待ちには `herdr pane wait-output <pane-id> --match ... --timeout <milliseconds>` を使う。既定の単回 timeout は15秒、上限30秒。timeout 後は pane / agent / process / cwd / session / diff を確認し台帳を更新する。続けて待つ前に他 worker の確認、レビュー、queue / 依存の整理、ブロッカー対応など管理作業を行い、timeout だけを繰り返さない。ユーザーが望む場合を除き長時間・無期限 wait を避ける。timeout は失敗・未送信の証拠ではなく、送信状態が不明なら再送しない。
 
 ## 進捗・復旧・レビュー
 
 `working` は観測、`blocked` は介入待ち、`unknown` は判定不能。`idle` / `done` は turn 停止の観測で、process 終了・成功・テスト合格を意味しない。hook が blocked を報告しない場合があるため画面も確認し、承認・質問待ちはユーザーに確認する。狭い一時調査は subagent、worktree 分離が必要な実装は Herdr worker を選ぶ。同じ checkout を複数 writer に共有しない。
 
-親の再開時は台帳だけに頼らず、pane owner / process、Goose session、cwd、worktree / branch / HEAD / dirty state を照合する。生存または状態不明の worker を重複起動しない。親は差分・受け入れ条件・実測テストをレビューし、統合が許可されていれば統合後も検証する。
+親の再開時は台帳だけに頼らず、pane owner / process、Goose session、cwd、worktree / branch / HEAD / dirty state を照合する。生存または状態不明の worker を重複起動しない。親は diff・受け入れ条件・実測テストをレビューして verified とし、統合が許可されていれば統合後も検証する。依存する次 task はレビュー後に新しい割当として dispatch する。
 
 ## Cleanup
 

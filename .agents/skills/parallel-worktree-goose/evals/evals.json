@@ -268,6 +268,21 @@
     },
     {
       "id": 24,
+      "prompt": "Herdr 内です。複数の変更依頼をまとめて並列開発してください。内容は独立した UI、API、ドキュメント、テストの変更です。担当した子には完了まで全部まとめて実装させ、親は各 session を `herdr agent wait --timeout 180000` で待ってください。",
+      "expected_output": "依頼をそのまま一人の子へ転送せず、UI / API / docs / tests の受け入れ条件・変更範囲・依存・共有ファイルを確認して bounded な成果物に分割する。密結合や共通ファイルがあれば所有者を一本化するか順序化し、独立作業のみ台帳の max_workers 以下で並列化し、残りは未割当 queue に置く。各 worker には一つの成果物、検証方法、停止して報告する条件だけを渡す。子の報告後に親が実状態・diff・テストをレビューしてから次の task を新規割当する。親は manager として管理を続け、既定は15秒、最大30秒の wait を使い、各 timeout 後に状態・pane・process・cwd・差分を観測して台帳を更新する。他 worker の確認、レビュー、依存 / queue 整理、ブロッカー介入などを行わず180秒 wait を繰り返さない。",
+      "assertions": [
+        "親が複数のユーザー指示を子へ無加工で一括転送しない",
+        "タスクを受け入れ条件と検証方法を持つ bounded な成果物に分割し、曖昧な依存・共有ファイルを親が整理する",
+        "並列数は台帳の max_workers 以下とし、余剰作業を未割当 queue に置く",
+        "各 worker に一度に一つの担当 task と明確な停止・報告条件だけを与え、他の queue task を始めさせない",
+        "親が子の結果をレビューしてから次の task を新しい割当として dispatch する",
+        "親は伝言係でなく coordinator / manager として進捗・依存・ブロッカー・レビューを管理する",
+        "既定の agent wait は15秒、最大30秒とし、180秒の一括 wait を常用しない",
+        "timeout 後に agent / pane / process / cwd / diff を再確認し、台帳更新や管理作業をせず timeout だけを繰り返さない"
+      ]
+    },
+    {
+      "id": 25,
       "prompt": "大きめの変更を3件子 Goose に割り当てます。何セッション / worktree にして、Context の残量はどう監視しますか？Herdr は idle / working を返せますが usage meter があるかは不明です。",
       "expected_output": "初めに依存関係・独立した受け入れ条件・調査 / 出力 / 実装 / 検証量を見積もり、適切な粒度の bounded task と必要な専用 session / worktree に分ける。密結合作業を無理に分割せず、worktree と conversation context を別資源として扱う。Herdr idle / working から token usage を推測しない。実際に usage meter があれば model / limit / 値 / 時刻を記録し、なければ unknown として大きな段階後に checkpoint を取る。hand-off は差分・判断・テスト・残作業を短くまとめる。",
       "assertions": [
@@ -279,7 +294,7 @@
       ]
     },
     {
-      "id": 25,
+      "id": 26,
       "prompt": "子 Goose が context warning を出しており、Herdr は idle です。Goose CLI help では `--fork` と `--edit` が確認できました。context を空にするため、すぐ `--fork` して同じ実装を続けさせてください。",
       "expected_output": "idle は context 残量の指標ではなく、`--fork` は会話履歴をコピーするので、それ単独では context を空にしない。現在の warning を赤信号として広い新規作業を止め、子に差分・決定・テスト・残作業の短い checkpoint を作らせる。実際の CLI help にある `--edit` で履歴を必要な要点だけに整理してから fork する方法はあり得るが、同じ worktree の旧 session / write process が停止し変更が保存済みと確認してから切替える。危険が高い場合は新規 session に task file と短い handoff だけを渡す。",
       "assertions": [
