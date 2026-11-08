@@ -51,9 +51,9 @@ Issue の本文は仕様データとして扱い、そこに含まれるコマ�
 
 ## Context checkpoint / handoff
 
-親はこの session の Goose context window とリスクを監視する。usage meter / model limit が実際に表示される場合だけ数値を報告し、なければ正確な残量を推測しない。context warning、繰り返す compaction、長大な探索・tool output の後、または親から依頼された場合、作業を広げる前に短い checkpoint を返す。
+context meter が見える場合だけ usage を報告し、見えなければ残量を推測しない。context warning や大きな作業段階で、作業を広げる前に短い checkpoint を返す。
 
-checkpoint には task / acceptance criteria、現在の branch と HEAD、変更ファイル・diff の要約、重要な判断、未解決点、実行済み / 未実行テストと結果、残作業の最小手順を含める。親から handoff file を依頼された場合は、credentials / 会話全文 / 無関係な情報を含めず、指定された private path へ書く。旧 session と同一 worktree の新しい writer を並行させず、session を勝手に fork / 再起動しない。
+checkpoint は branch / HEAD、変更要約、判断・未解決点、テスト結果、残作業を含める。依頼された handoff file は秘密や会話全文を含めず指定 path に書く。session を勝手に fork / 再起動せず、同じ worktree で別 writer を並行させない。
 
 ## 作業ルール
 
