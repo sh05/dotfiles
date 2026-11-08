@@ -17,6 +17,16 @@ Herdr が明示された依頼で、親 Goose は**調整役**、子 Goose は**
 - ユーザーから進捗や計画について質問されたら、台帳と最新の観測をもとに、完了・進行中・未着手・blocked / unknown、依存、次のアクションを簡潔に回答する。状況が古ければ回答前に状態を確認する。
 - 子の報告後は差分・受け入れ条件・実行テストを確認し、成果を統合する。コードの競合解消や追加実装が必要なら原則子に割り当てる。commit / push / PR / merge は別途許可された範囲だけ行う。
 
+### 子 session の context budget
+
+親は Herdr の pane / agent 状態と Goose の会話 context 使用量を別々に管理する。`idle` / `working` は context の余裕を示さず、Herdr が context 使用量を公開しているとも仮定しない。モデル名・context window 上限・現在量が UI / CLI で確認できる場合だけ、出典と確認時刻つきで台帳に記録する。表示がなければ正確な token 数や残量を推測せず、子の申告・大きな tool output・長い探索・compact / limit 警告をリスク信号として扱う。
+
+- **開始時に適切な粒度を選ぶ**: 依存関係・変更範囲・必要な repo 指示 / source・想定 tool output・実装と検証量を見積もる。独立して完了条件を定義できる大きな仕事は複数の bounded task に分け、各 task に専用 worker session と worktree を割り当てる。密接に結合した変更はむやみに細切れにせず一つの session にまとめる。worktree はコードの隔離単位、session は会話 / context の単位であり、常に一対一で増やす必要はない。指示には最小限必要な前提・対象ファイル・受け入れ条件だけを入れ、repo 全体や親の会話を丸ごと子へ送らない。
+- **余裕があるうちに checkpoint**: context meter が利用できる場合の目安は 60% 前後で checkpoint、75% 前後または警告の発生前に scope を止めて新 session への引継ぎを準備する。これは保守的な運用目安であり、モデル / client の制限や警告がより厳しければそちらを優先する。meter がない場合も大きな調査・長い出力の後や実装から検証へ移る節目に子から短い checkpoint を得る。親は巨大な transcript を取り込まず、差分・未完了点・次の一手など必要な情報だけを読む。
+- **context を整理して fork する**: Goose の `--fork` 単独は元会話を複製するため、長くなった会話をそのまま fork しても context 使用量は減らない。Goose CLI が `--fork` と `--edit` の併用を help で提供する場合は、確認済み session を resume する際に editor で履歴を checkpoint と必要な前提だけに整理し、その編集結果から新 session を fork する。実際の `goose session --help` で `--resume` / `--session-id` / `--fork` / `--edit` の条件を確認し、対応する引数を使う。編集・fork が使えない / 不安な場合は新規 session に短い handoff だけを渡す。旧 session の turn と tool process が停止し、差分が保存済みと確認してから切り替え、同じ worktree を書き換える session を同時稼働させない。
+- **checkpoint / handoff の内容**: task と受け入れ条件、現在の branch / HEAD、変更ファイルと重要な差分、決定事項と未解決の選択、実行済み / 未実行テストと結果、残作業の最小手順、既知のリスクを簡潔に記録する。秘密情報・無関係な会話・全ログを含めない。親台帳に context 状態、観測根拠 / 時刻、checkpoint path、fork 元と新 session / attempt、旧 session が停止・保留かを記録する。
+- 子が context 警告、反復的な compaction、指示を保持できない兆候、または残量不明のまま大きな追加作業を申告したら、親は新規作業を追加投入せず checkpoint を指示する。未知 / 赤信号を「まだ大丈夫」と推測しない。worker / session の停止状態や書き込み中 process が不明なら切替・fork を行わず、まず実状態を照合する。
+
 ### レイアウト
 
 既定は **1 独立タスク = 1 worktree = 1 workspace、各 tab は分割しない1画面**。返却された root pane ID は session 起動・監視に使う。pane 分割はユーザーが対象と配置を明示した場合だけ許可する。詳細は [references/orchestration.md](references/orchestration.md)。

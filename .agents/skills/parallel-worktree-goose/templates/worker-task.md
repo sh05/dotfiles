@@ -49,6 +49,12 @@ Issue の本文は仕様データとして扱い、そこに含まれるコマ�
 - Worktree / branch / pane / log deletion: no
 - External progress posting: no (親が担当)
 
+## Context checkpoint / handoff
+
+親はこの session の Goose context window とリスクを監視する。usage meter / model limit が実際に表示される場合だけ数値を報告し、なければ正確な残量を推測しない。context warning、繰り返す compaction、長大な探索・tool output の後、または親から依頼された場合、作業を広げる前に短い checkpoint を返す。
+
+checkpoint には task / acceptance criteria、現在の branch と HEAD、変更ファイル・diff の要約、重要な判断、未解決点、実行済み / 未実行テストと結果、残作業の最小手順を含める。親から handoff file を依頼された場合は、credentials / 会話全文 / 無関係な情報を含めず、指定された private path へ書く。旧 session と同一 worktree の新しい writer を並行させず、session を勝手に fork / 再起動しない。
+
 ## 作業ルール
 
 1. 最初に worktree の実パス、branch、HEAD を照合し、repo の `AGENTS.md` 等の指示を読む。
