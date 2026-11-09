@@ -331,10 +331,15 @@ in
     "zsh/61_goose_provider_helpers.zsh".text = providerHelpersContent;
   };
 
-  # Goose static integration sources are locked to this flake revision.
-  # User runtime config, auth, sessions and state are not linked into the store.
+  # Static agent skills are locked to this flake revision. Codex also scans
+  # repository-local .agents/skills; these links expose the skills user-wide.
   home.file.".agents/skills/parallel-worktree-goose".source =
     ../../.agents/skills/parallel-worktree-goose;
+  home.file.".agents/skills/parallel-worktree-codex".source =
+    ../../.agents/skills/parallel-worktree-codex;
+
+  # Goose static plugin source; user runtime config, auth, sessions and state
+  # are not linked into the store.
   home.file.".agents/plugins/sh05-goose".source =
     ../../config/herdr/plugins/sh05.goose;
 

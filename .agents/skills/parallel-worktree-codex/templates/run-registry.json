@@ -1,0 +1,85 @@
+{
+  "_note": "Coordinator-owned planning record, not a Codex/Herdr live-status API or lock. Record only observed identifiers and reconcile with actual threads, processes, panes (if used), and Git state.",
+  "schema_version": 1,
+  "run_id": "REPLACE_WITH_UNIQUE_RUN_ID",
+  "repository_url": "https://github.com/OWNER/REPO",
+  "primary_checkout": "/absolute/path/to/primary-checkout",
+  "base_ref": "main",
+  "base_commit": "REPLACE_WITH_FULL_COMMIT_SHA",
+  "task_root": "/absolute/private/path/outside-all-checkouts",
+  "execution_model": "codex-subagents-read-only | separate-cli-worktrees | single-worktree | optional-herdr",
+  "overall_plan": {
+    "goal": "REPLACE_WITH_RUN_GOAL",
+    "state": "planned",
+    "next_action": "REPLACE_WITH_NEXT_ACTION",
+    "items": [
+      {
+        "id": "task-1",
+        "description": "REPLACE_WITH_TASK",
+        "state": "planned",
+        "worker_attempt": null,
+        "dependencies": [],
+        "owned_scope": [],
+        "blockers": []
+      }
+    ]
+  },
+  "permissions": {
+    "create_worktrees": false,
+    "commit": false,
+    "push": false,
+    "create_or_update_pr": false,
+    "merge": false,
+    "delete_worktrees_or_branches": false,
+    "close_or_delete_codex_threads": false,
+    "delete_task_files_or_logs": false
+  },
+  "coordinator": {
+    "codex_thread_id": null,
+    "herdr_workspace_id": null,
+    "herdr_tab_id": null,
+    "herdr_pane_id": null
+  },
+  "workers": [
+    {
+      "task_id": "task-1",
+      "attempt_id": "task-1-a1",
+      "state": "planned",
+      "dependencies": [],
+      "owned_scope": [],
+      "worktree": "/absolute/path/to/worktree",
+      "branch": "agent/task-1-unique",
+      "base_commit": null,
+      "initial_head": null,
+      "codex_thread_id": null,
+      "codex_session_id": null,
+      "instructions_file": "/absolute/private/path/outside-all-checkouts/task-1.md",
+      "launch_method": null,
+      "process": {
+        "pid": null,
+        "cwd": null,
+        "command_observed": null
+      },
+      "herdr": {
+        "used": false,
+        "workspace_id": null,
+        "tab_id": null,
+        "pane_id": null,
+        "owner_observed": null,
+        "foreground_process_observed": null
+      },
+      "verification": {
+        "head": null,
+        "dirty": null,
+        "acceptance_criteria_checked": false,
+        "tests": [],
+        "blockers": []
+      },
+      "cleanup": {
+        "state": "retained",
+        "reason": "Not authorized"
+      }
+    }
+  ],
+  "last_checked_at": null
+}

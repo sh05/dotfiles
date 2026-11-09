@@ -326,7 +326,13 @@ The skill coordinates separate Herdr worktrees and Goose sessions, including
 safe prompt submission, recovery, and cleanup. It defaults to workspaces/tabs
 without split panes. Guidance and eval scenarios are in
 [`.agents/skills/parallel-worktree-goose/`](.agents/skills/parallel-worktree-goose/).
-The plugin's lifecycle hooks remain separate from the skill.
+The plugin's lifecycle hooks remain separate from the skill. The
+`parallel-worktree-codex` skill is also available for Codex CLI, covering native
+subagents, Codex-managed worktrees, isolated Git worktrees, and optional Herdr
+coordination. It does not assume that native subagents automatically have
+separate worktrees. Both skills are linked to `~/.agents/skills/` by Home
+Manager; Codex also discovers repository-local skills under `.agents/skills/`.
+Guidance is in [`.agents/skills/parallel-worktree-codex/`](.agents/skills/parallel-worktree-codex/).
 The provider-neutral `ask-pane` helper is source-controlled in
 `config/zsh/60_agents.zsh`; provider-specific wrappers are generated only when
 selected in `dotfiles.goose.providerHelpers`. The `"claude-code"` wrapper requires

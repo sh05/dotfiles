@@ -310,6 +310,11 @@ Home Manager cleanup による誤削除を防ぎます。checkout 以外でも�
 この Skill は Herdr の worktree と Goose session による並行作業、指示送信、復旧、cleanup を扱います。
 原則は workspace / tab を使い、pane は分割しません。手順と評価ケースは
 [`.agents/skills/parallel-worktree-goose/`](.agents/skills/parallel-worktree-goose/) にあります。
+Codex CLI 用の `parallel-worktree-codex` Skill も追加しました。Codex の native subagent、
+Codex 管理 worktree、Git worktree、必要な場合の Herdr 連携を扱います。subagent が自動的に
+独立 worktree を持つとは仮定しません。両 Skill は Home Manager で `~/.agents/skills/` にリンクし、
+Codex は repository 内の `.agents/skills/` も検出します。手順・template・eval は
+[`.agents/skills/parallel-worktree-codex/`](.agents/skills/parallel-worktree-codex/) にあります。
 plugin の lifecycle hooks は Skill とは別に維持します。provider-neutral な
 `ask-pane` helper は `config/zsh/60_agents.zsh` で管理します。provider-specific wrapper は
 `dotfiles.goose.providerHelpers` で選択されたものだけ生成します。`"claude-code"` wrapper を使うには
