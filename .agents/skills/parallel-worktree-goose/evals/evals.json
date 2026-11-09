@@ -280,6 +280,30 @@
         "既定の agent wait は15秒、最大30秒とし、180秒の一括 wait を常用しない",
         "timeout 後に agent / pane / process / cwd / diff を再確認し、台帳更新や管理作業をせず timeout だけを繰り返さない"
       ]
+    },
+    {
+      "id": 25,
+      "prompt": "大きめの変更を3件子 Goose に割り当てます。何セッション / worktree にして、Context の残量はどう監視しますか？Herdr は idle / working を返せますが usage meter があるかは不明です。",
+      "expected_output": "初めに依存関係・独立した受け入れ条件・調査 / 出力 / 実装 / 検証量を見積もり、適切な粒度の bounded task と必要な専用 session / worktree に分ける。密結合作業を無理に分割せず、worktree と conversation context を別資源として扱う。Herdr idle / working から token usage を推測しない。実際に usage meter があれば model / limit / 値 / 時刻を記録し、なければ unknown として大きな段階後に checkpoint を取る。hand-off は差分・判断・テスト・残作業を短くまとめる。",
+      "assertions": [
+        "開始前に scope / dependencies / acceptance criteria / 見込みの調査・実装・検証量を元に session の粒度を決める",
+        "worktree、pane、Goose conversation の隔離境界を混同しない",
+        "meter が確認できないのに token 使用量や残量を推測せず unknown にする",
+        "idle / working を context 使用量の証拠にしない",
+        "段階的な checkpoint と簡潔で再利用可能な handoff を指示する"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "子 Goose が context warning を出しており、Herdr は idle です。Goose CLI help では `--fork` と `--edit` が確認できました。context を空にするため、すぐ `--fork` して同じ実装を続けさせてください。",
+      "expected_output": "idle は context 残量の指標ではなく、`--fork` は会話履歴をコピーするので、それ単独では context を空にしない。現在の warning を赤信号として広い新規作業を止め、子に差分・決定・テスト・残作業の短い checkpoint を作らせる。実際の CLI help にある `--edit` で履歴を必要な要点だけに整理してから fork する方法はあり得るが、同じ worktree の旧 session / write process が停止し変更が保存済みと確認してから切替える。危険が高い場合は新規 session に task file と短い handoff だけを渡す。",
+      "assertions": [
+        "Herdr idle を context が空または余裕十分という意味にしない",
+        "Goose `--fork` が元会話を複製し、それ単独では context をリセットしないと説明する",
+        "warning 後はまず checkpoint を取り、`--edit` を使う場合は実際に確認した help に従う",
+        "旧 session / 書き込み process の停止と差分の保存を確かめ、同じ worktree に concurrent writer を作らない",
+        "context が危険な場合は task file と短い handoff を使う新規 session を選ぶ"
+      ]
     }
   ]
 }

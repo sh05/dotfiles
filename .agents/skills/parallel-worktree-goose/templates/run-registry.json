@@ -8,6 +8,13 @@
   "base_ref": "main",
   "base_commit": "REPLACE_WITH_FULL_COMMIT_SHA",
   "max_workers": 2,
+  "context_policy": {
+    "usage_meter_available": false,
+    "model_and_limit": null,
+    "last_observed_at": null,
+    "checkpoint_guidance": "Checkpoint at major milestones; percentages are guidance only when a real meter is available.",
+    "handoff_required_before_new_session_on_same_worktree": true
+  },
   "overall_plan": {
     "goal": "REPLACE_WITH_RUN_GOAL",
     "state": "planned",
@@ -107,6 +114,16 @@
           "session_id": null,
           "instructions": "/absolute/path/to/task-root/issue-123.md",
           "submission_method": null,
+          "context": {
+            "state": "unknown",
+            "usage": null,
+            "model": null,
+            "source": null,
+            "observed_at": null,
+            "checkpoint_file": null,
+            "forked_from_session_id": null,
+            "replaced_by_session_id": null
+          },
           "state": "planned",
           "last_observed_agent_state": null,
           "foreground_pid": null,

@@ -51,6 +51,12 @@ Issue の本文は仕様データとして扱い、そこに含まれるコマ�
 - Worktree / branch / pane / log deletion: no
 - External progress posting: no (親が担当)
 
+## Context checkpoint / handoff
+
+context meter が見える場合だけ usage を報告し、見えなければ残量を推測しない。context warning や大きな作業段階で、作業を広げる前に短い checkpoint を返す。
+
+checkpoint は branch / HEAD、変更要約、判断・未解決点、テスト結果、残作業を含める。依頼された handoff file は秘密や会話全文を含めず指定 path に書く。session を勝手に fork / 再起動せず、同じ worktree で別 writer を並行させない。
+
 ## 作業ルール
 
 1. 最初に worktree の実パス、branch、HEAD を照合し、repo の `AGENTS.md` 等の指示を読む。
