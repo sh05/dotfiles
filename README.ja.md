@@ -272,8 +272,9 @@ Goose の mutable runtime config は `~/.config/goose/config.yaml` です（公�
 このリポジトリや Nix store からはリンクしません。公開リポジトリにある `config/goose/config.yaml` は
 個人用の履歴ファイルであり、seed template として使わないでください。Goose の認証情報・secret・
 session などの runtime state も公開 checkout や read-only store にリンクしません。
-Home Manager のシェルセッションには `GOOSE_AUTO_COMPACT_THRESHOLD=0.0` を設定し、その環境を
-引き継いだ Goose の事前の自動圧縮を無効にします。環境変数は runtime config より優先されますが、
+Home Manager のシェルセッションには `GOOSE_AUTO_COMPACT_THRESHOLD=0.9` を設定し、その環境を
+引き継いだ Goose はモデルの context limit の90%（または先に達した token 上限）で自動圧縮を開始します。
+環境変数は runtime config より優先されますが、
 runtime config 自体は変更しません。共有の値は host module から上書きできます。既存プロセスには
 新しい環境が必要です。Home Manager の環境変数を引き継がない環境（独立して起動した GUI アプリや
 常駐サーバーなど）は対象外です。`goose info -v` は保存された設定を表示するため、このプロセス環境による

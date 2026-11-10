@@ -254,9 +254,10 @@ in
       XDG_DATA_HOME = "$HOME/.local/share";
       GOPATH = "$HOME/.go";
       KUBECTL_EXTERNAL_DIFF = "colordiff -u";
-      # Manage proactive compaction for Goose processes started in this session
-      # without linking or modifying Goose's mutable runtime config.
-      GOOSE_AUTO_COMPACT_THRESHOLD = "0.0";
+      # Start proactive Goose compaction at 90% of the model context window
+      # (or the configured token cap, whichever is reached first), without
+      # linking or modifying Goose's mutable runtime config.
+      GOOSE_AUTO_COMPACT_THRESHOLD = "0.9";
       # npm global install を書き込み可能な prefix へ（Nix管理のnodeと共存）
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
     };
