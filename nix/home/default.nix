@@ -254,9 +254,10 @@ in
       XDG_DATA_HOME = "$HOME/.local/share";
       GOPATH = "$HOME/.go";
       KUBECTL_EXTERNAL_DIFF = "colordiff -u";
-      # Manage proactive compaction for Goose processes started in this session
-      # without linking or modifying Goose's mutable runtime config.
-      GOOSE_AUTO_COMPACT_THRESHOLD = "0.0";
+      # Start proactive Goose compaction at 90% of the model context window
+      # (or the configured token cap, whichever is reached first), without
+      # linking or modifying Goose's mutable runtime config.
+      GOOSE_AUTO_COMPACT_THRESHOLD = "0.9";
       # npm global install を書き込み可能な prefix へ（Nix管理のnodeと共存）
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
     };
@@ -331,10 +332,15 @@ in
     "zsh/61_goose_provider_helpers.zsh".text = providerHelpersContent;
   };
 
-  # Goose static integration sources are locked to this flake revision.
-  # User runtime config, auth, sessions and state are not linked into the store.
+  # Static agent skills are locked to this flake revision. Codex also scans
+  # repository-local .agents/skills; these links expose the skills user-wide.
   home.file.".agents/skills/parallel-worktree-goose".source =
     ../../.agents/skills/parallel-worktree-goose;
+  home.file.".agents/skills/parallel-worktree-codex".source =
+    ../../.agents/skills/parallel-worktree-codex;
+
+  # Goose static plugin source; user runtime config, auth, sessions and state
+  # are not linked into the store.
   home.file.".agents/plugins/sh05-goose".source =
     ../../config/herdr/plugins/sh05.goose;
 

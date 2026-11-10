@@ -279,10 +279,11 @@ is user-owned, not linked from this repository or the Nix store. In particular,
 the checked-in `config/goose/config.yaml` is a historical personal config and
 must not be used as a seed template. Goose credentials/secrets, sessions, and
 other runtime state are not linked into the public checkout or read-only store.
-Home Manager exports `GOOSE_AUTO_COMPACT_THRESHOLD=0.0` to its shell sessions,
-which disables proactive auto-compaction in Goose processes inheriting that
-variable. Environment variables take precedence over the runtime config, which
-is not modified. This shared value can be overridden in a host module. Existing
+Home Manager exports `GOOSE_AUTO_COMPACT_THRESHOLD=0.9` to its shell sessions,
+so inheriting Goose processes start proactive auto-compaction when the model
+context window reaches 90% (or the configured token cap, whichever comes first).
+Environment variables take precedence over the runtime config, which is not
+modified. This shared value can be overridden in a host module. Existing
 processes need a new environment; independently launched GUI apps and
 long-running servers that do not inherit Home Manager session variables are not
 covered. `goose info -v` displays the stored configuration rather than this
@@ -326,7 +327,13 @@ The skill coordinates separate Herdr worktrees and Goose sessions, including
 safe prompt submission, recovery, and cleanup. It defaults to workspaces/tabs
 without split panes. Guidance and eval scenarios are in
 [`.agents/skills/parallel-worktree-goose/`](.agents/skills/parallel-worktree-goose/).
-The plugin's lifecycle hooks remain separate from the skill.
+The plugin's lifecycle hooks remain separate from the skill. The
+`parallel-worktree-codex` skill is also available for Codex CLI, covering native
+subagents, Codex-managed worktrees, isolated Git worktrees, and optional Herdr
+coordination. It does not assume that native subagents automatically have
+separate worktrees. Both skills are linked to `~/.agents/skills/` by Home
+Manager; Codex also discovers repository-local skills under `.agents/skills/`.
+Guidance is in [`.agents/skills/parallel-worktree-codex/`](.agents/skills/parallel-worktree-codex/).
 The provider-neutral `ask-pane` helper is source-controlled in
 `config/zsh/60_agents.zsh`; provider-specific wrappers are generated only when
 selected in `dotfiles.goose.providerHelpers`. The `"claude-code"` wrapper requires

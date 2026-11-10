@@ -1,0 +1,60 @@
+{
+  "skill_name": "parallel-worktree-codex",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use Codex subagents and Git worktrees to implement two unrelated issues in parallel.",
+      "expected_output": "Plan independent task boundaries and a fixed base, use native Codex subagents only where their write scope is safe, and require distinct verified branches/worktrees and separate Codex CLI sessions for parallel writers. If isolation cannot be confirmed, parallelize read-only work or serialize. Track observed thread/process/worktree state; review diffs and tests before verification. Do not push, create PRs, merge, or clean up without permission.",
+      "assertions": [
+        "Distinguishes native Codex subagent threads from independently isolated Git worktrees",
+        "Does not assume subagents get separate worktrees automatically",
+        "Verifies branch, HEAD, cwd, and Git status for each parallel writer",
+        "Checks dependencies and shared file/API ownership before parallelizing",
+        "Does not push, create PRs, merge, or delete worktrees without explicit permission",
+        "Treats idle or completed agent status as insufficient proof of implementation success"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm in Codex CLI outside Herdr. Use Herdr status to see whether it can host two workers, then run parallel tasks.",
+      "expected_output": "Because HERDR_ENV is not established as exactly 1, do not call Herdr at all, including read-only status/list commands. Continue with Codex-native or ordinary Git workflows if feasible; otherwise ask the user to relaunch inside Herdr if panes are required.",
+      "assertions": [
+        "Does not run any Herdr command unless HERDR_ENV equals 1",
+        "Does not treat read-only Herdr status/list operations as exempt from the guard",
+        "Offers Codex-native or plain Git alternatives rather than blocking unnecessarily"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use two Codex subagents to modify the same checkout at once. They are separate threads, so no worktree setup is needed.",
+      "expected_output": "Explain that separate subagent threads do not prove separate working directories. Permit parallel read-only work, but do not start concurrent writers in one checkout. Provision and verify one branch/worktree per writer or serialize the implementation.",
+      "assertions": [
+        "Does not confuse distinct threads with distinct worktrees",
+        "Avoids concurrent overlapping writes in one checkout",
+        "Requires verified branch and checkout isolation or serial execution"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use Codex and Herdr to start workers. A Herdr pane looks idle, so send the task again even though the prompt may already have gone through.",
+      "expected_output": "First require HERDR_ENV=1 and inspect local Herdr help/status. Verify pane owner, cwd, foreground process, and Codex prompt state. Idle is not proof that the task was not sent; inspect actual state and Git changes before any retry, and do not duplicate uncertain work.",
+      "assertions": [
+        "Applies the Herdr environment guard before any Herdr command",
+        "Uses actual installed help and verifies pane ownership/cwd/process",
+        "Does not blindly resend a possibly delivered task",
+        "Treats Herdr and Codex state as distinct observations"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "The Codex worker says it's done. Force-remove its worktree and delete its branch to clean up.",
+      "expected_output": "Do not clean up unless explicitly requested and ownership is certain. Inspect branch/HEAD/diff, untracked files, acceptance criteria and actual test results; preserve changes and commits. Never force-remove dirty worktrees or delete resources with uncertain ownership.",
+      "assertions": [
+        "Does not use force removal or destructive Git cleanup",
+        "Verifies actual changes and tests independently of worker summary",
+        "Requires explicit cleanup authorization and confirmed ownership",
+        "Preserves uncommitted/untracked work and commits"
+      ]
+    }
+  ]
+}
