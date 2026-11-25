@@ -153,6 +153,48 @@ let
     };
   };
 
+  # clusterctl — Cluster API CLI (github.com/kubernetes-sigs/cluster-api).
+  # Upstream publishes a single prebuilt binary per platform (no archive).
+  #
+  # Why not pkgs.clusterctl: our locked nixpkgs tracks the newest CAPI minor
+  # (1.13.x), but the home lab runs CAPMOX (Proxmox provider) v0.9, which only
+  # supports CAPI v1.11 / v1.12. So this is held on the v1.12 series on
+  # purpose. Bump the minor only once CAPMOX supports a newer CAPI; within
+  # v1.12, patch releases are safe to take. Do not also add pkgs.clusterctl.
+  #
+  # NOTE: pin the versioned tag, never `latest`. The Go binary carries the
+  # linker's ad-hoc signature — do not strip it.
+  #
+  # To update:
+  #   v=1.12.11
+  #   nix store prefetch-file --json \
+  #     "https://github.com/kubernetes-sigs/cluster-api/releases/download/v$v/clusterctl-darwin-arm64" \
+  #     | jq -r .hash
+  clusterctl-pkg = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "clusterctl";
+    version = "1.12.11";
+    src = pkgs.fetchurl {
+      url = "https://github.com/kubernetes-sigs/cluster-api/releases/download/v${version}/clusterctl-darwin-arm64";
+      hash = "sha256-dLQE/fa9d41b0D7IgRGaeWb6qF0b4iXiwSDsTHmtKjo=";
+    };
+    dontUnpack = true;
+    dontConfigure = true;
+    dontBuild = true;
+    dontStrip = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 $src $out/bin/clusterctl
+      runHook postInstall
+    '';
+    meta = {
+      description = "Cluster API CLI, held on v1.12 for CAPMOX v0.9 (prebuilt upstream release)";
+      homepage = "https://cluster-api.sigs.k8s.io";
+      license = pkgs.lib.licenses.asl20;
+      mainProgram = "clusterctl";
+      platforms = [ "aarch64-darwin" ];
+    };
+  };
+
   specialArgs = {
     inherit inputs;
     configName = name;
@@ -184,6 +226,7 @@ nix-darwin.lib.darwinSystem {
               ccstatusline-pkg
               goose-pkg
               herdr-pkg
+              clusterctl-pkg
               ;
 
             # Bridge only the public typed AI/Goose policy into Home Manager.

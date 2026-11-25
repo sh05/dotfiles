@@ -186,7 +186,7 @@ make rollback                      # 前の世代に戻す
 | 宣言場所 | 例 | バージョン固定 | ロールバック |
 |----------|-----|----------------|--------------|
 | `home.packages`（nixpkgs から） | `kubectl` | ✅ `flake.lock` | ✅ |
-| `home.packages`（`lib/mkdarwin.nix` の derivation から） | `ccstatusline`, `goose` | ✅ URL + hash | ✅ |
+| `home.packages`（`lib/mkdarwin.nix` の derivation から） | `ccstatusline`, `goose`, `clusterctl` | ✅ URL + hash | ✅ |
 | `nix/darwin` の `homebrew.casks` | `ghostty`, `block-goose` | ❌ 常に最新 | ❌ |
 
 3つとも宣言的で、`make switch` は flake の記述に収束します。違うのは Homebrew だけが
@@ -200,6 +200,7 @@ make rollback                      # 前の世代に戻す
 ### 固定したビルド済みバイナリの更新
 
 `ccstatusline` と `goose` は nixpkgs の追従が遅すぎるため、URL と hash で固定しています。
+`clusterctl` は逆の理由で固定しています。CAPMOX v0.9 が CAPI v1.11/v1.12 にしか対応しないため、nixpkgs が 1.13 を出していても v1.12 系に留めています。
 Renovate はこれを追跡しないので、更新は手動です。
 
 ```bash

@@ -43,7 +43,7 @@ When adding a new host, create `hosts/<name>/default.nix` and add a `mkDarwin` e
 - `nix/home/default.nix` — home-manager: `home.packages` (CLI/LSP/languages), `programs.*` declarative tool config (zsh, git, starship, delta, gh, bat, lazygit, direnv, fzf, eza, neovim), `xdg.configFile` symlinks.
 - `nix/modules/shared.nix` — `nix` daemon settings, `nixpkgs.config.allowUnfree`, `system.stateVersion`.
 - `hosts/<name>/default.nix` — `networking.hostName`, `networking.computerName`, host-specific `homebrew.masApps`.
-- `lib/mkdarwin.nix` — assembles all of the above; also packages the tools nixpkgs doesn't carry (or carries too far behind): `gh-branch` (a shell script, from a `flake = false` input), `gh-ghq-cd` (from the upstream flake's own package), `ccstatusline` (npm tarball, hash pinned), `goose` and `herdr` (upstream release binaries, hash pinned — herdr because nixpkgs' 0.9.0 lacks the `report-agent -- <resume argv>` that `sh05.goose` needs, which arrived in 0.9.2).
+- `lib/mkdarwin.nix` — assembles all of the above; also packages the tools nixpkgs doesn't carry (or carries too far behind): `gh-branch` (a shell script, from a `flake = false` input), `gh-ghq-cd` (from the upstream flake's own package), `ccstatusline` (npm tarball, hash pinned), `goose` and `herdr` (upstream release binaries, hash pinned — herdr because nixpkgs' 0.9.0 lacks the `report-agent -- <resume argv>` that `sh05.goose` needs, which arrived in 0.9.2), and `clusterctl` (upstream release binary, hash pinned — held on v1.12 because CAPMOX v0.9 supports only CAPI v1.11/v1.12, while nixpkgs tracks 1.13).
 
 ### Package management split
 
@@ -94,7 +94,7 @@ Work down the list; the first "yes" decides it.
 
 5. **Does upstream publish a prebuilt aarch64-darwin artifact?** → `pkgs.fetchurl`
    plus `stdenvNoCC.mkDerivation` in `lib/mkdarwin.nix` (patterns: `gh-branch`, `herdr`,
-   `ccstatusline`, `goose`). Pin a **versioned, immutable URL** — never a rolling
+   `ccstatusline`, `goose`, `clusterctl`). Pin a **versioned, immutable URL** — never a rolling
    tag like `stable` or `latest`, whose assets are overwritten in place, so a
    pinned hash breaks with no warning and no commit to blame. Renovate does not
    track these (the repo enables neither the `nix` manager nor

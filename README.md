@@ -186,7 +186,7 @@ Where a new tool is declared decides how well it can be pinned:
 | Where | Example | Version-pinned | Rollback |
 |-------|---------|----------------|----------|
 | `home.packages`, from nixpkgs | `kubectl` | ✅ via `flake.lock` | ✅ |
-| `home.packages`, from a derivation in `lib/mkdarwin.nix` | `ccstatusline`, `goose` | ✅ via URL + hash | ✅ |
+| `home.packages`, from a derivation in `lib/mkdarwin.nix` | `ccstatusline`, `goose`, `clusterctl` | ✅ via URL + hash | ✅ |
 | `homebrew.casks` in `nix/darwin` | `ghostty`, `block-goose` | ❌ always latest | ❌ |
 
 All three are declarative, and `make switch` converges to whatever the flake
@@ -201,7 +201,9 @@ repo's nixpkgs rather than the flake registry — is in CLAUDE.md under
 ### Updating a pinned prebuilt binary
 
 `ccstatusline` and `goose` are pinned by URL and hash because nixpkgs lags too
-far behind them. Renovate does not track these, so bumps are manual:
+far behind them. `clusterctl` is pinned for the opposite reason: it is held on
+the CAPI v1.12 series because CAPMOX v0.9 supports only CAPI v1.11/v1.12, while
+nixpkgs already ships 1.13. Renovate does not track these, so bumps are manual:
 
 ```bash
 v=1.56.0
