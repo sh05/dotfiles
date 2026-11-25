@@ -62,8 +62,8 @@ let
   # goose — AI agent CLI (github.com/block/goose). Upstream ships a prebuilt
   # aarch64-darwin binary, so we just unpack it.
   #
-  # Why not pkgs.goose-cli: our locked nixpkgs has 1.28.0 — goose releases
-  # weekly, so nixpkgs runs ~5 months behind while the GUI cask tracks latest.
+  # Why not pkgs.goose-cli: our locked nixpkgs has 1.55.0 (upstream 1.61.0) —
+  # goose releases weekly, so nixpkgs always lags while the GUI cask tracks latest.
   # The gap matters: CLI and GUI share ~/.config/goose/config.yaml, and the
   # newer one migrates it in place on read, which the older one cannot parse.
   #
@@ -81,16 +81,16 @@ let
   # against it breaks without warning.
   #
   # To update (keep in sync with the block-goose cask — see `make goose-check`):
-  #   v=1.56.0
+  #   v=1.61.0
   #   nix store prefetch-file --json \
   #     "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   #     | jq -r .hash
   goose-pkg = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "goose";
-    version = "1.56.0";
+    version = "1.61.0";
     src = pkgs.fetchurl {
       url = "https://github.com/block/goose/releases/download/v${version}/goose-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-UvP41i49FExd5wxcRx3jnYuSwk1B1bNDbri6sRukvCQ=";
+      hash = "sha256-2YzExi2tpciHgwVSvzmtwo2HmU2xqN1/nKe9YEQfOno=";
     };
     dontConfigure = true;
     dontBuild = true;

@@ -206,7 +206,7 @@ the CAPI v1.12 series because CAPMOX v0.9 supports only CAPI v1.11/v1.12, while
 nixpkgs already ships 1.13. Renovate does not track these, so bumps are manual:
 
 ```bash
-v=1.56.0
+v=1.61.0
 nix store prefetch-file --json \
   "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   | jq -r .hash
@@ -262,8 +262,8 @@ does not automatically restart an already-running Herdr server.
 goose is installed in two halves, on purpose:
 
 - **CLI** — the upstream release binary, pinned in `lib/mkdarwin.nix` and added
-  to `home.packages`. nixpkgs carries `goose-cli` but currently at 1.28.0, so
-  this pin tracks the GUI cask's current 1.56.0 release.
+  to `home.packages`. nixpkgs carries `goose-cli` but currently at 1.55.0, so
+  this pin tracks the GUI cask's current 1.61.0 release.
 - **GUI** — the `block-goose` cask in `nix/darwin/default.nix`. The cask ships
   `Goose.app` and nothing else, so it puts no `goose` on your `PATH`.
 
