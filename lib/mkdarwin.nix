@@ -39,10 +39,10 @@ let
   # To update: bump version, re-run nix-prefetch-url, update hash.
   ccstatusline-pkg = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "ccstatusline";
-    version = "2.2.22";
+    version = "2.2.34";
     src = pkgs.fetchurl {
       url = "https://registry.npmjs.org/ccstatusline/-/ccstatusline-${version}.tgz";
-      hash = "sha256-FKDBeocIjiP4xXxNycTAJFlr7s+I8zm+gNv9IchcsQA=";
+      hash = "sha256-QFLRn4cDd34K01TxejG6dGa4j8ub8smSllqn401f34E=";
     };
     nativeBuildInputs = [ pkgs.makeWrapper ];
     dontConfigure = true;
@@ -62,8 +62,8 @@ let
   # goose — AI agent CLI (github.com/block/goose). Upstream ships a prebuilt
   # aarch64-darwin binary, so we just unpack it.
   #
-  # Why not pkgs.goose-cli: our locked nixpkgs has 1.28.0 — goose releases
-  # weekly, so nixpkgs runs ~5 months behind while the GUI cask tracks latest.
+  # Why not pkgs.goose-cli: our locked nixpkgs has 1.55.0 (upstream 1.61.0) —
+  # goose releases weekly, so nixpkgs always lags while the GUI cask tracks latest.
   # The gap matters: CLI and GUI share ~/.config/goose/config.yaml, and the
   # newer one migrates it in place on read, which the older one cannot parse.
   #
@@ -81,16 +81,16 @@ let
   # against it breaks without warning.
   #
   # To update (keep in sync with the block-goose cask — see `make goose-check`):
-  #   v=1.56.0
+  #   v=1.61.0
   #   nix store prefetch-file --json \
   #     "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   #     | jq -r .hash
   goose-pkg = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "goose";
-    version = "1.56.0";
+    version = "1.61.0";
     src = pkgs.fetchurl {
       url = "https://github.com/block/goose/releases/download/v${version}/goose-aarch64-apple-darwin.tar.gz";
-      hash = "sha256-UvP41i49FExd5wxcRx3jnYuSwk1B1bNDbri6sRukvCQ=";
+      hash = "sha256-2YzExi2tpciHgwVSvzmtwo2HmU2xqN1/nKe9YEQfOno=";
     };
     dontConfigure = true;
     dontBuild = true;
@@ -153,6 +153,48 @@ let
     };
   };
 
+  # clusterctl — Cluster API CLI (github.com/kubernetes-sigs/cluster-api).
+  # Upstream publishes a single prebuilt binary per platform (no archive).
+  #
+  # Why not pkgs.clusterctl: our locked nixpkgs tracks the newest CAPI minor
+  # (1.13.x), but the home lab runs CAPMOX (Proxmox provider) v0.9, which only
+  # supports CAPI v1.11 / v1.12. So this is held on the v1.12 series on
+  # purpose. Bump the minor only once CAPMOX supports a newer CAPI; within
+  # v1.12, patch releases are safe to take. Do not also add pkgs.clusterctl.
+  #
+  # NOTE: pin the versioned tag, never `latest`. The Go binary carries the
+  # linker's ad-hoc signature — do not strip it.
+  #
+  # To update:
+  #   v=1.12.11
+  #   nix store prefetch-file --json \
+  #     "https://github.com/kubernetes-sigs/cluster-api/releases/download/v$v/clusterctl-darwin-arm64" \
+  #     | jq -r .hash
+  clusterctl-pkg = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "clusterctl";
+    version = "1.12.11";
+    src = pkgs.fetchurl {
+      url = "https://github.com/kubernetes-sigs/cluster-api/releases/download/v${version}/clusterctl-darwin-arm64";
+      hash = "sha256-dLQE/fa9d41b0D7IgRGaeWb6qF0b4iXiwSDsTHmtKjo=";
+    };
+    dontUnpack = true;
+    dontConfigure = true;
+    dontBuild = true;
+    dontStrip = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 $src $out/bin/clusterctl
+      runHook postInstall
+    '';
+    meta = {
+      description = "Cluster API CLI, held on v1.12 for CAPMOX v0.9 (prebuilt upstream release)";
+      homepage = "https://cluster-api.sigs.k8s.io";
+      license = pkgs.lib.licenses.asl20;
+      mainProgram = "clusterctl";
+      platforms = [ "aarch64-darwin" ];
+    };
+  };
+
   specialArgs = {
     inherit inputs;
     configName = name;
@@ -184,6 +226,7 @@ nix-darwin.lib.darwinSystem {
               ccstatusline-pkg
               goose-pkg
               herdr-pkg
+              clusterctl-pkg
               ;
 
             # Bridge only the public typed AI/Goose policy into Home Manager.

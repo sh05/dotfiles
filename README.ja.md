@@ -186,7 +186,7 @@ make rollback                      # 前の世代に戻す
 | 宣言場所 | 例 | バージョン固定 | ロールバック |
 |----------|-----|----------------|--------------|
 | `home.packages`（nixpkgs から） | `kubectl` | ✅ `flake.lock` | ✅ |
-| `home.packages`（`lib/mkdarwin.nix` の derivation から） | `ccstatusline`, `goose` | ✅ URL + hash | ✅ |
+| `home.packages`（`lib/mkdarwin.nix` の derivation から） | `ccstatusline`, `goose`, `clusterctl` | ✅ URL + hash | ✅ |
 | `nix/darwin` の `homebrew.casks` | `ghostty`, `block-goose` | ❌ 常に最新 | ❌ |
 
 3つとも宣言的で、`make switch` は flake の記述に収束します。違うのは Homebrew だけが
@@ -200,10 +200,11 @@ make rollback                      # 前の世代に戻す
 ### 固定したビルド済みバイナリの更新
 
 `ccstatusline` と `goose` は nixpkgs の追従が遅すぎるため、URL と hash で固定しています。
+`clusterctl` は逆の理由で固定しています。CAPMOX v0.9 が CAPI v1.11/v1.12 にしか対応しないため、nixpkgs が 1.13 を出していても v1.12 系に留めています。
 Renovate はこれを追跡しないので、更新は手動です。
 
 ```bash
-v=1.56.0
+v=1.61.0
 nix store prefetch-file --json \
   "https://github.com/block/goose/releases/download/v$v/goose-aarch64-apple-darwin.tar.gz" \
   | jq -r .hash
@@ -254,8 +255,8 @@ plugin の登録時に稼働中の Herdr server を自動再起動すること�
 goose は意図的に2つに分けてインストールしています。
 
 - **CLI** — upstream のリリースバイナリを `lib/mkdarwin.nix` で固定し、`home.packages`
-  に追加。nixpkgs にも `goose-cli` はありますが現在 1.28.0 で、upstream の 1.56.0 に対し
-  週1リリースのペースに追従できず数ヶ月遅れています。
+  に追加。nixpkgs にも `goose-cli` はありますが現在 1.55.0 で、upstream の 1.61.0 に対し
+  週1リリースのペースに追従できず遅れています。
 - **GUI** — `nix/darwin/default.nix` の `block-goose` cask。この cask は `Goose.app` だけを
   配布するので、`goose` コマンドは PATH に入りません。
 

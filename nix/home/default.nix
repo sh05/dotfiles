@@ -9,6 +9,7 @@
   ccstatusline-pkg,
   goose-pkg,
   herdr-pkg,
+  clusterctl-pkg,
   dotfilesPolicy,
   darwinConfig,
   ...
@@ -138,6 +139,8 @@ in
       stern
       kyverno
       kubectx
+      # Pinned to v1.12 in lib/mkdarwin.nix (CAPMOX v0.9 needs CAPI v1.11/v1.12).
+      clusterctl-pkg
 
       # Languages
       go
